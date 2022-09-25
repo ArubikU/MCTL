@@ -1,0 +1,23 @@
+cmd:
+  help: <prefix><gray>El comando no existe has /<command> help para ver los comandos</gray>
+  reload: <prefix><gray>Has recargado el plugin</gray>
+  no-permission: <prefix><gray>No tienes permiso para usar este comando</gray>
+  marry:
+    request: <prefix><gray>Has solicitado matrimonio a <second_name></gray>
+    recive: <prefix><gray><second_name>Te ha solicitado matrimonio</gray>
+    already-request: <prefix><gray>El jugador <second_name> ya tiene una solicitud de matrimonio</gray>
+    no-request: <prefix><gray>No tienes ninguna solicitud de matrimonio</gray>
+    already-married: <prefix><gray>El jugador <second_name> ya esta casado</gray>
+    accepted: <prefix><gray><second_name> Ha aceptado tu solicitud de matrimonio</gray>
+    offline: <prefix><gray>El jugador <second_name> esta desconectado</gray>
+    deny: <prefix><gray>Has rechazado la solicitud de matrimonio de <second_name></gray>
+  divorce:
+    reciver: <prefix><gray><spouse_name> se a divorciado de ti</gray>
+    sender: <prefix><gray>Te has divorciado de <spouse_name></gray>
+  gender:
+    no-args: <prefix><gray>La forma de uso correcta es /<command> gender male/female</gray>
+    success: <prefix><gray>Felicidades has cambiado con exito tu sexo a <sex></gray>
+    male: "Hombre"
+    female: "Mujer"
+prefix: "<red>[MCTL]</red> "
+command: "mctl"

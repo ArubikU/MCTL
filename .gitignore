@@ -1,0 +1,9 @@
+target/mctl-1.0.0-shaded.jar
+target/mctl-1.0.0.jar
+target/original-mctl-1.0.0.jar
+target/*
+libs/citizens.jar
+libs/LibsDisguises-10.0.27-Free.jar
+libs/original-mctl-1.0.0.jar
+libs/mythicmobs.jar
+libs/Shopkeepers-2.16.2.jar

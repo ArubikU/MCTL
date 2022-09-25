@@ -1,0 +1,16 @@
+config:
+  autoChangeVillagers: true
+  divorce:
+    broadcast:
+      all: true
+      ignore_spouses: true
+  interactions:
+    max: 6
+  permission:
+    default-commands: true
+  give-likes-ontime: 10
+  likes-timer: 40
+  villager-mobs:
+    - VILLAGER
+  villager-stats:
+    MAX_HEALTH: 30

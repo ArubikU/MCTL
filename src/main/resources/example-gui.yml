@@ -1,0 +1,18 @@
+gui:
+  size: 45
+  id: interaction-gui
+  saved-data:
+  - CustomVillager
+  - Player
+  items:
+    '1':
+      MATERIAL: DIAMOND
+      NAME: This is a fake button
+      CMD: 10001
+      ON_CLICK:
+        OPEN_GUI:
+          RUTE: guis/speech.yml
+          CONFIG_SECTION: speech
+          pass-data:
+          - CustomVillager
+          - Player

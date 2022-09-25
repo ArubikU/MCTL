@@ -1,0 +1,309 @@
+skins:
+  male:
+    farmer:
+    - 000LAY
+    - '100000000'
+    - '2807'
+    - 0_Luffy_0
+    - 0_Chameleon_0
+    - 8ay
+    - 3Danous
+    - 0mikron
+    - '0100011001000011'
+    - 0mikron
+    librarian:
+    - 10jezza10
+    - 000Fajmy_
+    - Amethystine
+    - 007zander
+    - 5corpius
+    - '0575'
+    - 0dyl
+    - 0Cruq
+    weaponsmith:
+    - 1000tobbe
+    - '0100011001000011'
+    - '190898'
+    - '0072'
+    - 123_go
+    - 3agles
+    - Amethystine
+    - 00T_
+    - 3bed
+    - 3GG_
+    - 021Alt
+    butcher:
+    - 2Indie4U
+    - 3PSat
+    - 1garsur
+    - '0100011001000011'
+    - '00101000'
+    - 1tyler21
+    - 3j0hn
+    - 09x09
+    cleric:
+    - 11th__Doctor
+    - 09x09
+    - '0100011001000011'
+    - 000Alfa
+    - 3rayman3
+    - appu1232
+    - 6blaynee8
+    - '0100011001000011'
+    leatherworker:
+    - 1000tobbe
+    - '0100011001000011'
+    - '190898'
+    - '0072'
+    - 123_go
+    - 3agles
+    - Amethystine
+    - 00T_
+    - 3bed
+    - 3GG_
+    - 021Alt
+    fletcher:
+    - 2sekunden
+    - 101VaultBoy101
+    - 2DRags
+    - 2EyedBunny
+    - 9littlebees
+    - Aaron203
+    - Agerog
+    - 21quentin
+    toolsmith:
+    - 1000tobbe
+    - '0100011001000011'
+    - '190898'
+    - '0072'
+    - 123_go
+    - 3agles
+    - Amethystine
+    - 00T_
+    - 3bed
+    - 3GG_
+    - 021Alt
+    cartographer:
+    - 2sekunden
+    - 101VaultBoy101
+    - 2DRags
+    - 2EyedBunny
+    - 9littlebees
+    - Aaron203
+    - Agerog
+    - 21quentin
+    mason:
+    - '01111000'
+    - '0100011001000011'
+    - 183official
+    - '2807'
+    - 117lone
+    - 0The_B_I_G
+    - 2sekunden
+    armorer:
+    - 0bsidianBlack
+    - 1dud
+    - 49Soul
+    - 000minec
+    - 17ThedarkLord
+    - 777LinkTriForce
+    - 1in3
+    - 2012jinwoo
+    - 123pacman04
+    shepherd:
+    - 0bsidianBlack
+    - 1dud
+    - 49Soul
+    - 000minec
+    - 17ThedarkLord
+    - 777LinkTriForce
+    - 1in3
+    - 2012jinwoo
+    - 123pacman04
+    fisherman:
+    - 1LSS
+    - 23Lancelot
+    - 42nl
+    - agramane
+    - 183official
+    - 999Elias
+    nitwit:
+    - 01q
+    - 1stElite
+    - 12xE
+    - 626bus
+    vindicator:
+    - Villagy
+    - Nvidea
+    evoker:
+    - Deathnote
+    - authentic
+    - ola
+    witch:
+    - Vaca12
+    - Ken_Kaneki_kun
+    - ZackDaWack1
+  female:
+    farmer:
+    - 0Nobody
+    - 0hSakura
+    - 1mEther
+    - 0hCharlie
+    - '8160'
+    - 20xl
+    - 0DreadMore_
+    - 0ser
+    - 0lijf
+    cleric:
+    - '2807'
+    - 0lympia
+    - '0100011001000011'
+    - 01_honeybee
+    - 0nceuponatime
+    - 1DrachiiLSP
+    - 00ga_B00ga
+    - StTv
+    librarian:
+    - 1mEther
+    - '0100011001000011'
+    - Ahriiiii
+    - 0lijf
+    - 11Kippers
+    - '197927030'
+    - 5eversimmer
+    - 1i1i
+    weaponsmith:
+    - 25Arvind02
+    - 11Kippers
+    - '2807'
+    - '2807'
+    - '26_95'
+    - '2807'
+    - 0Cy_ren
+    - 10Fps_
+    butcher:
+    - 11Kippers
+    - 115K
+    - '0100011001000011'
+    - Lizth
+    - 0Cy_ren
+    - '1027'
+    - 983dOnkEycHeEks
+    - 0Nobody
+    leatherworker:
+    - 115K
+    - '0100011001000011'
+    - Lizth
+    - '2807'
+    - akuny
+    - 1tsN1n1
+    - '2807'
+    - 0Cy_ren
+    fletcher:
+    - 1mEther
+    - 115K
+    - luvhm
+    - NuvSuicida
+    - Lizth
+    - Ellielza
+    - admiri
+    - AnimeTiddieesUwU
+    - '8160'
+    - Carnesita
+    - '0100011001000011'
+    toolsmith:
+    - 25Arvind02
+    - 11Kippers
+    - '2807'
+    - '2807'
+    - '26_95'
+    - '2807'
+    - 0Cy_ren
+    - 10Fps_
+    cartographer:
+    - 1mEther
+    - 115K
+    - luvhm
+    - NuvSuicida
+    - Lizth
+    - Ellielza
+    - admiri
+    - AnimeTiddieesUwU
+    - '8160'
+    - Carnesita
+    - '0100011001000011'
+    mason:
+    - 1mEther
+    - 115K
+    - luvhm
+    - NuvSuicida
+    - Lizth
+    - Ellielza
+    - admiri
+    - AnimeTiddieesUwU
+    - '8160'
+    - Carnesita
+    - '0100011001000011'
+    armorer:
+    - AbbygailTheGreat
+    - '0100011001000011'
+    - '26_95'
+    - 4House
+    - AKIMITSUUUUUUUUU
+    - BACinject
+    - 86R
+    - Spezc
+    - WolfPackGacha
+    - ArroZz
+    shepherd:
+    - AlexBay
+    - 0wnerLynn
+    - '0100011001000011'
+    - Emma_Vibez
+    - flawing
+    - Carnesita
+    - BoChurchTV
+    - '8160'
+    - Alyssatjuuhh
+    - 201861TW
+    fisherman:
+    - AlexBay
+    - 0wnerLynn
+    - '0100011001000011'
+    - Emma_Vibez
+    - flawing
+    - Carnesita
+    - BoChurchTV
+    - '8160'
+    - Alyssatjuuhh
+    - 201861TW
+    nitwit:
+    - gaytasha
+    - 0Finley0
+    - AlexBay
+    - 0wnerLynn
+    - '0100011001000011'
+    - Emma_Vibez
+    - flawing
+    - Carnesita
+    - BoChurchTV
+    - '8160'
+    - Alyssatjuuhh
+    - 201861TW
+    vindicator:
+    - Knukles
+    - keyblademaster
+    - Arcturio
+    - MaryGrace
+    evoker:
+    - alicia33226
+    - Lifechild
+    - Tere1610
+    - DaisyGamer
+    - SSJ
+    - Olivia
+    - amniraku
+    witch:
+    - Carol_Fofinha
+    - Pursia
+    - EEE

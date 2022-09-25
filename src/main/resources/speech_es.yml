@@ -1,0 +1,633 @@
+speech:
+  joke-good:
+  - '<villager_prefix><villager_name><white>: *Risas*'
+  - '<villager_prefix><villager_name><white>: Eso es muy gracioso!'
+  - '<villager_prefix><villager_name><white>: Eres el mejor contando chistes!'
+  - '<villager_prefix><villager_name><white>: OMG, eres muy gracioso!'
+  - '<villager_prefix><villager_name><white>: Eres el joker!'
+  - '<villager_prefix><villager_name><white>: Esa fue la mejor broma de mi vida!'
+  - '<villager_prefix><villager_name><white>: Que divertido!'
+  - '<villager_prefix><villager_name><white>: Si que eres un payaso!'
+  - '<villager_prefix><villager_name><white>: Eso es muy divertido!'
+  - '<villager_prefix><villager_name><white>: Eso fue... *Risas*'
+  - '<villager_prefix><villager_name><white>: Buena otra mas!'
+  joke-bad:
+  - '<villager_prefix><villager_name><white>: Que mal chiste...'
+  - '<villager_prefix><villager_name><white>: OK...'
+  - '<villager_prefix><villager_name><white>: No lo entendi.'
+  - '<villager_prefix><villager_name><white>: Sobre eso no se bromea!'
+  - '<villager_prefix><villager_name><white>: Eh que dijistes?'
+  - '<villager_prefix><villager_name><white>: Es lo mejor que puedes hacer?'
+  - '<villager_prefix><villager_name><white>: Wow, tan penoso!'
+  - '<villager_prefix><villager_name><white>: Eso no tiene sentido.'
+  - '<villager_prefix><villager_name><white>: Se supone que es un chiste?'
+  - '<villager_prefix><villager_name><white>: Ok supongo que no?'
+  chat-good:
+  - '<villager_prefix><villager_name><white>: Buena charla'
+  - '<villager_prefix><villager_name><white>: Suena genial'
+  - '<villager_prefix><villager_name><white>: Cool.'
+  - '<villager_prefix><villager_name><white>: Eso le pasa a los mejores.'
+  - '<villager_prefix><villager_name><white>: No! Enserio?'
+  - '<villager_prefix><villager_name><white>: Siento tu pesame.'
+  - '<villager_prefix><villager_name><white>: Estoy totalmente de acuerdo!'
+  chat-bad:
+  - '<villager_prefix><villager_name><white>: Um, Que?'
+  - '<villager_prefix><villager_name><white>: Losient, No escuche.'
+  - '<villager_prefix><villager_name><white>: Okey...'
+  - '<villager_prefix><villager_name><white>: Si, Bueno... te vere luego.'
+  - '<villager_prefix><villager_name><white>: Mentiroso.'
+  - '<villager_prefix><villager_name><white>: No estoy deacuerdo.'
+  - '<villager_prefix><villager_name><white>: No me gusta eso.'
+  - '<villager_prefix><villager_name><white>: Si. La verdad nunca me paso eso'
+  gift-bad:
+  - '<villager_prefix><villager_name><white>: Que es esto?'
+  - '<villager_prefix><villager_name><white>: Es basura.'
+  - '<villager_prefix><villager_name><white>: No quiero tu basura!'
+  - '<villager_prefix><villager_name><white>: Deja de darme basura!'
+  - '<villager_prefix><villager_name><white>: No gracias.'
+  - '<villager_prefix><villager_name><white>: De donde conseguistes esto. La basura?'
+  gift-small:
+  - '<villager_prefix><villager_name><white>: Gracias.'
+  - '<villager_prefix><villager_name><white>: Es un buen regalo enano.'
+  - '<villager_prefix><villager_name><white>: Es un adorno genial.'
+  - '<villager_prefix><villager_name><white>: Lo agrego a mi coleccion.'
+  - '<villager_prefix><villager_name><white>: Cool.'
+  gift-regular:
+  - '<villager_prefix><villager_name><white>: Wow Gracias.'
+  - '<villager_prefix><villager_name><white>: Es un buen regalo.'
+  - '<villager_prefix><villager_name><white>: Gracias por el regalo.'
+  - '<villager_prefix><villager_name><white>: Es hermoso.'
+  - '<villager_prefix><villager_name><white>: Algun dia de comprare uno.' 
+  - '<villager_prefix><villager_name><white>: Que cool.'
+  gift-great:
+  - '<villager_prefix><villager_name><white>: Es asombroso!'
+  - '<villager_prefix><villager_name><white>: Es el mejor regalo que eh visto!'
+  - '<villager_prefix><villager_name><white>: Lo amo!'
+  - '<villager_prefix><villager_name><white>: Donde lo conseguistes!'
+  - '<villager_prefix><villager_name><white>: Eres asombros<player_sex_endchar>!'
+  - '<villager_prefix><villager_name><white>: Que Cool! gracias!'
+  gift-love:
+  - '<villager_prefix><villager_name><white>: Porque, Muchas gracias!'
+  - '<villager_prefix><villager_name><white>: *Se sonroja* muchas gracias.'
+  - '<villager_prefix><villager_name><white>: Esto es amoros!'
+  - '<villager_prefix><villager_name><white>: Que dulce.'
+  - '<villager_prefix><villager_name><white>: Oh, es hermoso!'
+  - '<villager_prefix><villager_name><white>: Eres tan dulce!'
+  marry-yes:
+  - '<villager_prefix><villager_name><white>: Acepto!'
+  - '<villager_prefix><villager_name><white>: Claro! Si Acepto!'
+  - '<villager_prefix><villager_name><white>: Te amo!'
+  - '<villager_prefix><villager_name><white>: Sere tuy<villager_sex_endchar> por siempre'
+  - '<villager_prefix><villager_name><white>: Si, Me caso contigo!'
+  - '<villager_prefix><villager_name><white>: Hasta que la muerte nos separe!'
+  marry-no:
+  - '<villager_prefix><villager_name><white>: Dire que no.'
+  - '<villager_prefix><villager_name><white>: No, No me caso contigo.'
+  - '<villager_prefix><villager_name><white>: Estas loc<player_sex_endchar>?'
+  - '<villager_prefix><villager_name><white>: No estoy list<villager_sex_endchar>.'
+  - '<villager_prefix><villager_name><white>: Es muy temprano.'
+  - '<villager_prefix><villager_name><white>: Mis padres no lo aprobarian.'
+  marry-alredy:
+  - '<villager_prefix><villager_name><white>: Losiento ya estoy casad<villager_sex_endchar>'
+  marry-cant:
+  - '<villager_prefix><villager_name><white>: Ya estas casado.'
+  - '<villager_prefix><villager_name><white>: Puedo ver tu anillo.'
+  - '<villager_prefix><villager_name><white>: Debes divorciarte primero.'
+  - '<villager_prefix><villager_name><white>: No puedo ya estas casado.'
+  - '<villager_prefix><villager_name><white>: No me hagas esto a mi.'
+  - '<villager_prefix><villager_name><white>: What tu ya estas casado.'
+  marry-cant-son:
+  - '<villager_prefix><villager_name><white>: Soy tu hij<villager_sex_endchar>!'
+  - '<villager_prefix><villager_name><white>: Estas loc<player_sex_endchar> <villager_parent_me>'
+  play-good:
+  - "<villager_prefix><villager_name><white>: Esto es divertido"
+  - "<villager_prefix><villager_name><white>: JaJa te estoy ganando"
+  - "<villager_prefix><villager_name><white>: Que divertido"
+  - "<villager_prefix><villager_name><white>: Nunca me venceras"
+  - "<villager_prefix><villager_name><white>: Eres bastante buen<player_sex_endchar> en esto."
+  play-bad:
+  - "<villager_prefix><villager_name><white>: Esto no es divertido."
+  - "<villager_prefix><villager_name><white>: Que aburrido."
+  - "<villager_prefix><villager_name><white>: No quiero jugar."
+  - "<villager_prefix><villager_name><white>: Otro dia estoy cansad<villager_sex_endchar>"
+  - "<villager_prefix><villager_name><white>: Vamos espabila ti<player_sex_endchar>"
+  greet-good:
+  - "<villager_prefix><villager_name><white>: ¡Hola! ¿Cómo estás hoy?"
+  - "<villager_prefix><villager_name><white>: Hey %player%!, ¿qué tal?"
+  - "<villager_prefix><villager_name><white>: Oh, hola. ¿Necesitas algo?"
+  - "<villager_prefix><villager_name><white>: ¡Parece que estás preparado para afrontar el día! ¿Cómo te va?"
+  - "<villager_prefix><villager_name><white>: ¡Hola %player%! ¡Me alegro de verte!"
+  - "<villager_prefix><villager_name><white>: ¡Oh, hola!"
+  - "<villager_prefix><villager_name><white>: ¡Me alegro de verte!"
+  - "<villager_prefix><villager_name><white>: ¡Hola! Es un placer verte. ¿Cómo estás hoy?"
+  - "<villager_prefix><villager_name><white>: ¡Hey!, ¡qué alegría verte!"
+  greet-bad:
+  - "<villager_prefix><villager_name><white>: ¡Ew, vete, eres la ÚLTIMA persona que quería ver!"
+  - "<villager_prefix><villager_name><white>: Genial, mira quién ha vuelto. Otra vez."
+  - "<villager_prefix><villager_name><white>: ¿Mm?"
+  - "<villager_prefix><villager_name><white>: Oh. Solo eres tú. Esperaba a alguien más."
+  - "<villager_prefix><villager_name><white>: ¿Has venido a molestarme otra vez?"
+  kiss-good:
+  - '<villager_prefix><villager_name><white>: *Se sonroja*'
+  - '<villager_prefix><villager_name><white>: Ohh, eres tan bueno.'
+  - '<villager_prefix><villager_name><white>: Mmmmmm.'
+  - '<villager_prefix><villager_name><white>: Tus labios son tan suaves...'
+  - '<villager_prefix><villager_name><white>: *Se sonroja* eres un<player_sex_endchardisapear> buen<player_sex_endchardisapear> besador<player_sex_endchardisapear>.'
+  - '<villager_prefix><villager_name><white>: Hagamoslo denuevo.'
+  - '<villager_prefix><villager_name><white>: Sabes bien.'
+  kiss-bad:
+  - '<villager_prefix><villager_name><white>: *Bofetada*'
+  - '<villager_prefix><villager_name><white>: Que te pasa.'
+  - '<villager_prefix><villager_name><white>: Que tienes!'
+  - '<villager_prefix><villager_name><white>: Eres <player_sex_pronoun> peor.'
+  - '<villager_prefix><villager_name><white>: Eww, quedate lejos.'
+  - '<villager_prefix><villager_name><white>: Hey mucha lengua.'
+  - '<villager_prefix><villager_name><white>: Quedate lejos de mi!'
+  story-good:
+  - "<villager_prefix><villager_name><white>: ¿En serio? ¡No me creo que pasará todo eso!"
+  - "<villager_prefix><villager_name><white>: Ojalá fuese tan valiente como para matar un creeper."
+  - "<villager_prefix><villager_name><white>: ¡Qué historia tan buena! ¿Es tuya?"
+  - "<villager_prefix><villager_name><white>: ¡Jajaja, definitivamente suena a %Supporter%! Que gran persona."
+  - "<villager_prefix><villager_name><white>: He escuchado la leyenda de %Supporter% casi un millón de veces. ¡Cuéntamela de nuevo!"
+  - "<villager_prefix><villager_name><white>: ¡Oooh! ¿Así que así es como encontraste tu primer diamante?"
+  - "<villager_prefix><villager_name><white>: ¡Deberías volver más tarde! Me encantaría escuchar más."
+  - "<villager_prefix><villager_name><white>: ¡Genial! ¡Yo también exploraré el mundo, algún día!."
+  - "<villager_prefix><villager_name><white>: ¡Guau! Debe ser increíble poder viajar y explorar. Me encanta mi pueblo, mi familia y mis amigos, pero al escucharte me da mucha envidia."
+  - "<villager_prefix><villager_name><white>: Debes ser muy valiente para ir a explorar lo desconocido."
+  - "<villager_prefix><villager_name><white>: ¿Tanto calor hace allí?"
+  - "<villager_prefix><villager_name><white>: Vaya, ¿cómo has conseguido sobrevivir en un lugar tan horrible? Estoy impresionado."
+  - "<villager_prefix><villager_name><white>: He oído que hay muchos tesoros en el Nether para aquellos que sean lo suficientemente valientes como para ir allí. Si solo yo fuera lo suficientemente valiente como para intentar poner un pie en el Nether…"
+  - "<villager_prefix><villager_name><white>: Debes ser muy valiente para ir allí. ¿No tienes miedo cuando vas? N-No es que yo lo tuviese…"
+  - "<villager_prefix><villager_name><white>: ¿Has visto un Piglin Zombificado?"
+  - "<villager_prefix><villager_name><white>: ¡Increíble! ¿Y te has traído el huevo de dragón contigo?"
+  - "<villager_prefix><villager_name><white>: ¡Ay, madre! ¿Realmente has matado al poderoso dragón de la leyenda? ¡La aldea cantará tus esfuerzos durante generaciones!"
+  - "<villager_prefix><villager_name><white>: ¡Imposible! ¡He oído que el Wither causa una destrucción inimaginable!"
+  - "<villager_prefix><villager_name><white>: ¡¿Has superado incluso al Wither?! ¡E-Es increíble!"
+  story-bad:
+  - "<villager_prefix><villager_name><white>: ¿Todo eso pasó ayer? ¡No me lo creo!"
+  - "<villager_prefix><villager_name><white>: Yo estaba allí ayer, es imposible que no me hubiera enterado de eso."
+  - "<villager_prefix><villager_name><white>: Creo que nunca has puesto un pie en el Nether."
+  - "<villager_prefix><villager_name><white>: ... ahora entiendo por qué esos Piglins te atacaron"
+  - "<villager_prefix><villager_name><white>: No me importa si hubieses estado en el Nether. No podrías contar una historia ni para salvar tu vida."
+  - "<villager_prefix><villager_name><white>: ... no pareces lo suficientemente fuerte como para ir al Nether."
+  - "<villager_prefix><villager_name><white>: Mi abuelo solía explorar el Nether, y nunca me habló de los hongos distorsionados. ¡Mentiroso!"
+  - "<villager_prefix><villager_name><white>: Tus historias se están haciendo viejas"
+  - "<villager_prefix><villager_name><white>: Vaya. No te cortes con ese filo, tío duro."
+  - "<villager_prefix><villager_name><white>: Hablar contigo es como preguntarle a un niño que quiere ser de mayor. Sin la parte adorable, claro."
+  - "<villager_prefix><villager_name><white>: ¡Haha! ¿Te has vuelto loco? El dragón del ender es un mito."
+  - "<villager_prefix><villager_name><white>: Debes estar bromeando. ¡Ningún humano podría aspirar a arañar a ese dragón!"
+  - "<villager_prefix><villager_name><white>: No te creo."
+  - "<villager_prefix><villager_name><white>: Te ves demasiado en una pieza para que eso sea cierto."
+  - "<villager_prefix><villager_name><white>: *Ejem* Estás hablando de mi madre."
+  - "<villager_prefix><villager_name><white>: Por eso hablan mal de ti."
+  - "<villager_prefix><villager_name><white>: No lo entiendo..."
+  - "<villager_prefix><villager_name><white>: ¡Eres horrible! ¡Los creepers también tienen sentimientos!"
+  - "<villager_prefix><villager_name><white>: ¡¿Cómo pudiste matar a una pobre oveja?!"
+  - "<villager_prefix><villager_name><white>: *Ronquidos* Uh— huh, ¿qué?"
+  - "<villager_prefix><villager_name><white>: ¿Cómo valió la pena mi tiempo?"
+  flirt-good:
+  - '<villager_prefix><villager_name><white>: *Se sonroja* Oh, mi dios.'
+  - '<villager_prefix><villager_name><white>: *Sonrie* Eres muy <player_nice>.'
+  - '<villager_prefix><villager_name><white>: Deberias venir a mi casa a pasar mas tiempo.'
+  - '<villager_prefix><villager_name><white>: Oh dios, eres tan caliente!'
+  - '<villager_prefix><villager_name><white>: Oh claro <player_nice>!'
+  - '<villager_prefix><villager_name><white>: Vuelve con mas cosas caliente!'
+  - '<villager_prefix><villager_name><white>: Porque. gracias, *Sonrie*'
+  - '<villager_prefix><villager_name><white>: Enserio piensas eso? *Se sonroja*'
+  - '<villager_prefix><villager_name><white>: Deberiamos salir en algun momento.'
+  - '<villager_prefix><villager_name><white>: Tu dulsura.'
+  - '<villager_prefix><villager_name><white>: Lo sabes.'
+  flirt-bad:
+  - '<villager_prefix><villager_name><white>: Eso fue malo.'
+  - '<villager_prefix><villager_name><white>: No me interesas.'
+  - '<villager_prefix><villager_name><white>: Le dire eso a <contrary_sex_plural_pronoun> <contrary_sex_plural>'
+  - '<villager_prefix><villager_name><white>: Quedate lejos de mi.'
+  - '<villager_prefix><villager_name><white>: Ewwww.'
+  - '<villager_prefix><villager_name><white>: Eh buen intento.'
+  drunk:
+  - Don't.. Ahh.
+  - Ohh, %player%! Please stop!
+  - Stop please!
+  - Please stop %player%! Please!
+  - Nooo..
+  - Please...
+  - Stop, Stop it!
+  aid-yes:
+  - Sure, I can help.
+  - Here you go.
+  - will this help?
+  - Here is a little something.
+  - I can lend a hand.
+  - That's what are friends are for.
+  aid-no:
+  - Can't sorry.
+  - I need help myself.
+  - I'm busy right now.
+  - Sorry, I don't have anything.
+  - I don't have anything for myself.
+  - If anything I need your help.
+  punch:
+  - '<villager_prefix><villager_name><white>: No me toques denuevo!'
+  - '<villager_prefix><villager_name><white>: Ohh, %player%! Para!'
+  - '<villager_prefix><villager_name><white>: Para porfavor!'
+  - '<villager_prefix><villager_name><white>: Porfavor %player%! Porfavor!'
+  - '<villager_prefix><villager_name><white>: Ouch!'
+  - '<villager_prefix><villager_name><white>: Ouch Eso dolio.'
+  - '<villager_prefix><villager_name><white>: Como se te ocurre!'
+  - '<villager_prefix><villager_name><white>: Mantente lejos de mi!'
+  - '<villager_prefix><villager_name><white>: Porque me golpeas!'
+  - '<villager_prefix><villager_name><white>: Ni se te ocurra hacerlo denuevo!'
+  - '<villager_prefix><villager_name><white>: Le dire a los golems!'
+  - '<villager_prefix><villager_name><white>: Me vengare!'
+  insult:
+  - "<villager_prefix><villager_name><white>: Que quieres decir!"
+  - "<villager_prefix><villager_name><white>: Que significa eso!"
+  - "<villager_prefix><villager_name><white>: Realmente eres un.."
+  - "<villager_prefix><villager_name><white>: Porque me dices eso!"
+  - "<villager_prefix><villager_name><white>: COMO Sea"
+  - "<villager_prefix><villager_name><white>: Te odio!"
+  follow:
+  - Lead the way.
+  - Im coming.
+  - Where are we going?
+  - I will follow your lead.
+  - Lets go!
+  CHAT-bad: []
+speechSpouse:
+  chat-good:
+  - Sounds like you had a hard day.
+  - Everything is fine around here.
+  - Nice, did you bring any for me?
+  - That happens to the best of us.
+  - You should do that for me sometime.
+  - I know how you feel.
+  - I totally agree!
+  chat-bad:
+  - Don't you want to hear what I have to say?
+  - Sorry, wasn't listening.
+  - You shouldn't be doing that!
+  - I'm kind of busy right now.
+  - You talk too much.
+  - I don't agree with you.
+  - I'm in a hurry, can't chat!
+  - Yah, hasn't happened to me before.
+  divorce:
+  - I'm taking the house!
+  - I knew you were cheating on me!
+  - I don't want to see you ever again!
+  - Get far away from me!
+  - Why are you doing this to me!
+  - Am I not good enough for you?
+  - You told me you lived me!
+  - Your a horrible person!
+  - I'm too good for you anyway!
+  gift-bad:
+  - No thanks.
+  - I have one of these already.
+  - Stop giving me junk! You should know what I like.
+  - Why are you giving me garbage?
+  - This is what you call a gift?
+  - You know I don't like these!
+  - Where did you get this, the dump?
+  gift-great:
+  - This must have been expensive!
+  - You remembered! Thank you!
+  - I love it!
+  - I really shouldn't take it...but it's so shiny!
+  - I will hold this dear forever.
+  - Thanks sweetheart, you really know me.
+  - Where did you get this! I love it!
+  - You're sexy and I know it.
+  - You're and awesome partner!
+  gift-regular:
+  - This is great!
+  - You shouldn't have!
+  - I can use this.
+  - You know just what I like!
+  - Thanks, this is nice of you.
+  - That was very sweet.
+  - I didn't get you anything...
+  gift-small:
+  - Thanks.
+  - I appreciate this.
+  - It's the thought that counts.
+  - You're sweet.
+  - 'You didn''t have to get me anything. '
+  - This is a nice trinket.
+  gift-love:
+  - Why thank you honey!
+  - Its beautiful!
+  - That's sweet!
+  - Oh! Thank you!
+  - Just like when we were dating!
+  - This reminds me of our first kiss...
+  - Honey, its beautiful!
+  - Now I'm turned on...
+  punch:
+  - Ow! How dare you!
+  - You didn't mean to do that did you!
+  - That really hurts!
+  - Stop hitting me!
+  - Stop it!
+  - Please! Stop!
+  - Why do you want to hit me!
+  joke-good:
+  - '*Laughs*'
+  - That's so funny!
+  - Your the best at telling jokes!
+  - OMG, your so funny!
+  - That's the best joke I have ever heard!
+  - Your a real clown!
+  - That was too funny!
+  joke-bad:
+  - That was bad...
+  - OK...
+  - I don't get it.
+  - That's not something to joke about!
+  - Is that the best you can come up with?
+  - Wow, that was awful!
+  - That didn't even make sense.
+  - OK.. I um, get it?
+  procreate-yes:
+  - Come here!
+  - Ohhhhh! ohhhh!
+  - Lets make a baby!
+  - I want to kiss every inch of you!
+  - I hope its a boy!
+  - Make me shout your name!
+  - I have always wanted kids!
+  - I hope its a girl!
+  procreate-no:
+  - Not now.
+  - Maybe later.
+  - Treat me better first.
+  - Not in the mood.
+  - I'm um, busy right now.
+  - No way!
+  - I don't think so.
+  - Get away you perv!
+  kiss-good:
+  - Ohh, your so warm.
+  - I love you, too.
+  - Mmmmmm.
+  - Your lips are so soft...
+  - You really turn me on...
+  - Lets do that again.
+  - You taste wonderful.
+  kiss-bad:
+  - '<villager_prefix><villager_name><white>: No estoy de humor.'
+  - '<villager_prefix><villager_name><white>: Oh, ahora quieres besar.'
+  - '<villager_prefix><villager_name><white>: OK, ahora no estoy ocupad<villager_sex_endchar>.'
+  - '<villager_prefix><villager_name><white>: No pienso en eso.'
+  - '<villager_prefix><villager_name><white>: Solo, vete lejos de mi.'
+  - '<villager_prefix><villager_name><white>: Tu besastes mi nariz...'
+  - '<villager_prefix><villager_name><white>: Ewe, eres tan malo.'
+  - '<villager_prefix><villager_name><white>: Espera mucha lengua.'
+  greet-good:
+  - Hey honey.
+  - How is your day going?
+  - Greetings love.
+  - Love you too!
+  - Whats up?
+  - '*Kiss* I love you.'
+  greet-bad:
+  - Your in the way.
+  - Your so dirty.
+  - Really, a greeting?
+  - Shouldn't you be working?
+  - Yes, I see you!
+  - I'm not shaking your hand.
+  story-good:
+  - Wow, that must of been fun!
+  - Really? You and Syndicate did that?
+  - What adventures you've had!
+  - You did all that with a stick?
+  - That's interesting.
+  - Best, story, ever!
+  - That sound dangerous!
+  - Can I come with you next time?
+  - '*Laughs* that sound like a lot of fun'
+  - '*Blushes* that happened to me, except I wasn''t in a closet.'
+  story-bad:
+  - I know you never did that.
+  - Stop making things up.
+  - You did not!
+  - Sorry, wasn't listening.
+  - You did want with who!
+  - Don't ever do that again
+  - That was not very interesting.
+  - I know you never did that!
+  - That was a pathetic lie.
+  flirt-good:
+  - '*Blushes* Oh, my.'
+  - You sound just like when we were dating.
+  - '*Blushes*'
+  - Oh my, your so hot!
+  - Still a sweet talker.
+  - Right back at you hot stuff!
+  - Why thank you.
+  - You really thing so? *Blushes*
+  - Your sweet.
+  - You know it.
+  flirt-bad:
+  - That was bad.
+  - Were already married...
+  - You already got me.
+  - Enough of that.
+  - Not today.
+  - Nice try.
+  insult:
+  - That was rude!
+  - That was mean!
+  - You're a real a-hole!
+  - Don't talk to me like that!
+  - Just shut up!
+  - Why did you just say that?
+  follow:
+  - Lead the way.
+  - I'm coming.
+  - Where are we going?
+  - Coming honey.
+  - Lets go!
+speechChild:
+  chat-bad:
+  - Can't you just leave me alone!
+  - Go away <villager_parent_me>, I'm busy!
+  - You're so boring!
+  - <villager_parent_other> said that word is bad!
+  - Can't you see I'm playing here!
+  - Huh?
+  - I want to take a nap.
+  chat-good:
+  - I'm doing good.
+  - That's awesome <villager_parent_me>! Will you take me with you next time?
+  - I want to fight zombies!
+  - I want to be a cave explorer!
+  - That sounds so cool!
+  - How did you do that?
+  - Really? Can I come next time?
+  - You're the best <villager_parent_me> in the world!
+  joke-bad:
+  - <villager_parent_me>, you said a bad word!
+  - What does that mean?
+  - I don't get it.
+  - Zombies won't get <villager_parent_other>! *Cries*
+  - Don't make fun of me!
+  - You say that one all the time.
+  - That didn't make any sense.
+  joke-good:
+  - You're so funny <villager_parent_me>.
+  - '*Laughs* I get it!'
+  - That's a good one!
+  - '*Giggles* that was funny!'
+  - '*Giggles*'
+  - '*Laughs*'
+  - I'm gonna tell my friends that one!
+  gift-bad:
+  - What is this <villager_parent_me>?
+  - What can I do with this?
+  - I don't like these.
+  - <villager_parent_me>, this is a piece of junk.
+  - I already have tons of these.
+  - Do you want me to throw this into the garbage?
+  - Don't give me junk!
+  gift-great:
+  - This is so awesome <villager_parent_me>!
+  - Did you get this for me?
+  - Thanks! I love it!
+  - Is this all mine!
+  - I have wanted one of these for a long time!
+  - You're the best <villager_parent_me> ever!
+  gift-regular:
+  - I like these.
+  - You got me a gift!
+  - You got this for me on your trip!
+  - Cool!
+  gift-small:
+  - This in neat.
+  - Ill add it to my collection!
+  - Thanks for the present.
+  - Cool present <villager_parent_me>.
+  - Thanks, <villager_parent_me>.
+  gift-love:
+  - Thanks <villager_parent_me>
+  - Its beautiful!
+  - Oh! Thank you!
+  - <villager_parent_me>, its beautiful!
+  - Its just like the one you gave <villager_parent_other>!
+  punch:
+  - '<villager_prefix><villager_name><white>: Ouch! Le dire a <villager_parent_other> que me golpeastes!'
+  - '<villager_prefix><villager_name><white>: <villager_parent_me>, Para de golpearme!'
+  - '<villager_prefix><villager_name><white>: <villager_parent_me>, eso duele!'
+  - '<villager_prefix><villager_name><white>: Ouch Que hice yo!'
+  - '<villager_prefix><villager_name><white>: Ouch para <villager_parent_me>!'
+  - '<villager_prefix><villager_name><white>: No hice nada malo!'
+  - '<villager_prefix><villager_name><white>: Te lo dije.'
+  - '<villager_prefix><villager_name><white>: No me toques denuevo!'
+  - '<villager_prefix><villager_name><white>: Ohh, %player%! Para!'
+  - '<villager_prefix><villager_name><white>: Para porfavor!'
+  - '<villager_prefix><villager_name><white>: Ouch!'
+  - '<villager_prefix><villager_name><white>: Ouch Eso dolio.'
+  - '<villager_prefix><villager_name><white>: Mantente lejos de mi!'
+  story-good:
+  - That's a great story!
+  - I want to do that when I grow up!
+  - Did you ever see them again?
+  - I thought you only did that with <villager_parent_other>?
+  - You did that! Wow!
+  story-bad:
+  - '*Cries* Why would you hurt a bunny?'
+  - <villager_parent_other> said that is bad.
+  - I don't want to hear any stories right now.
+  - I don't want to die from a creeper!
+  - But piggies are nice!
+  play-good:
+  - This is so fun!
+  - Can <villager_parent_other> play too?
+  - I am winning!
+  - You can never beat me!
+  - You're really good that this game <villager_parent_me>.
+  play-bad:
+  - This is not fun.
+  - I don't want to play right now.
+  - I'm too old for that game.
+  - That game is boring.
+  - Your not as fun as <villager_parent_other>.
+  greet-good:
+  - Hello, <villager_parent_me>.
+  - <villager_parent_other> made bread for me!
+  - I'm doing good.
+  - You're home!
+  - Let's play!
+  greet-bad:
+  - What do you want?
+  - I'm busy!
+  - Your in the way!
+  - What now!
+  - Why are you gone all the time?
+  insult:
+  - Why did you say that?
+  - That was mean!
+  - I'm telling <villager_parent_other> on you!
+  - That was a nasty thing to say!
+  - '*Cries* don''t say that!'
+  - Why did you just say that?
+  follow:
+  - Coming <villager_parent_other>!
+  - I'm coming.
+  - Where are we going?
+  - Where are you taking me?
+  - Lets go!
+speechLike:
+  shy-gift:
+  - Hey, here is a flower...
+  - I um, think you're hot...
+  - Hi...
+  - Hi, um you're hot...
+  - Um, you... me...?
+  - You're pretty cute...
+  fun-gift:
+  - You're pretty cute...
+  - You should come over some time...
+  - I really like you...
+  - Lets go fishing together.
+  - Here is flower, for a <player_nice> <player_type>.
+  - I wanted to say that your <player_nice>!
+  serious-gift:
+  - Will you go out with me some time?
+  - Can I be your <villager_type> friend?
+  - I want to get to know you better.
+  - Would you like to go out on a date?
+  - I spoke to your father, he is fine with us going out.
+  - You are very <player_nice>.
+  friendly-gift:
+  - Can I be your <villager_type> friend?
+  - Will you go out with me some time?
+  - Your soooo hot!
+  - Hey, <player_nice>!
+  - You're so <player_nice>, so I got you this flower!
+  - Will you go out with me <player_type>?
+  irritable-gift:
+  - I guess you can have this flower.
+  - You can go out will me if you want.
+  - I wanted to say that your <player_nice>!
+  - Will you um... Nothing.
+  - Will you go out with me some time?
+  - Hi.
+  emotional-gift:
+  - You're soooo hot!
+  - Please go out with me?
+  - I love you!
+  - Here is a flower to show my affection!
+  - '*kiss*'
+  - I hope you like this.
+  outgoing-gift:
+  - Can I be your <villager_type> friend?
+  - Will you go out with me <player_type>?
+  - Wanna to back to my place?
+  - Do you think I'm hot?
+  - Here is a flower, now wanna go do it?
+  - Here is a <player_nice> flower for a <player_nice> <player_type>!
+speechMessage Error!:
+  CHAT-good: []
+  follow: []

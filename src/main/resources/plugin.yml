@@ -1,0 +1,35 @@
+name: Minecraft_Comes_to_Life
+api-version: 1.13
+version: '${project.version}'
+main: dev.arubik.mctl.MComesToLife
+authors: [ OkraMT, Ayane ]
+commands:
+  mctl:
+    description: MCTL command
+    usage: /mctl <command>
+    aliases: [ mctolife, mctol, mct ]
+    permission: mctl.command
+    permission-message: You do not have permission to use this command.
+    default: true
+    tab-complete: 0
+  mctolife:
+    description: MCTL command
+    usage: /mctolife <command>
+    permission: mctl.command
+    permission-message: You do not have permission to use this command.
+    default: true
+    tab-complete: 0
+  mctol:
+    description: MCTL command
+    usage: /mctol <command>
+    permission: mctl.command
+    permission-message: You do not have permission to use this command.
+    default: true
+    tab-complete: 0
+  mct:
+    description: MCTL command
+    usage: /mct <command>
+    permission: mctl.command
+    permission-message: You do not have permission to use this command.
+    default: true
+    tab-complete: 0
