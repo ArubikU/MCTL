@@ -8,6 +8,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
@@ -34,6 +35,79 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 public class ItemSerializer {
+
+        public static ItemStack putData(ItemStack item, String tag, Object object) {
+                ItemStack stack = item;
+                if (object.getClass().getName().equals("java.lang.String")) {
+                        stack.getItemMeta().getPersistentDataContainer().set(
+                                        new NamespacedKey(MComesToLife.getPlugin(), tag), PersistentDataType.STRING,
+                                        (String) object);
+                } else if (object.getClass().getName().equals("java.lang.Integer")) {
+                        stack.getItemMeta().getPersistentDataContainer().set(
+                                        new NamespacedKey(MComesToLife.getPlugin(), tag), PersistentDataType.INTEGER,
+                                        (Integer) object);
+                } else if (object.getClass().getName().equals("java.lang.Double")) {
+                        stack.getItemMeta().getPersistentDataContainer().set(
+                                        new NamespacedKey(MComesToLife.getPlugin(), tag), PersistentDataType.DOUBLE,
+                                        (Double) object);
+                } else if (object.getClass().getName().equals("java.lang.Float")) {
+                        stack.getItemMeta().getPersistentDataContainer().set(
+                                        new NamespacedKey(MComesToLife.getPlugin(), tag), PersistentDataType.FLOAT,
+                                        (Float) object);
+                } else if (object.getClass().getName().equals("java.lang.Long")) {
+                        stack.getItemMeta().getPersistentDataContainer().set(
+                                        new NamespacedKey(MComesToLife.getPlugin(), tag), PersistentDataType.LONG,
+                                        (Long) object);
+                } else if (object.getClass().getName().equals("java.lang.Short")) {
+                        stack.getItemMeta().getPersistentDataContainer().set(
+                                        new NamespacedKey(MComesToLife.getPlugin(), tag), PersistentDataType.SHORT,
+                                        (Short) object);
+                } else if (object.getClass().getName().equals("java.lang.Byte")) {
+                        stack.getItemMeta().getPersistentDataContainer().set(
+                                        new NamespacedKey(MComesToLife.getPlugin(), tag), PersistentDataType.BYTE,
+                                        (Byte) object);
+                } else if (object.getClass().getName().equals("java.lang.Boolean")) {
+                        stack.getItemMeta().getPersistentDataContainer().set(
+                                        new NamespacedKey(MComesToLife.getPlugin(), tag), PersistentDataType.BYTE,
+                                        (Byte) object);
+                }
+
+                return stack;
+        }
+
+        public static Boolean containsData(ItemStack item, String tag) {
+                return item.getItemMeta().getPersistentDataContainer()
+                                .has(new NamespacedKey(MComesToLife.getPlugin(), tag));
+        }
+
+        public static <T> T getData(ItemStack item, String tag, Class<T> Type) {
+                if (Type.getName().equals("java.lang.String")) {
+                        return (T) item.getItemMeta().getPersistentDataContainer().get(
+                                        new NamespacedKey(MComesToLife.getPlugin(), tag), PersistentDataType.STRING);
+                } else if (Type.getName().equals("java.lang.Integer")) {
+                        return (T) item.getItemMeta().getPersistentDataContainer().get(
+                                        new NamespacedKey(MComesToLife.getPlugin(), tag), PersistentDataType.INTEGER);
+                } else if (Type.getName().equals("java.lang.Double")) {
+                        return (T) item.getItemMeta().getPersistentDataContainer().get(
+                                        new NamespacedKey(MComesToLife.getPlugin(), tag), PersistentDataType.DOUBLE);
+                } else if (Type.getName().equals("java.lang.Float")) {
+                        return (T) item.getItemMeta().getPersistentDataContainer().get(
+                                        new NamespacedKey(MComesToLife.getPlugin(), tag), PersistentDataType.FLOAT);
+                } else if (Type.getName().equals("java.lang.Long")) {
+                        return (T) item.getItemMeta().getPersistentDataContainer()
+                                        .get(new NamespacedKey(MComesToLife.getPlugin(), tag), PersistentDataType.LONG);
+                } else if (Type.getName().equals("java.lang.Short")) {
+                        return (T) item.getItemMeta().getPersistentDataContainer().get(
+                                        new NamespacedKey(MComesToLife.getPlugin(), tag), PersistentDataType.SHORT);
+                } else if (Type.getName().equals("java.lang.Byte")) {
+                        return (T) item.getItemMeta().getPersistentDataContainer()
+                                        .get(new NamespacedKey(MComesToLife.getPlugin(), tag), PersistentDataType.BYTE);
+                } else if (Type.getName().equals("java.lang.Boolean")) {
+                        return (T) item.getItemMeta().getPersistentDataContainer()
+                                        .get(new NamespacedKey(MComesToLife.getPlugin(), tag), PersistentDataType.BYTE);
+                }
+                return null;
+        }
 
         public static String write(ItemStack... items) {
                 try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -255,5 +329,15 @@ public class ItemSerializer {
                 }
 
                 return stack.getType().toString().toUpperCase();
+        }
+
+        public static int getEnchantmentLevel(ItemStack stack, String enchant) {
+                for (Enchantment Enchant : stack.getEnchantments().keySet()) {
+
+                        if (Enchant.toString().contains(enchant.toUpperCase())) {
+                                return stack.getEnchantmentLevel(Enchant);
+                        }
+                }
+                return 0;
         }
 }

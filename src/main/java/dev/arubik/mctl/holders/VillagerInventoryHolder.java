@@ -14,6 +14,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import me.libraryaddict.disguise.disguisetypes.PlayerDisguise;
+import net.minecraft.world.item.Item;
 import dev.arubik.mctl.MComesToLife;
 import dev.arubik.mctl.entity.CustomVillager;
 import dev.arubik.mctl.enums.mood;
@@ -40,6 +41,11 @@ public class VillagerInventoryHolder extends CustomVillager {
 
     public void loadInventory() {
         this.loadVillager(false);
+        this.setupInv();
+        this.loadEquipment();
+    }
+
+    public void loadInventoryNoReload(){
         this.setupInv();
         this.loadEquipment();
     }
@@ -77,10 +83,10 @@ public class VillagerInventoryHolder extends CustomVillager {
             ItemStack itemStack = ItemSerializer.read(this.getData(type.toString(), ""))[0];
             if (!ItemSerializer.getType(itemStack).contains("FLOWER")) {
                 this.villager.getWorld().dropItem(this.getLocation(), itemStack);
-                this.villager.getEquipment().setItem(type, null);
-                this.setData(type.toString(), null);
-                return true;
             }
+            this.villager.getEquipment().setItem(type, null);
+            this.setData(type.toString(), null);
+            this.Disguise();
             return false;
         }
         return false;
@@ -135,8 +141,7 @@ public class VillagerInventoryHolder extends CustomVillager {
                     this.dropItems(clone);
                 }
                 equip(EquipmentSlot.HEAD, stack);
-            }
-            if (Material.isType(Material.CHESTPLATE, ItemSerializer.getType(stack))) {
+            } else if (Material.isType(Material.CHESTPLATE, ItemSerializer.getType(stack))) {
                 if (stack.getAmount() > 1) {
                     ItemStack clone = stack;
                     clone.setAmount(stack.getAmount() - 1);
@@ -144,8 +149,7 @@ public class VillagerInventoryHolder extends CustomVillager {
                     this.dropItems(clone);
                 }
                 equip(EquipmentSlot.CHEST, stack);
-            }
-            if (Material.isType(Material.LEGGINGS, ItemSerializer.getType(stack))) {
+            } else if (Material.isType(Material.LEGGINGS, ItemSerializer.getType(stack))) {
                 if (stack.getAmount() > 1) {
                     ItemStack clone = stack;
                     clone.setAmount(stack.getAmount() - 1);
@@ -153,8 +157,7 @@ public class VillagerInventoryHolder extends CustomVillager {
                     this.dropItems(clone);
                 }
                 equip(EquipmentSlot.LEGS, stack);
-            }
-            if (Material.isType(Material.BOOTS, ItemSerializer.getType(stack))) {
+            } else if (Material.isType(Material.BOOTS, ItemSerializer.getType(stack))) {
                 if (stack.getAmount() > 1) {
                     ItemStack clone = stack;
                     clone.setAmount(stack.getAmount() - 1);
@@ -162,8 +165,7 @@ public class VillagerInventoryHolder extends CustomVillager {
                     this.dropItems(clone);
                 }
                 equip(EquipmentSlot.FEET, stack);
-            }
-            if (Material.isTool(ItemSerializer.getType(stack))) {
+            } else if (Material.isTool(ItemSerializer.getType(stack))) {
                 if (stack.getAmount() > 1) {
                     ItemStack clone = stack;
                     clone.setAmount(stack.getAmount() - 1);
@@ -288,6 +290,31 @@ public class VillagerInventoryHolder extends CustomVillager {
         this.dropItems(villagerInv.getStorageContents());
         villagerInv.clear();
         SaveInventory();
+    }
+
+    public ItemStack consumeItem(String id) {
+        for (ItemStack item : villagerInv.getContents()) {
+            if (ItemSerializer.getType(item).toUpperCase().contains(id.toUpperCase())) {
+                ItemStack newItem = item.clone();
+                villagerInv.remove(item);
+                newItem.setAmount(newItem.getAmount() - 1);
+                villagerInv.addItem(newItem);
+                SaveInventory();
+                return newItem;
+            }
+        }
+        return null;
+    }
+
+    public boolean hasAnyOf(String... allowed){
+        for (ItemStack item : villagerInv.getContents()) {
+            for(String id : allowed){
+                if (ItemSerializer.getType(item).toUpperCase().contains(id.toUpperCase())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public enum Material {

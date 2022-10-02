@@ -3,6 +3,7 @@ package dev.arubik.mctl;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -21,6 +22,7 @@ import dev.arubik.mctl.events.listeners.PacketListener;
 import dev.arubik.mctl.events.listeners.PaperEvents;
 import dev.arubik.mctl.holders.CommandHolder;
 import dev.arubik.mctl.holders.EnabledPlugins;
+import dev.arubik.mctl.holders.Nms;
 import dev.arubik.mctl.holders.timers;
 import dev.arubik.mctl.holders.Abstract.SkinHolder;
 import dev.arubik.mctl.holders.Methods.DataMethods;
@@ -37,6 +39,12 @@ public final class MComesToLife extends JavaPlugin {
     @Getter
     @Setter
     public static JavaPlugin plugin;
+
+    @Getter
+    public static Nms nms;
+
+    @Getter
+    private static String ServerVersion;
 
     public static FileConfiguration config;
     @Getter
@@ -70,6 +78,7 @@ public final class MComesToLife extends JavaPlugin {
     public void onEnable() {
         plugin = this;
         enabledPlugins = new EnabledPlugins();
+        ServerVersion = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3].substring(1);
         proffesions = new langFile("proffesion.yml");
         config = fileUtils.getFileConfiguration("config.yml");
         messages = new langFile(config.getString("config.lang-file", "messages.yml"));
@@ -77,6 +86,7 @@ public final class MComesToLife extends JavaPlugin {
         names = new langFile(config.getString("config.names-file", "names.yml"));
         villagers = new langFile(config.getString("config.speech-file", "speech.yml"));
         skinHolder = new SkinHolder();
+        nms = new Nms();
         skinHolder.preLoadSkins(config.getStringList("config.file-skins", new ArrayList<String>()));
 
         // register TabExecutor "holders/CommandHolder.java"
@@ -154,6 +164,11 @@ public final class MComesToLife extends JavaPlugin {
         int minutes = conf.getInt("minutes", 0);
         int seconds = conf.getInt("seconds", 0);
         // convert time to millis
+        long time = (days * 24 * 60 * 60 * 1000) + (hours * 60 * 60 * 1000) + (minutes * 60 * 1000) + (seconds * 1000);
+        return time;
+    }
+
+    public static Long getTimeFromArgs(int days, int hours, int minutes, int seconds) {
         long time = (days * 24 * 60 * 60 * 1000) + (hours * 60 * 60 * 1000) + (minutes * 60 * 1000) + (seconds * 1000);
         return time;
     }

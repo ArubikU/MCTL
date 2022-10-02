@@ -16,6 +16,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.entity.Villager.Profession;
@@ -41,12 +42,25 @@ import dev.arubik.mctl.enums.mood;
 import dev.arubik.mctl.enums.sex;
 import dev.arubik.mctl.enums.trait;
 import dev.arubik.mctl.holders.Message;
+import dev.arubik.mctl.holders.VillagerInventoryHolder;
 import dev.arubik.mctl.holders.timers;
 import dev.arubik.mctl.utils.FileConfiguration;
 import dev.arubik.mctl.utils.fileUtils;
 import dev.arubik.mctl.utils.messageUtils;
 
 public class DataMethods {
+
+    public static CustomVillager getVillager(LivingEntity a) {
+        CustomVillager b = new CustomVillager(a);
+        b.loadVillager(false);
+        return b;
+    }
+
+    public static VillagerInventoryHolder getVillagerInventoryHolder(LivingEntity a) {
+        VillagerInventoryHolder b = new VillagerInventoryHolder(a);
+        b.loadInventory();
+        return b;
+    }
 
     public static mood getMood(LivingEntity entity) {
         return mood.valueOf((String) Optional

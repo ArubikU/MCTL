@@ -1,18 +1,19 @@
 gui:
-  size: 45
-  id: interaction-gui
+  size: 9
+  id: main-gui
+  title: "<villager_displayname>"
   saved-data:
   - CustomVillager
   - Player
   items:
     '1':
       MATERIAL: DIAMOND
-      NAME: This is a fake button
+      NAME: "<white>Interactions"
+      AMOUNT: 1
+      LORE:
+      - "<red>Click to open the Interactions menu"
       CMD: 10001
-      ON_CLICK:
-        OPEN_GUI:
-          RUTE: guis/speech.yml
-          CONFIG_SECTION: speech
-          pass-data:
-          - CustomVillager
-          - Player
+      ON_LEFT_CLICK:
+        OPEN_MENU:
+          RUTE: "guis/interactions.yml"
+          PATH: "gui"

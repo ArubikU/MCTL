@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -132,6 +133,24 @@ public class GuiCreator {
             tittle = new Message(tittle).removeMiniMessage().getString();
             Inventory clone = Bukkit.createInventory(Gui, inv.getSize(), tittle);
             InventoryItems.forEach((slot, item) -> {
+                if (config.getConfigurationSection("items." + slot).contains("conditions")) {
+                    List<String> conditions = config.getConfigurationSection("items." + slot)
+                            .getStringList("conditions");
+                    for (String condition : conditions) {
+                        ConditionReader cond = new ConditionReader(condition);
+                        if (cond.isAvaliableCondition()) {
+                            if (!cond.checkCondition(player)) {
+                                item = new ItemStack(Material.AIR);
+                                if (cond.get("replace-item") != null) {
+                                    item = ItemSerializer.getFromConfigurationSection(
+                                            config.getConfigurationSection("items." + slot + ".replace-item"));
+                                    item = ItemSerializer.putData(item, "condition_section", cond.get("replace-item"));
+                                }
+                            }
+                            item = ItemSerializer.putData(item, "conditioned", true);
+                        }
+                    }
+                }
                 clone.setItem(slot, ItemSerializer.generateItem(item, player));
             });
             player.openInventory(clone);

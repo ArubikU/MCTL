@@ -21,6 +21,7 @@ import dev.arubik.mctl.holders.VillagerInventoryHolder;
 import dev.arubik.mctl.holders.Methods.DataMethods;
 import dev.arubik.mctl.utils.CustomConfigurationSection;
 import dev.arubik.mctl.utils.GuiCreator;
+import dev.arubik.mctl.utils.ItemSerializer;
 import dev.arubik.mctl.utils.fileUtils;
 import dev.arubik.mctl.utils.messageUtils;
 import dev.arubik.mctl.utils.GuiCreator.Action;
@@ -34,12 +35,31 @@ public class GuiListener extends Listener {
         }
         if (event.getClickedInventory().getHolder() instanceof GuiHolder) {
             event.setCancelled(true);
+
+            if(event.getClickedInventory().getItem(event.getSlot())==null)return;
+            if(event.getClickedInventory().getItem(event.getSlot()).getType().toString().contains("AIR"))return;
+            
+
             GuiHolder holder = (GuiHolder) event.getClickedInventory().getHolder();
             ConfigurationSection conf = fileUtils.getFileConfiguration(holder.getPath()).getConfig()
                     .getConfigurationSection(holder.getSection());
             if (conf.getConfigurationSection("items").contains(Integer.toString(event.getSlot()))) {
                 ConfigurationSection item = conf.getConfigurationSection("items")
                         .getConfigurationSection(Integer.toString(event.getSlot()));
+
+                if(ItemSerializer.containsData(event.getClickedInventory().getItem(event.getSlot()), "conditioned")){
+                    if(ItemSerializer.containsData(event.getClickedInventory().getItem(event.getSlot()), "condition_section")){
+                        if(!item.contains(ItemSerializer.getData(event.getClickedInventory().getItem(event.getSlot()), "condition_section",String.class)))return;
+                item = conf.getConfigurationSection("items")
+                .getConfigurationSection(Integer.toString(event.getSlot())).getConfigurationSection(ItemSerializer.getData(event.getClickedInventory().getItem(event.getSlot()), "condition_section",String.class));
+                    }else{
+                        return;
+                    }
+                    
+                }
+
+                if(item == null) return;
+
                 messageUtils.Bukkitlog("InventoryClick: " + event.getClick().toString());
                 if (item.getConfigurationSection("ON_" + event.getClick().toString() + "_CLICK") == null)
                     return;

@@ -3,12 +3,15 @@ package dev.arubik.mctl.entity;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import javax.annotation.Nullable;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Mob;
 import org.bukkit.entity.ZombieVillager;
 import org.bukkit.inventory.ItemStack;
 
@@ -20,6 +23,8 @@ import dev.arubik.mctl.utils.fileUtils;
 import lombok.Getter;
 
 public class CustomEntity {
+    protected final static Random random = new Random();
+
     public CustomEntity(LivingEntity v) {
         villager = v;
     }
@@ -118,4 +123,11 @@ public class CustomEntity {
         return null;
     }
 
+    public Mob getMob() {
+        return (Mob) villager;
+    }
+
+    public Creature getCreature() {
+        return (Creature) villager;
+    }
 }

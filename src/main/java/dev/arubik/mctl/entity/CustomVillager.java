@@ -40,6 +40,7 @@ import dev.arubik.mctl.enums.Works;
 import dev.arubik.mctl.enums.mood;
 import dev.arubik.mctl.enums.sex;
 import dev.arubik.mctl.enums.trait;
+import dev.arubik.mctl.holders.EntityAi;
 import dev.arubik.mctl.holders.Message;
 import dev.arubik.mctl.holders.VillagerInventoryHolder;
 import dev.arubik.mctl.holders.timers;
@@ -200,7 +201,9 @@ public class CustomVillager extends BetterEntity {
                         ((String) this.data.get("skin")).replace("file:", "").replace("url:", "").replace("name:", ""));
             }
             VillagerInventoryHolder inv = VillagerInventoryHolder.getInstance(this);
-            inv.loadInventory();
+            if (DataMethods.isCustom(this.getLivingEntity())) {
+                inv.loadInventoryNoReload();
+            }
             disguise = inv.loadDisguiseDisplay(disguise);
             messageUtils.Bukkitlog("Loaded disguise for:" + villager.getCustomName() + "{" + disguise.getSkin() + ","
                     + disguise.getWatcher().getItemInMainHand() + "}");
@@ -240,23 +243,23 @@ public class CustomVillager extends BetterEntity {
         if (skin.startsWith("file:")) {
             skin = skin.replaceFirst("file:", "");
             tempData.put("skin-type", "file");
-            data.put("skin-type", "file");
+            setData("skin-type", "file");
         } else if (skin.startsWith("url:")) {
             skin = skin.replaceFirst("url:", "");
             tempData.put("skin-type", "url");
-            data.put("skin-type", "url");
+            setData("skin-type", "url");
         } else if (skin.startsWith("name:")) {
             skin = skin.replaceFirst("name:", "");
             tempData.put("skin-type", "name");
-            data.put("skin-type", "name");
+            setData("skin-type", "name");
         } else if (skin.startsWith("data")) {
             tempData.put("skin-type", "data");
-            data.put("skin-type", "data");
+            setData("skin-type", "data");
         } else {
             tempData.put("skin-type", "name");
-            data.put("skin-type", "name");
+            setData("skin-type", "name");
         }
-        data.put("skin", skin);
+        setData("skin", skin);
         save();
     }
 
@@ -306,6 +309,16 @@ public class CustomVillager extends BetterEntity {
             }
         }
 
+        if (MComesToLife.getPlugin().getConfig().getConfigurationSection("config.attributes") != null) {
+            for (Attribute temp : Attribute.values()) {
+                if (MComesToLife.config.getConfig()
+                        .getString("config.attributes." + temp.toString().toLowerCase()) != null) {
+                    this.setAttribute(temp, MComesToLife.config.getConfig()
+                            .getDouble("config.attributes." + temp.toString().toLowerCase()));
+                }
+            }
+        }
+
         if (fileUtils.getFileConfiguration("data.yml").getConfig().contains(path())) {
             load();
             if (reApplySkin) {
@@ -335,14 +348,8 @@ public class CustomVillager extends BetterEntity {
             save();
         }
 
-        if (MComesToLife.getPlugin().getConfig().getConfigurationSection("config.attributes") != null) {
-            for (Attribute temp : Attribute.values()) {
-                if (MComesToLife.config.getConfig()
-                        .getString("config.attributes." + temp.toString().toLowerCase()) != null) {
-                    this.setAttribute(temp, MComesToLife.config.getConfig()
-                            .getDouble("config.attributes." + temp.toString().toLowerCase()));
-                }
-            }
+        if (this.getLivingEntity().getChunk().isLoaded()) {
+            EntityAi.updateVillagerDefend(this.getMob());
         }
     }
 
@@ -483,13 +490,13 @@ public class CustomVillager extends BetterEntity {
                 mood m = mood.values()[DataMethods.rand(1, mood.values().length - 1)];
                 String skin = getSkin(sex, type);
                 String name = getName(sex);
-                data.put("mood", m.toString());
-                data.put("sex", sex);
-                data.put("trait", t.toString());
-                data.put("skin", skin);
-                data.put("name", name);
-                data.put("type", type);
-                data.put("tittle", MComesToLife.getProffesions().getLang("prefix", "")
+                setData("mood", m.toString());
+                setData("sex", sex);
+                setData("trait", t.toString());
+                setData("skin", skin);
+                setData("name", name);
+                setData("type", type);
+                setData("tittle", MComesToLife.getProffesions().getLang("prefix", "")
                         + MComesToLife.getProffesions().getLang(type, type.toLowerCase().replace("_", " ")));
 
             } catch (Exception e) {

@@ -1,0 +1,19 @@
+gui:
+  size: 9
+  id: actions-gui
+  title: "<white>Interacciones"
+  saved-data:
+  - CustomVillager
+  - Player
+  items:
+    '1':
+      MATERIAL: STICK
+      NAME: "<white>Chat"
+      AMOUNT: 2
+      LORE:
+      - "<red>Click to chat with the villager"
+      CMD: 10001
+      ON_LEFT_CLICK:
+        INTERACT:
+          INTERACT: true
+          action: CHAT

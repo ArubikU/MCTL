@@ -27,7 +27,9 @@ import org.bukkit.potion.PotionEffectType;
 
 import io.lumine.mythic.lib.api.crafting.uifilters.RecipeUIFilter;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsHook;
+import me.gamercoder215.mobchip.ai.memories.EntityMemory;
 import dev.arubik.mctl.MComesToLife;
+import dev.arubik.mctl.entity.BetterEntity;
 import dev.arubik.mctl.entity.CustomVillager;
 import dev.arubik.mctl.enums.EventType;
 import dev.arubik.mctl.enums.mood;
@@ -35,6 +37,7 @@ import dev.arubik.mctl.events.Listener;
 import dev.arubik.mctl.events.event.CustomEvent;
 import dev.arubik.mctl.holders.Message;
 import dev.arubik.mctl.holders.timers;
+import dev.arubik.mctl.holders.IA.CustomMemory;
 import dev.arubik.mctl.holders.Methods.DataMethods;
 import dev.arubik.mctl.holders.VillagerInventoryHolder.Material;
 import dev.arubik.mctl.utils.GuiCreator;
@@ -171,14 +174,16 @@ public class EntityListener extends Listener {
         if (!timers.entEnabled(event.getEntity())) {
             return;
         }
-        // if (event.getDamager().getType().toString().toLowerCase().contains("zombie")
-        // && !event.getEntity().getType().toString().toLowerCase().contains("zombie"))
-        // {
-        // CustomVillager cv = new CustomVillager((LivingEntity) event.getEntity());
-        // cv.setZombie(true);
-        //
-        // return;
-        // }
+        if (!(event.getEntity() instanceof LivingEntity))
+            return;
+        if (event.getDamager() instanceof LivingEntity) {
+            BetterEntity entity = new BetterEntity((LivingEntity) event.getEntity());
+            if(entity.getNBT(CustomMemory.SHIELDING) != null) {
+                event.setCancelled(true);
+                return;
+            }
+            entity.setMemory(EntityMemory.ATTACK_TARGET, event.getDamager());
+        }
         if (event.getDamager() instanceof Player) {
             Player player = (Player) event.getDamager();
             if (playersToSendMessageOfPunch.contains(event.getDamager().getUniqueId().toString())) {

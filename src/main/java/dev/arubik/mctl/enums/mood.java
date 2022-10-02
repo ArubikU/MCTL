@@ -110,7 +110,6 @@ public enum mood {
                                 "<prefix><gray>Debes Esperar <day_amount> <day_format> <hours_amount> <hours_format> <minutes_amount> <minutes_format> <seconds_amount> <seconds_format>/gray>"));
                 timetoWait.setupTimePlaceholder(timeToP);
                 messageUtils.MessageParsedPlaceholders((Player) interacter, timetoWait);
-
                 return;
             }
             waitTimes.addToTime((Player) interacter);
@@ -210,35 +209,36 @@ public enum mood {
 
             }
 
-        }VillagerInventoryHolder vil = VillagerInventoryHolder.getInstance(cv);
-        vil.loadInventory();
+        }
+        VillagerInventoryHolder vil = VillagerInventoryHolder.getInstance(cv);
+        vil.loadInventoryNoReload();
 
         if (type.equalsIgnoreCase("GIFT")) {
-            
+
             vil.giveItem((Player) interacter);
         }
         if (type.equalsIgnoreCase("UNEQUIPHAT")) {
-            
+
             vil.deEquip(EquipmentSlot.HEAD);
         }
         if (type.equalsIgnoreCase("UNEQUIPCHEST")) {
-            
+
             vil.deEquip(EquipmentSlot.CHEST);
         }
-        if (type.equalsIgnoreCase("UNEQUILEGS")) {
-            
+        if (type.equalsIgnoreCase("UNEQUIPLEGS")) {
+
             vil.deEquip(EquipmentSlot.LEGS);
         }
         if (type.equalsIgnoreCase("UNEQUIPBOOTS")) {
-            
+
             vil.deEquip(EquipmentSlot.FEET);
         }
         if (type.equalsIgnoreCase("UNEQUIPHAND")) {
-            
+
             vil.deEquip(EquipmentSlot.HAND);
         }
         if (type.equalsIgnoreCase("UNEQUIPOFFHAND")) {
-            
+
             vil.deEquip(EquipmentSlot.OFF_HAND);
         }
 
@@ -274,6 +274,17 @@ public enum mood {
             int hearts = cv.getHappiness().orElse(1);
             int min = 1;
             int max = 6;
+
+            if (vil.getMood() == mood.ANGER)
+                max -= 1;
+            if (vil.getMood() == mood.FATIGUE)
+                max -= 2;
+            if (vil.getMood() == mood.HAPPY)
+                max += 3;
+            if (vil.getMood() == mood.NEUTRAL)
+                max += 1;
+            if (vil.getMood() == mood.SADNESS)
+                max -= 2;
 
             if (cv.getLivingEntity() instanceof Villager
                     && ((Villager) cv.getLivingEntity()).getProfession().toString().equalsIgnoreCase("NITWIT")) {
