@@ -5,7 +5,7 @@ import java.util.HashMap;
 import org.bukkit.entity.Player;
 
 import dev.arubik.mctl.utils.CustomConfigurationSection;
-import dev.arubik.mctl.utils.fileUtils;
+import dev.arubik.mctl.utils.FileUtils;
 
 public class WaitTimePerAction {
     String action;
@@ -45,7 +45,7 @@ public class WaitTimePerAction {
     }
 
     public Boolean Enabled() {
-        return fileUtils.getBoolean("config.yml", "config.wait-" + action, false);
+        return FileUtils.getBoolean("config.yml", "config.wait-" + action, false);
     }
 
 }

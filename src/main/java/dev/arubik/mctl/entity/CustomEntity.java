@@ -19,7 +19,7 @@ import dev.arubik.mctl.MComesToLife;
 import dev.arubik.mctl.holders.Methods.DataMethods;
 import dev.arubik.mctl.utils.FileConfiguration;
 import dev.arubik.mctl.utils.ItemSerializer;
-import dev.arubik.mctl.utils.fileUtils;
+import dev.arubik.mctl.utils.FileUtils;
 import lombok.Getter;
 
 public class CustomEntity {
@@ -29,7 +29,15 @@ public class CustomEntity {
         villager = v;
     }
 
+    public static CustomEntity getFromEntity(LivingEntity v) {
+        return new CustomEntity(v);
+    }
+
     public LivingEntity villager;
+
+    public LivingEntity getLivingEntity() {
+        return (LivingEntity) villager;
+    }
 
     @Getter
     protected HashMap<String, Object> data = new HashMap<String, Object>();
@@ -67,15 +75,15 @@ public class CustomEntity {
     }
 
     public void save() {
-        FileConfiguration file = fileUtils.getFileConfiguration("data.yml");
+        FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
         for (String key : data.keySet()) {
             file.getConfig().set(path() + "." + key, data.get(key));
         }
-        fileUtils.saveFile(file.getConfig(), "data.yml");
+        FileUtils.saveFile(file.getConfig(), "data.yml");
     };
 
     public void load() {
-        FileConfiguration file = fileUtils.getFileConfiguration("data.yml");
+        FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
         for (String key : file.getConfig().getConfigurationSection(path()).getKeys(false)) {
             if (key.equalsIgnoreCase("tittle")) {
                 data.put(key, file.getConfig().get(path() + "." + key));
@@ -98,10 +106,10 @@ public class CustomEntity {
     };
 
     public void removeData() {
-        Bukkit.getScheduler().runTaskLater(MComesToLife.plugin, () -> {
-            FileConfiguration file = fileUtils.getFileConfiguration("data.yml");
+        Bukkit.getScheduler().runTaskLater(MComesToLife.getPlugin(), () -> {
+            FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
             file.getConfig().set(path(), null);
-            fileUtils.saveFile(file.getConfig(), "data.yml");
+            FileUtils.saveFile(file.getConfig(), "data.yml");
         }, 2L);
     }
 
@@ -115,12 +123,11 @@ public class CustomEntity {
         return villager.getLocation();
     }
 
-    @Nullable
     public String getSpouse() {
         if (DataMethods.getRelationMap(villager).get("spouse") != null) {
             return (String) DataMethods.getRelationMap(villager).get("spouse");
         }
-        return null;
+        return "null";
     }
 
     public Mob getMob() {

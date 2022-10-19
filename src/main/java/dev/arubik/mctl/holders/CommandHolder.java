@@ -24,22 +24,22 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 
 import dev.arubik.mctl.MComesToLife;
-import dev.arubik.mctl.MComesToLife.timeFormat;
 import dev.arubik.mctl.entity.CustomVillager;
 import dev.arubik.mctl.entity.WorldEntityLoader;
 import dev.arubik.mctl.enums.TypeAction;
-import dev.arubik.mctl.enums.sex;
+import dev.arubik.mctl.enums.Sex;
 import dev.arubik.mctl.events.listeners.EntityListener;
 import dev.arubik.mctl.holders.Methods.DataMethods;
 import dev.arubik.mctl.utils.Target;
-import dev.arubik.mctl.utils.fileUtils;
-import dev.arubik.mctl.utils.messageUtils;
+import dev.arubik.mctl.utils.TimeUtils;
+import dev.arubik.mctl.utils.FileUtils;
+import dev.arubik.mctl.utils.MessageUtils;
 
 public class CommandHolder implements org.bukkit.command.TabExecutor {
 
     // mesage example
 
-    // messageUtils.MessageParsedPlaceholders(sender,
+    // MessageUtils.MessageParsedPlaceholders(sender,
     // new Message(
     // MComesToLife.getMessages().getLang("cmd.help",
     // "<prefix><gray>El comando no existe has /<command> help para ver los
@@ -50,7 +50,7 @@ public class CommandHolder implements org.bukkit.command.TabExecutor {
         return (sender.hasPermission("mctl.admin") || sender.isOp());
     }
 
-    private Boolean default_commands = fileUtils.getFileConfiguration("config.yml")
+    private Boolean default_commands = FileUtils.getFileConfiguration("config.yml")
             .getBoolean("config.permission.default-commands", true);
 
     public enum CommandArg0 {
@@ -61,6 +61,7 @@ public class CommandHolder implements org.bukkit.command.TabExecutor {
         trade,
         loadAllVillagers,
         debug,
+        version,
         help;
 
         public static Boolean contains(String arg) {
@@ -172,7 +173,7 @@ public class CommandHolder implements org.bukkit.command.TabExecutor {
             @NotNull String[] args) {
 
         if (!sender.hasPermission("mctl.command")) {
-            messageUtils.MessageParsedPlaceholders(sender,
+            MessageUtils.MessageParsedPlaceholders(sender,
                     new Message(
                             MComesToLife.getMessages().getLang("cmd.no-permission",
                                     "<prefix><gray>No tienes permisos para ejecutar este comando</gray>")));
@@ -181,7 +182,7 @@ public class CommandHolder implements org.bukkit.command.TabExecutor {
         int size = args.length;
         if (size >= 1) {
             if (!CommandArg0.contains(args[0])) {
-                messageUtils.MessageParsedPlaceholders(sender,
+                MessageUtils.MessageParsedPlaceholders(sender,
                         new Message(
                                 MComesToLife.getMessages().getLang("cmd.help",
                                         "<prefix><gray>Los argumentos son muy cortos has /<command> help para ver los comandos</gray>")));
@@ -190,13 +191,21 @@ public class CommandHolder implements org.bukkit.command.TabExecutor {
 
             if (CommandArg0.valueOf(args[0]) != null) {
                 switch (CommandArg0.valueOf(args[0])) {
+                    case version: {
+                        if (sender.hasPermission("mctl.version")) {
+                            MessageUtils.MessageParsedPlaceholders(sender,
+                                    new Message("<prefix><gray>La version de MComesToLife es <version></gray>"));
+                            MessageUtils.MessageParsedPlaceholders(sender,
+                                    new Message("<prefix><gray>La version del servidor es <server_version></gray>"));
+                        }
+                    }
                     case gender: {
                         if (sender.hasPermission("mctl.gender") || sender.hasPermission("mctl.gender.male")
                                 || sender.hasPermission("mctl.gender.female") || admin(sender)) {
 
                             if (size >= 2) {
-                                if (!sex.contains(args[1])) {
-                                    messageUtils.MessageParsedPlaceholders(sender,
+                                if (!Sex.contains(args[1])) {
+                                    MessageUtils.MessageParsedPlaceholders(sender,
                                             new Message(
                                                     MComesToLife.getMessages().getLang("cmd.gender.no-args",
                                                             "<prefix><gray>La forma de uso correcta es /<command> gender male/female</gray>")));
@@ -205,7 +214,7 @@ public class CommandHolder implements org.bukkit.command.TabExecutor {
 
                                 if (!DataMethods.getRelationMap((Player) sender).get("spouse").toString()
                                         .equalsIgnoreCase("any")) {
-                                    messageUtils.MessageParsedPlaceholders(sender,
+                                    MessageUtils.MessageParsedPlaceholders(sender,
                                             new Message(
                                                     MComesToLife.getMessages().getLang("cmd.gender.married",
                                                             "<prefix><gray>No puedes cambiar tu sexo mientras estas casado</gray>")));
@@ -217,19 +226,19 @@ public class CommandHolder implements org.bukkit.command.TabExecutor {
                                                 .replace("<sex>",
                                                         MComesToLife.getMessages().getLang(
                                                                 "cmd.gender."
-                                                                        + sex.valueOf(args[1]).toString().toLowerCase(),
-                                                                sex.valueOf(args[1]).toString().toLowerCase()))
+                                                                        + Sex.valueOf(args[1]).toString().toLowerCase(),
+                                                                Sex.valueOf(args[1]).toString().toLowerCase()))
                                                 .replace("<sex_lowercase>",
                                                         MComesToLife.getMessages().getLang(
                                                                 "cmd.gender."
-                                                                        + sex.valueOf(args[1]).toString().toLowerCase(),
-                                                                sex.valueOf(args[1]).toString().toLowerCase())
+                                                                        + Sex.valueOf(args[1]).toString().toLowerCase(),
+                                                                Sex.valueOf(args[1]).toString().toLowerCase())
                                                                 .toLowerCase()));
-                                DataMethods.setSex((LivingEntity) ((Player) sender), sex.valueOf(args[1]));
-                                messageUtils.MessageParsedPlaceholders(sender, message);
+                                DataMethods.setSex((LivingEntity) ((Player) sender), Sex.valueOf(args[1]));
+                                MessageUtils.MessageParsedPlaceholders(sender, message);
                                 return true;
                             } else {
-                                messageUtils.MessageParsedPlaceholders(sender,
+                                MessageUtils.MessageParsedPlaceholders(sender,
                                         new Message(
                                                 MComesToLife.getMessages().getLang("cmd.gender.no-args",
                                                         "<prefix><gray>La forma de uso correcta es /<command> gender male/female</gray>")));
@@ -245,7 +254,7 @@ public class CommandHolder implements org.bukkit.command.TabExecutor {
                             if (sender instanceof Player) {
                                 if (DataMethods.getRelationMap((Player) sender).get("spouse").toString()
                                         .equalsIgnoreCase("any")) {
-                                    messageUtils.MessageParsedPlaceholders(sender,
+                                    MessageUtils.MessageParsedPlaceholders(sender,
                                             new Message(
                                                     MComesToLife.getMessages().getLang("cmd.marry.procreate.no-spouse",
                                                             "<prefix><gray>No tienes pareja para procrear</gray>")));
@@ -254,8 +263,8 @@ public class CommandHolder implements org.bukkit.command.TabExecutor {
                                     // verify if the spouse is online
                                     String uuid = DataMethods.getRelationMap((Player) sender).get("spouse")
                                             .toString();
-                                    if (timers.getPlayerByUuid(uuid) != null) {
-                                        Player p2 = timers.getPlayerByUuid(uuid);
+                                    if (Timers.getPlayerByUuid(uuid) != null) {
+                                        Player p2 = Timers.getPlayerByUuid(uuid);
                                         Player p1 = (Player) sender;
                                         Long p1l = (Long) DataMethods.retrivePlayerData(p1).getOrDefault("last-baby",
                                                 0L);
@@ -273,28 +282,28 @@ public class CommandHolder implements org.bukkit.command.TabExecutor {
 
                                                 // spawn baby
 
-                                                if (DataMethods.getSex(p1) == sex.male) {
+                                                if (DataMethods.getSex(p1) == Sex.male) {
                                                     DataMethods.loadBabyVillager(true, p1, p2);
                                                 } else {
                                                     DataMethods.loadBabyVillager(true, p2, p1);
                                                 }
 
                                                 // tell message your baby grow up
-                                                messageUtils.MessageParsedPlaceholders(p1,
+                                                MessageUtils.MessageParsedPlaceholders(p1,
                                                         new Message(
                                                                 MComesToLife.getMessages().getLang(
                                                                         "cmd.marry.procreate.success",
                                                                         "<prefix><gray>Tu pareja ha tenido un bebe con tigo</gray>")));
                                             } else {
                                                 // your spouse is too far
-                                                messageUtils.MessageParsedPlaceholders(p1,
+                                                MessageUtils.MessageParsedPlaceholders(p1,
                                                         new Message(
                                                                 MComesToLife.getMessages().getLang(
                                                                         "cmd.marry.procreate.too-far",
                                                                         "<prefix><gray>Tu pareja esta muy lejos para procrear</gray>")));
                                             }
-                                        } else if (p2l >= p2l + MComesToLife.getTimeOutProcreate()) {
-                                            messageUtils.MessageParsedPlaceholders(sender,
+                                        } else if (p2l >= p2l + TimeUtils.getTimeOutProcreate()) {
+                                            MessageUtils.MessageParsedPlaceholders(sender,
                                                     new Message(
                                                             MComesToLife.getMessages().getLang(
                                                                     "cmd.marry.procreate.timeout",
@@ -303,13 +312,13 @@ public class CommandHolder implements org.bukkit.command.TabExecutor {
                                             Message timetoWait = new Message(
                                                     MComesToLife.getMessages().getLang("cmd.timeout",
                                                             "<prefix><gray>Debes Esperar <day_amount> <day_format> <hours_amount> <hours_format> <minutes_amount> <minutes_format> <seconds_amount> <seconds_format>/gray>"));
-                                            Long currentTime = p2l + MComesToLife.getTimeOutProcreate()
+                                            Long currentTime = p2l + TimeUtils.getTimeOutProcreate()
                                                     - System.currentTimeMillis();
                                             timetoWait.setupTimePlaceholder(currentTime);
-                                            messageUtils.MessageParsedPlaceholders(sender, timetoWait);
+                                            MessageUtils.MessageParsedPlaceholders(sender, timetoWait);
                                             return true;
-                                        } else if (p1l >= p2l + MComesToLife.getTimeOutProcreate()) {
-                                            messageUtils.MessageParsedPlaceholders(sender,
+                                        } else if (p1l >= p2l + TimeUtils.getTimeOutProcreate()) {
+                                            MessageUtils.MessageParsedPlaceholders(sender,
                                                     new Message(
                                                             MComesToLife.getMessages().getLang(
                                                                     "cmd.marry.procreate.timeout",
@@ -318,10 +327,10 @@ public class CommandHolder implements org.bukkit.command.TabExecutor {
                                             Message timetoWait = new Message(
                                                     MComesToLife.getMessages().getLang("cmd.timeout",
                                                             "<prefix><gray>Debes Esperar <day_amount> <day_format> <hours_amount> <hours_format> <minutes_amount> <minutes_format> <seconds_amount> <seconds_format>/gray>"));
-                                            Long currentTime = p2l + MComesToLife.getTimeOutProcreate()
+                                            Long currentTime = p2l + TimeUtils.getTimeOutProcreate()
                                                     - System.currentTimeMillis();
                                             timetoWait.setupTimePlaceholder(currentTime);
-                                            messageUtils.MessageParsedPlaceholders(sender, timetoWait);
+                                            MessageUtils.MessageParsedPlaceholders(sender, timetoWait);
                                             return true;
                                         }
                                     } else {
@@ -338,7 +347,7 @@ public class CommandHolder implements org.bukkit.command.TabExecutor {
                                         }
 
                                         if (!a) {
-                                            messageUtils.MessageParsedPlaceholders(p1,
+                                            MessageUtils.MessageParsedPlaceholders(p1,
                                                     new Message(
                                                             MComesToLife.getMessages().getLang(
                                                                     "cmd.marry.procreate.offline",
@@ -360,28 +369,28 @@ public class CommandHolder implements org.bukkit.command.TabExecutor {
 
                                                     // spawn baby
 
-                                                    if (DataMethods.getSex(p1) == sex.male) {
+                                                    if (DataMethods.getSex(p1) == Sex.male) {
                                                         DataMethods.loadBabyVillager(true, p1, p2);
                                                     } else {
                                                         DataMethods.loadBabyVillager(true, p2, p1);
                                                     }
 
                                                     // tell message your baby grow up
-                                                    messageUtils.MessageParsedPlaceholders(p1,
+                                                    MessageUtils.MessageParsedPlaceholders(p1,
                                                             new Message(
                                                                     MComesToLife.getMessages().getLang(
                                                                             "cmd.marry.procreate.success",
                                                                             "<prefix><gray>Tu pareja ha tenido un bebe con tigo</gray>")));
                                                 } else {
                                                     // your spouse is too far
-                                                    messageUtils.MessageParsedPlaceholders(p1,
+                                                    MessageUtils.MessageParsedPlaceholders(p1,
                                                             new Message(
                                                                     MComesToLife.getMessages().getLang(
                                                                             "cmd.marry.procreate.too-far",
                                                                             "<prefix><gray>Tu pareja esta muy lejos para procrear</gray>")));
                                                 }
-                                            } else if (p2l >= p2l + MComesToLife.getTimeOutProcreate()) {
-                                                messageUtils.MessageParsedPlaceholders(sender,
+                                            } else if (p2l >= p2l + TimeUtils.getTimeOutProcreate()) {
+                                                MessageUtils.MessageParsedPlaceholders(sender,
                                                         new Message(
                                                                 MComesToLife.getMessages().getLang(
                                                                         "cmd.marry.procreate.timeout",
@@ -390,13 +399,13 @@ public class CommandHolder implements org.bukkit.command.TabExecutor {
                                                 Message timetoWait = new Message(
                                                         MComesToLife.getMessages().getLang("cmd.timeout",
                                                                 "<prefix><gray>Debes Esperar <day_amount> <day_format> <hours_amount> <hours_format> <minutes_amount> <minutes_format> <seconds_amount> <seconds_format>/gray>"));
-                                                Long currentTime = p2l + MComesToLife.getTimeOutProcreate()
+                                                Long currentTime = p2l + TimeUtils.getTimeOutProcreate()
                                                         - System.currentTimeMillis();
                                                 timetoWait.setupTimePlaceholder(currentTime);
-                                                messageUtils.MessageParsedPlaceholders(sender, timetoWait);
+                                                MessageUtils.MessageParsedPlaceholders(sender, timetoWait);
                                                 return true;
-                                            } else if (p1l >= p2l + MComesToLife.getTimeOutProcreate()) {
-                                                messageUtils.MessageParsedPlaceholders(sender,
+                                            } else if (p1l >= p2l + TimeUtils.getTimeOutProcreate()) {
+                                                MessageUtils.MessageParsedPlaceholders(sender,
                                                         new Message(
                                                                 MComesToLife.getMessages().getLang(
                                                                         "cmd.marry.procreate.timeout",
@@ -405,10 +414,10 @@ public class CommandHolder implements org.bukkit.command.TabExecutor {
                                                 Message timetoWait = new Message(
                                                         MComesToLife.getMessages().getLang("cmd.timeout",
                                                                 "<prefix><gray>Debes Esperar <day_amount> <day_format> <hours_amount> <hours_format> <minutes_amount> <minutes_format> <seconds_amount> <seconds_format>/gray>"));
-                                                Long currentTime = p2l + MComesToLife.getTimeOutProcreate()
+                                                Long currentTime = p2l + TimeUtils.getTimeOutProcreate()
                                                         - System.currentTimeMillis();
                                                 timetoWait.setupTimePlaceholder(currentTime);
-                                                messageUtils.MessageParsedPlaceholders(sender, timetoWait);
+                                                MessageUtils.MessageParsedPlaceholders(sender, timetoWait);
                                                 return true;
                                             }
 
@@ -422,7 +431,7 @@ public class CommandHolder implements org.bukkit.command.TabExecutor {
                         Player p = Bukkit.getPlayer(args[1]);
                         if (p != null) {
                             if (p.getUniqueId() == ((Player) sender).getUniqueId()) {
-                                messageUtils.MessageParsedPlaceholders(sender,
+                                MessageUtils.MessageParsedPlaceholders(sender,
                                         new Message(
                                                 MComesToLife.getMessages().getLang("cmd.marry.no-same",
                                                         "<prefix><gray>No puedes casarte contigo mismo</gray>")));
@@ -430,10 +439,10 @@ public class CommandHolder implements org.bukkit.command.TabExecutor {
                             }
                             if (DataMethods.retrivePlayerData(p).containsKey("sex")
                                     && DataMethods.retrivePlayerData((Player) sender).containsKey("sex")) {
-                                if (sex.valueOf((String) DataMethods.retrivePlayerData(p).get("sex")) == sex.valueOf(
+                                if (Sex.valueOf((String) DataMethods.retrivePlayerData(p).get("sex")) == Sex.valueOf(
                                         (String) DataMethods.retrivePlayerData((Player) sender).get("sex"))) {
                                     // our sex are the same
-                                    messageUtils.MessageParsedPlaceholders(sender,
+                                    MessageUtils.MessageParsedPlaceholders(sender,
                                             new Message(MComesToLife.getMessages()
                                                     .getLang("cmd.marry.same-gender",
                                                             "<prefix><gray>Sus generos no pueden ser los mismos</gray>")),
@@ -441,14 +450,14 @@ public class CommandHolder implements org.bukkit.command.TabExecutor {
                                 }
                             } else {
                                 if (!DataMethods.retrivePlayerData((Player) sender).containsKey("sex")) {
-                                    messageUtils.MessageParsedPlaceholders(sender,
+                                    MessageUtils.MessageParsedPlaceholders(sender,
                                             new Message(MComesToLife.getMessages()
                                                     .getLang("cmd.marry.no-gender",
                                                             "<prefix><gray>No tienes ningun sexo establecido</gray>")),
                                             p);
                                     return true;
                                 }
-                                messageUtils.MessageParsedPlaceholders(sender, new Message(MComesToLife.getMessages()
+                                MessageUtils.MessageParsedPlaceholders(sender, new Message(MComesToLife.getMessages()
                                         .getLang("cmd.marry.no-gender-other",
                                                 "<prefix><gray>El jugador <second_name> no tiene ningun sexo establecido</gray>")),
                                         p);
@@ -457,29 +466,29 @@ public class CommandHolder implements org.bukkit.command.TabExecutor {
                             if (!DataMethods.getRelationMap(p).containsKey("spouse")
                                     && !DataMethods.getRelationMap((Player) sender).containsValue("spouse")) {
                                 if (marryRequest.containsKey(p)) {
-                                    messageUtils.MessageParsedPlaceholders(sender,
+                                    MessageUtils.MessageParsedPlaceholders(sender,
                                             new Message(MComesToLife.getMessages().getLang("cmd.marry.already-request",
                                                     "<prefix><gray>El jugador <second_name> ya tiene una solicitud de matrimonio</gray>")),
                                             p);
                                 } else {
-                                    messageUtils.MessageParsedPlaceholders(sender,
+                                    MessageUtils.MessageParsedPlaceholders(sender,
                                             new Message(MComesToLife.getMessages().getLang("cmd.marry.request",
                                                     "<prefix><gray>Has enviado una solicitud de matrimonio a <second_name></gray>")),
                                             p);
-                                    messageUtils.MessageParsedPlaceholders((CommandSender) p,
+                                    MessageUtils.MessageParsedPlaceholders((CommandSender) p,
                                             new Message(MComesToLife.getMessages().getLang("cmd.marry.recive",
                                                     "<prefix><gray><second_name>Te ha solicitado matrimonio</gray>")),
                                             (Player) sender);
                                     marryRequest.put(p, (Player) sender);
                                 }
                             } else {
-                                messageUtils.MessageParsedPlaceholders(sender,
+                                MessageUtils.MessageParsedPlaceholders(sender,
                                         new Message(MComesToLife.getMessages().getLang("cmd.marry.already-married",
                                                 "<prefix><gray>El jugador <second_name> ya esta casado</gray>")),
                                         p);
                             }
                         } else {
-                            messageUtils.MessageParsedPlaceholders(sender,
+                            MessageUtils.MessageParsedPlaceholders(sender,
                                     new Message(MComesToLife.getMessages().getLang("cmd.marry.no-player",
                                             "<prefix><gray>El jugador <second_name> no esta conectado</gray>")),
                                     p);
@@ -488,25 +497,25 @@ public class CommandHolder implements org.bukkit.command.TabExecutor {
                             if (marryRequest.containsKey((Player) sender)) {
                                 OfflinePlayer p2 = marryRequest.get((Player) sender);
                                 if (p2.isOnline()) {
-                                    messageUtils.MessageParsedPlaceholders(sender,
+                                    MessageUtils.MessageParsedPlaceholders(sender,
                                             new Message(MComesToLife.getMessages().getLang("cmd.marry.accept",
                                                     "<prefix><gray>Has aceptado la solicitud de matrimonio de <second_name></gray>")),
                                             (Player) p2);
-                                    messageUtils.MessageParsedPlaceholders((CommandSender) p2,
+                                    MessageUtils.MessageParsedPlaceholders((CommandSender) p2,
                                             new Message(MComesToLife.getMessages().getLang("cmd.marry.accepted",
                                                     "<prefix><gray><second_name> Ha aceptado tu solicitud de matrimonio</gray>")),
                                             (Player) sender);
-                                    DataMethods.marry((Player) sender, (Player) p2,0);
+                                    DataMethods.marry((Player) sender, (Player) p2, 0);
                                     marryRequest.remove((Player) sender);
                                 } else {
-                                    messageUtils.MessageParsedPlaceholders(sender,
+                                    MessageUtils.MessageParsedPlaceholders(sender,
                                             new Message(MComesToLife.getMessages().getLang("cmd.marry.offline",
                                                     "<prefix><gray>El jugador <second_name> esta desconectado</gray>")
                                                     .replace("<second_name>", p2.getName())
                                                     .replace("<second_displayname>", p2.getName())));
                                 }
                             } else {
-                                messageUtils.MessageParsedPlaceholders(sender,
+                                MessageUtils.MessageParsedPlaceholders(sender,
                                         new Message(MComesToLife.getMessages().getLang("cmd.marry.no-request",
                                                 "<prefix><gray>No tienes ninguna solicitud de matrimonio</gray>")));
                             }
@@ -514,24 +523,24 @@ public class CommandHolder implements org.bukkit.command.TabExecutor {
                             if (marryRequest.containsKey((Player) sender)) {
                                 OfflinePlayer p2 = marryRequest.get((Player) sender);
                                 if (p2.isOnline()) {
-                                    messageUtils.MessageParsedPlaceholders((CommandSender) p2,
+                                    MessageUtils.MessageParsedPlaceholders((CommandSender) p2,
                                             new Message(MComesToLife.getMessages().getLang("cmd.marry.denied",
                                                     "<prefix><gray><second_name> Ha rechazado tu solicitud de matrimonio</gray>")),
                                             (Player) sender);
                                 }
-                                messageUtils.MessageParsedPlaceholders(sender,
+                                MessageUtils.MessageParsedPlaceholders(sender,
                                         new Message(MComesToLife.getMessages().getLang("cmd.marry.deny",
                                                 "<prefix><gray>Has rechazado la solicitud de matrimonio de <second_name></gray>")
                                                 .replace("<second_name>", p2.getName())
                                                 .replace("<second_displayname>", p2.getName())));
                                 marryRequest.remove((Player) sender);
                             } else {
-                                messageUtils.MessageParsedPlaceholders(sender,
+                                MessageUtils.MessageParsedPlaceholders(sender,
                                         new Message(MComesToLife.getMessages().getLang("cmd.marry.no-request",
                                                 "<prefix><gray>No tienes ninguna solicitud de matrimonio</gray>")));
                             }
                         } else {
-                            messageUtils.MessageParsedPlaceholders(sender,
+                            MessageUtils.MessageParsedPlaceholders(sender,
                                     new Message(MComesToLife.getMessages().getLang("cmd.marry.no-args",
                                             "<prefix><gray>Debes especificar si quieres aceptar o rechazar la solicitud de matrimonio</gray> <nbsp><prefix><gray>O tambien para enviar una petición de matrimonio/<command> marry <player/accept/deny></gray>")));
                         }
@@ -542,7 +551,7 @@ public class CommandHolder implements org.bukkit.command.TabExecutor {
                             if (sender.hasPermission("mctl.admin.reload") || admin(sender)) {
                                 MComesToLife.getPlugin().reloadConfig();
                                 // send message reloaded
-                                messageUtils.MessageParsedPlaceholders(sender, new Message(MComesToLife.getMessages()
+                                MessageUtils.MessageParsedPlaceholders(sender, new Message(MComesToLife.getMessages()
                                         .getLang("cmd.reload", "<prefix><gray>Has recargado el plugin</gray>")));
                             } else {
                                 return true;
@@ -557,10 +566,10 @@ public class CommandHolder implements org.bukkit.command.TabExecutor {
                     case fixVillager: {
                         // get looked entity from "Target" class utils
                         Entity e = Target.getTargetEntity((Player) sender);
-                        if (timers.entEnabled(e) && DataMethods.avaliable(e)) {
+                        if (Timers.entEnabled(e) && DataMethods.avaliable(e)) {
                             CustomVillager villager = new CustomVillager((LivingEntity) e);
                             villager.loadVillager(true);
-                            messageUtils.MessageParsedPlaceholders(sender, new Message(MComesToLife.getMessages()
+                            MessageUtils.MessageParsedPlaceholders(sender, new Message(MComesToLife.getMessages()
                                     .getLang("cmd.fixvillager", "<prefix><gray>Has reparado al aldeano</gray>")));
                         }
 
@@ -573,7 +582,7 @@ public class CommandHolder implements org.bukkit.command.TabExecutor {
                     }
                     case loadAllVillagers: {
                         WorldEntityLoader.makeVillagers();
-                        messageUtils.MessageParsedPlaceholders(sender, new Message(MComesToLife.getMessages()
+                        MessageUtils.MessageParsedPlaceholders(sender, new Message(MComesToLife.getMessages()
                                 .getLang("cmd.loadallvillagers",
                                         "<prefix><gray>Has recargado todos los aldeanos</gray>")));
                         return true;
@@ -597,7 +606,7 @@ public class CommandHolder implements org.bukkit.command.TabExecutor {
                 }
             }
         } else {
-            messageUtils.MessageParsedPlaceholders(sender,
+            MessageUtils.MessageParsedPlaceholders(sender,
                     new Message(
                             MComesToLife.getMessages().getLang("cmd.help",
                                     "<prefix><gray>Los argumentos son muy cortos has /<command> help para ver los comandos</gray>")));

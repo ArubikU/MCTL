@@ -12,17 +12,19 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
-import io.lumine.mythic.bukkit.utils.lib.lang3.math.NumberUtils;
 import lombok.Getter;
 import lombok.Setter;
+import net.minecraft.world.inventory.Slot;
 import dev.arubik.mctl.MComesToLife;
 import dev.arubik.mctl.entity.CustomVillager;
 import dev.arubik.mctl.enums.TypeAction;
 import dev.arubik.mctl.holders.Message;
+import dev.arubik.mctl.holders.Methods.DataMethods;
 
 public class GuiCreator {
     private static ArrayList<Integer> avaliableSize = new ArrayList<Integer>();
@@ -43,11 +45,16 @@ public class GuiCreator {
         avaliableSize.add(28);
         avaliableSize.add(37);
         avaliableSize.add(45);
+        avaliableSize.add(54);
     }
 
     public class GuiHolder implements InventoryHolder {
         @Setter
         private Inventory Inventory;
+
+        @Setter
+        @Getter
+        private ConfigurationSection config;
 
         @Getter
         public HashMap<String, Object> InventoryData = new HashMap<String, Object>();
@@ -74,6 +81,10 @@ public class GuiCreator {
             return this.Inventory;
         }
 
+        public GuiCreator regenInventory() {
+            return new GuiCreator(config, path);
+        }
+
     }
 
     public void setupInv() {
@@ -81,27 +92,39 @@ public class GuiCreator {
         holder.setType(Customconfig.getString("id", UUID.randomUUID().toString()));
         holder.setSection(config.getCurrentPath());
         holder.setPath(path);
+        holder.setConfig(config);
         if (avaliableSize.contains(Customconfig.getInteger(new String[] { "slots", "size" }, 9))) {
             inv = Bukkit.createInventory(holder, Customconfig.getInt(new String[] { "slots", "size" }, 9),
                     Customconfig.getString(new String[] { "gui-name", "title" }, "Title"));
+            this.Gui = holder;
+            loadItem();
         } else {
-            messageUtils.log("<red>[MCTL]</red> <gray> The gui with path " + config.getCurrentPath()
+            MessageUtils.log("<red>[MCTL]</red> <gray> The gui with path " + config.getCurrentPath()
                     + " dont have a correct size");
         }
-        this.Gui = holder;
-        loadItem();
+    }
+
+    public ItemStack getSlot(EquipmentSlot slot, CustomVillager v) {
+        if (v.hasData(slot.toString())) {
+            if (ItemSerializer.read(v.getData(slot.toString(), "")).length == 0) {
+                return null;
+            }
+            ItemStack stack = ItemSerializer.read(v.getData(slot.toString(), ""))[0];
+            return stack;
+        }
+        return null;
     }
 
     public void loadItem() {
         for (String key : config.getConfigurationSection("items").getKeys(false)) {
-            if (NumberUtils.isNumber(key)) {
+            if (NumberUtils.isCreatable(key)) {
                 try {
                     int slot = Integer.parseInt(key);
                     if (slot <= inv.getSize()) {
                         this.InventoryItems.put(slot, ItemSerializer
                                 .getFromConfigurationSection(config.getConfigurationSection("items." + key)));
                     } else {
-                        messageUtils.log("<red>[MCTL]</red> <gray> The gui with path " + config.getCurrentPath()
+                        MessageUtils.log("<red>[MCTL]</red> <gray> The gui with path " + config.getCurrentPath()
                                 + " have a item with a slot bigger than the size of the gui");
                     }
                 } catch (Throwable e) {
@@ -118,40 +141,124 @@ public class GuiCreator {
         INTERACT,
         DIVORCE,
         TRADE,
-        DEEQUIP
+        DEEQUIP,
+        INTERNAL
 
     }
 
     public void OpenInv(Player... players) {
+        if (inv == null) {
+
+            MessageUtils.log("<red>[MCTL]</red> <gray> The gui with path " + config.getCurrentPath()
+                    + " have errors in config");
+        }
         for (Player player : players) {
-            String tittle = messageUtils.StringParsedPlaceholders(player,
+            String tittle = MessageUtils.StringParsedPlaceholders(player,
                     new Message(Customconfig.getString(new String[] { "gui_name", "title" }, "Title")),
-                    MComesToLife.getlastClickedEntity(player));
-            if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+                    DataMethods.getlastClickedEntity(player));
+            if (MComesToLife.getEnabledPlugins().isEnabled("PlaceholderAPI")) {
                 tittle = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, tittle);
             }
             tittle = new Message(tittle).removeMiniMessage().getString();
             Inventory clone = Bukkit.createInventory(Gui, inv.getSize(), tittle);
-            InventoryItems.forEach((slot, item) -> {
+            InventoryItems.forEach((slot, tempItem) -> {
+                ItemStack item = tempItem;
+                if (config.getConfigurationSection("items." + slot).contains("slot")) {
+                    if (DataMethods.getlastClickedEntity(player) != null) {
+
+                        try {
+                            switch (config.getConfigurationSection("items." + slot).getString("slot").toUpperCase()) {
+                                case "HAND":
+                                    item = DataMethods.getlastClickedEntity(player).getLivingEntity()
+                                            .getEquipment()
+                                            .getItemInMainHand();
+                                case "OFFHAND":
+                                    item = DataMethods.getlastClickedEntity(player).getLivingEntity()
+                                            .getEquipment()
+                                            .getItemInOffHand();
+                                case "LEGS":
+                                    item = DataMethods.getlastClickedEntity(player).getLivingEntity()
+                                            .getEquipment()
+                                            .getLeggings();
+                                case "BOOTS":
+                                    item = DataMethods.getlastClickedEntity(player).getLivingEntity()
+                                            .getEquipment()
+                                            .getBoots();
+                                case "HELMET":
+                                    item = DataMethods.getlastClickedEntity(player).getLivingEntity()
+                                            .getEquipment()
+                                            .getHelmet();
+                                case "CHESTPLATE":
+                                    item = DataMethods.getlastClickedEntity(player).getLivingEntity()
+                                            .getEquipment()
+                                            .getChestplate();
+
+                            }
+                            if (item == null) {
+                                if (config.getConfigurationSection("items." + slot).get("replace-armor-item") != null) {
+                                    item = ItemSerializer.getFromConfigurationSection(
+                                            config.getConfigurationSection("items." + slot + ".replace-armor-item"));
+                                    item = ItemSerializer.putData(item, "armor_replace_section",
+                                            config.getConfigurationSection("items." + slot).get("replace-armor-item"));
+                                } else {
+                                    item = tempItem;
+                                }
+                            } else {
+                                if (config.getConfigurationSection("items." + slot).get("add-lore") != null) {
+                                    List<String> addLore = (List<String>) config
+                                            .getConfigurationSection("items." + slot).getList("add-lore");
+                                    List<String> lore = item.getItemMeta().getLore();
+                                    lore.addAll(addLore);
+                                    item.getItemMeta().setLore(lore);
+                                }
+                            }
+                        } catch (Throwable e) {
+                            if (config.getConfigurationSection("items." + slot).get("replace-armor-item") != null) {
+                                item = ItemSerializer.getFromConfigurationSection(
+                                        config.getConfigurationSection("items." + slot + ".replace-armor-item"));
+                                item = ItemSerializer.putData(item, "armor_replace_section",
+                                        config.getConfigurationSection("items." + slot).get("replace-armor-item"));
+                            } else {
+                                item = tempItem;
+                            }
+                        }
+                    }
+                }
                 if (config.getConfigurationSection("items." + slot).contains("conditions")) {
                     List<String> conditions = config.getConfigurationSection("items." + slot)
                             .getStringList("conditions");
                     for (String condition : conditions) {
                         ConditionReader cond = new ConditionReader(condition);
+                        if (MComesToLife.isDEBUG()) {
+                            MessageUtils.BukkitLog("condition: " + condition);
+                        }
                         if (cond.isAvaliableCondition()) {
-                            if (!cond.checkCondition(player)) {
+                            if (MComesToLife.isDEBUG()) {
+                                MessageUtils.BukkitLog("condition Detected: true");
+                            }
+                            if (cond.checkCondition(player)) {
+                                if (MComesToLife.isDEBUG()) {
+                                    MessageUtils.BukkitLog("condition Pass: false");
+                                }
                                 item = new ItemStack(Material.AIR);
                                 if (cond.get("replace-item") != null) {
                                     item = ItemSerializer.getFromConfigurationSection(
-                                            config.getConfigurationSection("items." + slot + ".replace-item"));
+                                            config.getConfigurationSection(
+                                                    "items." + slot + "." + cond.get("replace-item")));
                                     item = ItemSerializer.putData(item, "condition_section", cond.get("replace-item"));
+                                }
+                            } else {
+                                if (MComesToLife.isDEBUG()) {
+                                    MessageUtils.BukkitLog("condition Pass: true");
                                 }
                             }
                             item = ItemSerializer.putData(item, "conditioned", true);
                         }
                     }
                 }
-                clone.setItem(slot, ItemSerializer.generateItem(item, player));
+                if (!item.getType().isAir()) {
+                    clone.setItem(slot, ItemSerializer.generateItem(item, player));
+                }
             });
             player.openInventory(clone);
         }

@@ -38,15 +38,16 @@ import net.skinsrestorer.api.exception.SkinRequestException;
 import dev.arubik.mctl.MComesToLife;
 import dev.arubik.mctl.entity.CustomVillager;
 import dev.arubik.mctl.enums.Works;
-import dev.arubik.mctl.enums.mood;
-import dev.arubik.mctl.enums.sex;
-import dev.arubik.mctl.enums.trait;
+import dev.arubik.mctl.enums.Mood;
+import dev.arubik.mctl.enums.Sex;
+import dev.arubik.mctl.enums.Trait;
 import dev.arubik.mctl.holders.Message;
 import dev.arubik.mctl.holders.VillagerInventoryHolder;
-import dev.arubik.mctl.holders.timers;
+import dev.arubik.mctl.holders.Timers;
 import dev.arubik.mctl.utils.FileConfiguration;
-import dev.arubik.mctl.utils.fileUtils;
-import dev.arubik.mctl.utils.messageUtils;
+import dev.arubik.mctl.utils.Target;
+import dev.arubik.mctl.utils.FileUtils;
+import dev.arubik.mctl.utils.MessageUtils;
 
 public class DataMethods {
 
@@ -62,10 +63,10 @@ public class DataMethods {
         return b;
     }
 
-    public static mood getMood(LivingEntity entity) {
-        return mood.valueOf((String) Optional
+    public static Mood getMood(LivingEntity entity) {
+        return Mood.valueOf((String) Optional
                 .ofNullable(
-                        fileUtils.getFileConfiguration("data.yml").getConfig()
+                        FileUtils.getFileConfiguration("data.yml").getConfig()
                                 .get(DataMethods.path(entity) + ".mood", "NEUTRAL"))
                 .orElse("NEUTRAL"));
     }
@@ -82,6 +83,9 @@ public class DataMethods {
 
         if (MComesToLife.getEnabledPlugins().isEnabled("MythicMobs")) {
             if (MythicBukkit.inst().getMobManager().isActiveMob(e.getUniqueId())) {
+                if(Timers.entEnabled(MythicBukkit.inst().getMobManager().getMythicMobInstance(e).getType().getInternalName())) {
+                    return true;
+                }
                 return false;
             }
         }
@@ -95,6 +99,9 @@ public class DataMethods {
             if (ShopkeepersAPI.getShopkeeperRegistry().isShopkeeper(e)) {
                 return false;
             }
+        }
+        if(Timers.entEnabled(e)){
+            return true;
         }
         return true;
     }
@@ -173,41 +180,41 @@ public class DataMethods {
     }
 
     public static boolean isVillager(Entity e) {
-        FileConfiguration file = fileUtils.getFileConfiguration("data.yml");
+        FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
         if (file.getConfig().getString(DataMethods.path((LivingEntity) e) + ".name") != "any")
             return true;
         return false;
     }
 
-    public static Boolean setSex(LivingEntity e, sex s) {
-        FileConfiguration file = fileUtils.getFileConfiguration("data.yml");
-        if (timers.entEnabled(e)) {
+    public static Boolean setSex(LivingEntity e, Sex s) {
+        FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
+        if (Timers.entEnabled(e)) {
             file.getConfig().set(path(e) + "." + "sex", s.toString().toLowerCase());
-            fileUtils.saveFile(file.getConfig(), "data.yml");
+            FileUtils.saveFile(file.getConfig(), "data.yml");
             return true;
         }
         if (e instanceof Player || e instanceof OfflinePlayer) {
             file.getConfig().set(playerPath((OfflinePlayer) e) + "." + "sex", s.toString().toLowerCase());
-            fileUtils.saveFile(file.getConfig(), "data.yml");
+            FileUtils.saveFile(file.getConfig(), "data.yml");
             return true;
         }
         return false;
     }
 
-    public static sex getSex(LivingEntity e) {
-        FileConfiguration file = fileUtils.getFileConfiguration("data.yml");
-        if (timers.entEnabled(e)) {
-            return sex.valueOf(DataMethods.retriveData(e).getOrDefault("sex", "male").toString());
+    public static Sex getSex(LivingEntity e) {
+        FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
+        if (Timers.entEnabled(e)) {
+            return Sex.valueOf(DataMethods.retriveData(e).getOrDefault("sex", "male").toString());
         }
         if (e instanceof Player || e instanceof OfflinePlayer) {
-            return sex.valueOf(DataMethods.retrivePlayerData((Player) e).getOrDefault("sex", "male").toString());
+            return Sex.valueOf(DataMethods.retrivePlayerData((Player) e).getOrDefault("sex", "male").toString());
         }
         return null;
     }
 
     public static HashMap<String, Object> retriveData(LivingEntity e) {
         HashMap<String, Object> mapData = new HashMap<String, Object>();
-        FileConfiguration file = fileUtils.getFileConfiguration("data.yml");
+        FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
         if (file.getConfig().contains(path(e))) {
             for (String key : file.getConfig().getConfigurationSection(pathEnt(e)).getKeys(false)) {
                 mapData.put(key, file.getConfig().get(path(e) + "." + key));
@@ -223,7 +230,7 @@ public class DataMethods {
 
     public static HashMap<String, Object> retriveData(String e) {
         HashMap<String, Object> mapData = new HashMap<String, Object>();
-        FileConfiguration file = fileUtils.getFileConfiguration("data.yml");
+        FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
         if (file.getConfig().contains(path(e))) {
             for (String key : file.getConfig().getConfigurationSection(pathEnt(e)).getKeys(false)) {
                 mapData.put(key, file.getConfig().get(path(e) + "." + key));
@@ -239,7 +246,7 @@ public class DataMethods {
 
     public static HashMap<String, Object> retrivePlayerData(OfflinePlayer player) {
         HashMap<String, Object> mapData = new HashMap<String, Object>();
-        FileConfiguration file = fileUtils.getFileConfiguration("data.yml");
+        FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
         if (file.getConfig().contains(playerPath(player))) {
             for (String key : file.getConfig().getConfigurationSection(playerPath(player)).getKeys(false)) {
                 mapData.put(key, file.getConfig().get(playerPath(player) + "." + key));
@@ -263,11 +270,11 @@ public class DataMethods {
             p = (Player) a;
         }
 
-        if (MComesToLife.config.getInt("config.marry-likes", 0) < vil.getLikes(p).orElse(0) + extraLikes) {
-            Message msg = new Message(mood.getText("marry-no", ""));
+        if (MComesToLife.getMainConfig().getInt("config.marry-likes", 0) < vil.getLikes(p).orElse(0) + extraLikes) {
+            Message msg = new Message(Mood.getText("marry-no", ""));
             msg.formatPlayerSex(DataMethods.getSex(p));
             msg.formatSex(DataMethods.getSex(a));
-            messageUtils.MessageParsedPlaceholders((CommandSender) ((Player) a), msg, vil);
+            MessageUtils.MessageParsedPlaceholders((CommandSender) ((Player) a), msg, vil);
             return false;
         }
 
@@ -277,39 +284,39 @@ public class DataMethods {
                         "<prefix><gray>Ya estas casad<player_sex_endchar> con <villager_name></gray>"));
                 msg.formatPlayerSex(DataMethods.getSex(p));
                 msg.formatSex(DataMethods.getSex(a));
-                messageUtils.MessageParsedPlaceholders((CommandSender) ((Player) a), msg, vil);
+                MessageUtils.MessageParsedPlaceholders((CommandSender) ((Player) a), msg, vil);
                 return false;
             }
-            Message msg = new Message(mood.getText("marry-alredy", ""));
+            Message msg = new Message(Mood.getText("marry-alredy", ""));
             msg.formatPlayerSex(DataMethods.getSex(p));
             msg.formatSex(DataMethods.getSex(a));
-            messageUtils.MessageParsedPlaceholders((CommandSender) ((Player) a), msg, vil);
+            MessageUtils.MessageParsedPlaceholders((CommandSender) ((Player) a), msg, vil);
             return false;
         }
 
         if (DataMethods.getSpouse(p).isPresent()) {
-            Message msg = new Message(mood.getText("marry-cant", ""));
+            Message msg = new Message(Mood.getText("marry-cant", ""));
             msg.formatPlayerSex(DataMethods.getSex(p));
             msg.formatSex(DataMethods.getSex(a));
-            messageUtils.MessageParsedPlaceholders((CommandSender) ((Player) a), msg, vil);
+            MessageUtils.MessageParsedPlaceholders((CommandSender) ((Player) a), msg, vil);
             return false;
         }
 
         if (DataMethods.getFamily("", p, vil.villager).equalsIgnoreCase("child")) {
-            Message msg = new Message(mood.getText("marry-cant-son", ""));
+            Message msg = new Message(Mood.getText("marry-cant-son", ""));
             msg.formatPlayerSex(DataMethods.getSex(p));
             msg.formatSex(DataMethods.getSex(a));
-            messageUtils.MessageParsedPlaceholders((CommandSender) ((Player) a), msg, vil);
+            MessageUtils.MessageParsedPlaceholders((CommandSender) ((Player) a), msg, vil);
             return false;
         }
 
         DataMethods.setData("spouse", a.getUniqueId().toString(), b);
         DataMethods.setData("spouse", b.getUniqueId().toString(), a);
 
-        Message msg = new Message(mood.getText("marry-yes", ""));
+        Message msg = new Message(Mood.getText("marry-yes", ""));
         msg.formatPlayerSex(DataMethods.getSex(p));
         msg.formatSex(DataMethods.getSex(a));
-        messageUtils.MessageParsedPlaceholders((CommandSender) ((Player) a), msg, vil);
+        MessageUtils.MessageParsedPlaceholders((CommandSender) ((Player) a), msg, vil);
         return true;
     }
 
@@ -363,7 +370,7 @@ public class DataMethods {
 
     public static HashMap<String, Object> getRelationMap(LivingEntity v) {
         HashMap<String, Object> map = new HashMap<String, Object>();
-        if (timers.entEnabled(v)) {
+        if (Timers.entEnabled(v)) {
             map.put("mother", DataMethods.retriveData(v).getOrDefault("mother", "any"));
             map.put("father", DataMethods.retriveData(v).getOrDefault("father", "any"));
             map.put("spouse", DataMethods.retriveData(v).getOrDefault("spouse", "any"));
@@ -406,14 +413,14 @@ public class DataMethods {
     }
 
     public static void setData(String key, @Nullable Object value, LivingEntity e) {
-        FileConfiguration file = fileUtils.getFileConfiguration("data.yml");
+        FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
         if (e instanceof Player || e instanceof OfflinePlayer) {
             file.getConfig().set(DataMethods.playerPath((OfflinePlayer) e) + "." + key, value);
-            fileUtils.saveFile(file.getConfig(), "data.yml");
+            FileUtils.saveFile(file.getConfig(), "data.yml");
             return;
         }
         file.getConfig().set(DataMethods.path(e) + "." + key, value);
-        fileUtils.saveFile(file.getConfig(), "data.yml");
+        FileUtils.saveFile(file.getConfig(), "data.yml");
     }
 
     public static String path(LivingEntity entity) {
@@ -441,7 +448,7 @@ public class DataMethods {
     }
 
     public static Boolean isCustom(Entity e) {
-        FileConfiguration file = fileUtils.getFileConfiguration("data.yml");
+        FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
         if (e instanceof LivingEntity) {
             return file.getConfig().contains(DataMethods.pathEnt((LivingEntity) e));
         } else {
@@ -450,8 +457,26 @@ public class DataMethods {
     }
 
     public static Boolean isCustom(String e) {
-        FileConfiguration file = fileUtils.getFileConfiguration("data.yml");
+        FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
         return file.getConfig().contains(DataMethods.pathEnt(e));
+    }
+
+    public static CustomVillager getlastClickedEntity(Player p) {
+        Entity e = MComesToLife.lastClickedEntity.get(p.getUniqueId().toString());
+        if (e == null || e.isDead()) {
+            if (isCustom(Target.getTargetEntity((Entity) p))) {
+                CustomVillager vil = new CustomVillager((LivingEntity) Target.getTargetEntity((Entity) p));
+                vil.loadVillager(false);
+                return vil;
+            }
+        } else {
+            if (isCustom(e)) {
+                CustomVillager vil = new CustomVillager((LivingEntity) e);
+                vil.loadVillager(false);
+                return vil;
+            }
+        }
+        return null;
     }
 
 }

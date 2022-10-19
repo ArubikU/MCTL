@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameEvent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.IronGolem;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -16,6 +17,7 @@ import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
+import org.bukkit.event.entity.EntityTransformEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
@@ -32,17 +34,18 @@ import dev.arubik.mctl.MComesToLife;
 import dev.arubik.mctl.entity.BetterEntity;
 import dev.arubik.mctl.entity.CustomVillager;
 import dev.arubik.mctl.enums.EventType;
-import dev.arubik.mctl.enums.mood;
+import dev.arubik.mctl.enums.Mood;
 import dev.arubik.mctl.events.Listener;
 import dev.arubik.mctl.events.event.CustomEvent;
+import dev.arubik.mctl.holders.EntityAi;
 import dev.arubik.mctl.holders.Message;
-import dev.arubik.mctl.holders.timers;
+import dev.arubik.mctl.holders.Timers;
 import dev.arubik.mctl.holders.IA.CustomMemory;
 import dev.arubik.mctl.holders.Methods.DataMethods;
 import dev.arubik.mctl.holders.VillagerInventoryHolder.Material;
 import dev.arubik.mctl.utils.GuiCreator;
-import dev.arubik.mctl.utils.fileUtils;
-import dev.arubik.mctl.utils.messageUtils;
+import dev.arubik.mctl.utils.FileUtils;
+import dev.arubik.mctl.utils.MessageUtils;
 import dev.arubik.mctl.utils.GuiCreator.GuiHolder;
 
 public class EntityListener extends Listener {
@@ -69,7 +72,7 @@ public class EntityListener extends Listener {
      */
     @EventHandler
     public void onDeath(org.bukkit.event.entity.EntityDeathEvent event) {
-        if (dev.arubik.mctl.holders.timers.entEnabled(event.getEntity())) {
+        if (dev.arubik.mctl.holders.Timers.entEnabled(event.getEntity())) {
             dev.arubik.mctl.entity.CustomVillager customVillager = new dev.arubik.mctl.entity.CustomVillager(
                     event.getEntity());
 
@@ -81,6 +84,8 @@ public class EntityListener extends Listener {
                 event.setCancelled(true);
                 return;
             }
+
+            MessageUtils.BukkitLog(event.getEntity() + event.getEntity().getUniqueId().toString() + " died");
 
             DataMethods.setData("death", true, customVillager.villager);
             // play death sound
@@ -94,9 +99,10 @@ public class EntityListener extends Listener {
                     continue;
 
                 GuiHolder inv = (GuiHolder) openInventory.getHolder();
-                if (inv.getInventoryData().get("villager") != null)
+                if (inv.getInventoryData().get("villager") == null)
                     continue;
-                if (inv.getInventoryData().get("villager") == customVillager.villager) {
+                LivingEntity villager = (LivingEntity) inv.getInventoryData().get("villager");
+                if (villager.getUniqueId() == customVillager.villager.getUniqueId()) {
                     player.closeInventory();
                 }
             }
@@ -115,6 +121,21 @@ public class EntityListener extends Listener {
         event.setCancelled(true);
     }
 
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onEntityTransformEvent(EntityTransformEvent event) {
+        if (!(event.getEntity() instanceof Villager))
+            return;
+        if (!(DataMethods.isVillager(event.getEntity())))
+            return;
+        if ((event.getTransformReason() == EntityTransformEvent.TransformReason.INFECTION)) {
+            event.getTransformedEntity().remove();
+            // event.setCancelled(true);
+        }
+        if (event.getTransformReason() == EntityTransformEvent.TransformReason.CURED) {
+            event.setCancelled(true);
+        }
+    }
+
     @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onGenericGameEvent(GenericGameEvent event) {
@@ -125,7 +146,6 @@ public class EntityListener extends Listener {
         // RING BELL is called because of the map replacing the duplicated key.
         if (gameEvent != GameEvent.BLOCK_CHANGE && gameEvent != GameEvent.RING_BELL)
             return;
-
         event.getLocation().getBlock().getType();
         if (event.getLocation().getBlock().getType() != org.bukkit.Material.BELL)
             return;
@@ -147,14 +167,13 @@ public class EntityListener extends Listener {
         event.setCancelled(true);
     }
 
-    /*
+    /*image.png
      * on summon a villager and verify they dont have any nbt tags in the List of
      * path config.yml config.except-nbts entity
      */
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onSummon(org.bukkit.event.entity.CreatureSpawnEvent event) {
-        if (dev.arubik.mctl.holders.timers.entEnabled(event.getEntity())
-                && DataMethods.avaliable(event.getEntity())) {
+        if (DataMethods.avaliable(event.getEntity()) && Timers.entEnabled(event.getEntity())) {
             dev.arubik.mctl.entity.CustomVillager customVillager = new dev.arubik.mctl.entity.CustomVillager(
                     event.getEntity());
             customVillager.loadVillager(true);
@@ -171,18 +190,16 @@ public class EntityListener extends Listener {
         if (event.getEntity().isDead()) {
             return;
         }
-        if (!timers.entEnabled(event.getEntity())) {
+        if (!Timers.entEnabled(event.getEntity())) {
             return;
         }
         if (!(event.getEntity() instanceof LivingEntity))
             return;
-        if (event.getDamager() instanceof LivingEntity) {
-            BetterEntity entity = new BetterEntity((LivingEntity) event.getEntity());
-            if(entity.getNBT(CustomMemory.SHIELDING) != null) {
-                event.setCancelled(true);
-                return;
+        if (DataMethods.isVillager(event.getEntity())) {
+            if (!(event.getDamager() instanceof Player && !EntityAi.targetTypes.contains("PLAYER"))) {
+                BetterEntity betterEntity = BetterEntity.getFromEntity((LivingEntity) event.getEntity());
+                betterEntity.setNBT(CustomMemory.TARGET_UUID, event.getDamager().getUniqueId().toString());
             }
-            entity.setMemory(EntityMemory.ATTACK_TARGET, event.getDamager());
         }
         if (event.getDamager() instanceof Player) {
             Player player = (Player) event.getDamager();
@@ -199,20 +216,20 @@ public class EntityListener extends Listener {
                         1);
                 cv.getLivingEntity().removePotionEffect(PotionEffectType.SLOW);
                 cv.getLivingEntity().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 30, 2));
-                if (mood.rand(1, 15) == 10) {
+                if (Mood.rand(1, 15) == 10) {
                     cv.getLivingEntity().attack(event.getDamager());
                 }
-                cv.takeLikes(mood.rand(1, 10), player);
+                cv.takeLikes(Mood.rand(1, 10), player);
                 // play angry particles upp the villager
 
                 playersToSendMessageOfPunch.add(event.getDamager().getUniqueId().toString());
-                Bukkit.getScheduler().runTaskLater(MComesToLife.plugin, new Runnable() {
+                Bukkit.getScheduler().runTaskLater(MComesToLife.getPlugin(), new Runnable() {
                     @Override
                     public void run() {
                         if (playersToSendMessageOfPunch.contains(event.getDamager().getUniqueId().toString())) {
                             playersToSendMessageOfPunch.remove(event.getDamager().getUniqueId().toString());
-                            messageUtils.MessageParsedPlaceholders((CommandSender) player,
-                                    new Message(mood.getText("punch",
+                            MessageUtils.MessageParsedPlaceholders((CommandSender) player,
+                                    new Message(Mood.getText("punch",
                                             DataMethods.getFamily("punch", player, cv.getLivingEntity()))),
                                     cv);
                         }
@@ -224,10 +241,22 @@ public class EntityListener extends Listener {
     }
 
     @EventHandler
+    public void VehicleEnterEvent(org.bukkit.event.vehicle.VehicleEnterEvent event) {
+        if (event.getEntered() instanceof Villager && event.getVehicle().getType() == EntityType.BOAT
+                && MComesToLife.getMainConfig().getBoolean("config.unboat", false)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
     public void onRightClickEntity(org.bukkit.event.player.PlayerInteractEntityEvent event) {
         Player player = event.getPlayer();
         Entity entity = event.getRightClicked();
-        if (timers.entEnabled(entity)) {
+        if (Timers.entEnabled(entity)) {
+            if (!DataMethods.isCustom(event.getRightClicked())) {
+                CustomVillager vil = new CustomVillager((LivingEntity) entity);
+                vil.loadVillager(true);
+            }
             MComesToLife.lastClickedEntity.put(player.getUniqueId().toString(), entity);
             if (playertoTrade.contains(player.getUniqueId().toString().toLowerCase())) {
                 playertoTrade.remove(player.getUniqueId().toString().toLowerCase());
@@ -235,7 +264,6 @@ public class EntityListener extends Listener {
             } else if (player.isSneaking()) {
             } else {
                 event.setCancelled(true);
-
                 MComesToLife.Maingui.OpenInv(player);
             }
         }
@@ -244,7 +272,7 @@ public class EntityListener extends Listener {
     @EventHandler
     public void onChunkLoad(org.bukkit.event.world.ChunkLoadEvent e) {
         for (Entity entity : e.getChunk().getEntities()) {
-            if (timers.entEnabled(entity)) {
+            if (Timers.entEnabled(entity)) {
                 CustomVillager customVillager = new CustomVillager((LivingEntity) entity);
                 customVillager.loadVillager(true);
             }
@@ -254,7 +282,7 @@ public class EntityListener extends Listener {
     // @EventHandler
     public void onEntityLoad(org.bukkit.event.world.EntitiesLoadEvent e) {
         for (Entity entity : e.getEntities()) {
-            if (timers.entEnabled(entity) && e.getChunk().isLoaded()) {
+            if (Timers.entEnabled(entity) && e.getChunk().isLoaded()) {
                 CustomVillager customVillager = new CustomVillager((LivingEntity) entity);
                 customVillager.loadVillager(true);
             }

@@ -22,31 +22,31 @@ import io.lumine.mythic.lib.adventure.title.TitlePart;
 import lombok.Getter;
 import dev.arubik.mctl.MComesToLife;
 import dev.arubik.mctl.entity.CustomVillager;
-import dev.arubik.mctl.enums.sex;
+import dev.arubik.mctl.enums.Sex;
 import dev.arubik.mctl.holders.Methods.DataMethods;
 
-public class messageUtils {
+public class MessageUtils {
     public static final BukkitAudiences au = BukkitAudiences.create(MComesToLife.getPlugin());
+
+    public static void BukkitLog(String s) {
+        if (MComesToLife.isDEBUG()) {
+            Bukkit.getConsoleSender().sendMessage(s);
+        }
+    }
 
     public static void Message(Player pl, String s) {
         Audience p = Audience.empty();
         p = au.player(pl);
 
         Component parsed = mm.deserialize(s.toString());
-        messageUtils.sendMessage(p, parsed, 0);
+        MessageUtils.sendMessage(p, parsed, 0);
 
     }
 
     private static ConsoleCommandSender console = MComesToLife.getPlugin().getServer().getConsoleSender();
 
     public static void log(final String message) {
-        messageUtils.Message(console, message);
-    }
-
-    public static void Bukkitlog(final String message) {
-        if (fileUtils.getBoolean("config.yml", "config.debug", true)) {
-            Bukkit.getConsoleSender().sendMessage(message);
-        }
+        MessageUtils.Message(console, message);
     }
 
     public static void Message(CommandSender pl, String s) {
@@ -55,7 +55,7 @@ public class messageUtils {
         p = au.sender(pl);
 
         Component parsed = mm.deserialize(s.toString());
-        messageUtils.sendMessage(p, parsed, 0);
+        MessageUtils.sendMessage(p, parsed, 0);
     }
 
     private static MiniMessage mm = MiniMessage.miniMessage();
@@ -75,21 +75,21 @@ public class messageUtils {
             p = au.sender(Bukkit.getConsoleSender());
 
             Component parsed = mm.deserialize(s.toString());
-            messageUtils.sendMessage(p, parsed, id);
+            MessageUtils.sendMessage(p, parsed, id);
         } else {
 
             Audience p = Audience.empty();
             p = au.sender(player);
 
             Component parsed = mm.deserialize(s.toString());
-            messageUtils.sendMessage(p, parsed, id);
+            MessageUtils.sendMessage(p, parsed, id);
         }
     }
 
     // CommandSender
     public static void MiniMessage(Object s, CommandSender player, int id /* 0: message 1: actionbar */) {
         if (player instanceof Player) {
-            messageUtils.MiniMessage(s, (Player) player, id);
+            MessageUtils.MiniMessage(s, (Player) player, id);
             return;
         }
         Audience p = Audience.empty();
@@ -97,7 +97,7 @@ public class messageUtils {
         p = au.sender(player);
 
         Component parsed = mm.deserialize(s.toString());
-        messageUtils.sendMessage(p, parsed, id);
+        MessageUtils.sendMessage(p, parsed, id);
     }
 
     public static void sendMessage(Audience p, Component parsed, int id) {
@@ -139,8 +139,8 @@ public class messageUtils {
             String nice = MComesToLife.getMessages().getLang("message.gender.female.nice", "beautiful");
             String type = MComesToLife.getMessages().getLang("message.gender.female.type", "girl");
 
-            if (sex.valueOf(Optional.ofNullable(DataMethods.retrivePlayerData((Player) p).get("sex")).orElse("male")
-                    .toString()) == sex.male) {
+            if (Sex.valueOf(Optional.ofNullable(DataMethods.retrivePlayerData((Player) p).get("sex")).orElse("male")
+                    .toString()) == Sex.male) {
                 nice = MComesToLife.getMessages().getLang("message.gender.male.nice", "handsome");
                 type = MComesToLife.getMessages().getLang("message.gender.male.type", "boy");
             }
@@ -149,12 +149,14 @@ public class messageUtils {
             LivingEntity liv = (LivingEntity) ((Player) p);
             message.replace("<spouse_name>", DataMethods.getSpouse(liv).orElse(liv).getCustomName());
         }
-        messageUtils.MiniMessage(message.getString(), p, 0);
+        MessageUtils.MiniMessage(message.getString(), p, 0);
     }
 
     public static void MessageParsedPlaceholders(CommandSender p, dev.arubik.mctl.holders.Message message) {
         message.replace("<prefix>", MComesToLife.getMessages().getLang("prefix", "<red>[MCTL]</red> "));
         message.replace("<random_name>", CustomVillager.genName());
+        message.replace("<version>", MComesToLife.getPlugin().getDescription().getVersion());
+        message.replace("<server_version>", MComesToLife.getServerVersion());
         message.replace(new String[] { "<cmd>", "<command>" }, MComesToLife.getMessages().getLang("command", "mctl"));
         if (p instanceof Player) {
             message.replace("<player_sons>", DataMethods.getSonNames((Player) p));
@@ -170,8 +172,8 @@ public class messageUtils {
             String nice = MComesToLife.getMessages().getLang("message.gender.female.nice", "beautiful");
             String type = MComesToLife.getMessages().getLang("message.gender.female.type", "girl");
 
-            if (sex.valueOf(Optional.ofNullable(DataMethods.retrivePlayerData((Player) p).get("sex")).orElse("male")
-                    .toString()) == sex.male) {
+            if (Sex.valueOf(Optional.ofNullable(DataMethods.retrivePlayerData((Player) p).get("sex")).orElse("male")
+                    .toString()) == Sex.male) {
                 nice = MComesToLife.getMessages().getLang("message.gender.male.nice", "handsome");
                 type = MComesToLife.getMessages().getLang("message.gender.male.type", "boy");
             }
@@ -180,7 +182,7 @@ public class messageUtils {
             LivingEntity liv = (LivingEntity) ((Player) p);
             message.replace("<spouse_name>", DataMethods.getSpouse(liv).orElse(liv).getCustomName());
         }
-        messageUtils.MiniMessage(message.getString(), p, 0);
+        MessageUtils.MiniMessage(message.getString(), p, 0);
     }
 
     public static String StringParsedPlaceholders(CommandSender p, dev.arubik.mctl.holders.Message message) {
@@ -201,8 +203,8 @@ public class messageUtils {
             String nice = MComesToLife.getMessages().getLang("message.gender.female.nice", "beautiful");
             String type = MComesToLife.getMessages().getLang("message.gender.female.type", "girl");
 
-            if (sex.valueOf(Optional.ofNullable(DataMethods.retrivePlayerData((Player) p).get("sex")).orElse("male")
-                    .toString()) == sex.male) {
+            if (Sex.valueOf(Optional.ofNullable(DataMethods.retrivePlayerData((Player) p).get("sex")).orElse("male")
+                    .toString()) == Sex.male) {
                 nice = MComesToLife.getMessages().getLang("message.gender.male.nice", "handsome");
                 type = MComesToLife.getMessages().getLang("message.gender.male.type", "boy");
             }
@@ -234,8 +236,8 @@ public class messageUtils {
             String nice = MComesToLife.getMessages().getLang("message.gender.female.nice", "beautiful");
             String type = MComesToLife.getMessages().getLang("message.gender.female.type", "girl");
 
-            if (sex.valueOf(Optional.ofNullable(DataMethods.retrivePlayerData((Player) p).get("sex")).orElse("male")
-                    .toString()) == sex.male) {
+            if (Sex.valueOf(Optional.ofNullable(DataMethods.retrivePlayerData((Player) p).get("sex")).orElse("male")
+                    .toString()) == Sex.male) {
                 nice = MComesToLife.getMessages().getLang("message.gender.male.nice", "handsome");
                 type = MComesToLife.getMessages().getLang("message.gender.male.type", "boy");
             }
@@ -246,7 +248,34 @@ public class messageUtils {
         }
         message.replace("<second_name>", second.getDisplayName());
         message.replace("<second_displayname>", second.getDisplayName());
-        messageUtils.MiniMessage(message.getString(), p, 0);
+        MessageUtils.MiniMessage(message.getString(), p, 0);
+    }
+
+    public static String replace(CustomVillager v, CommandSender p, String vd) {
+        dev.arubik.mctl.holders.Message message = new dev.arubik.mctl.holders.Message(vd);
+        message.replace("<villager_nice>", MComesToLife.getMessages()
+                .getLang("message.gender." + v.getSex().toString().toLowerCase() + ".nice", "beautiful"));
+        message.replace("<villager_name>", v.getRealName());
+        message.replace("<villager_prefix>", MComesToLife.getNames().getLang().getString("names.prefix", ""));
+        message.replace("<villager_suffix>", MComesToLife.getNames().getLang().getString("names.suffix", ""));
+        message.replace("<villager_displayname>", ((String) v.getData().get("name")));
+        message.replace("<villager_sons>", DataMethods.getSonNames(v.villager));
+        message.replace("<villager_health>", ((int) v.villager.getHealth()) + "");
+        message.replace("<villager_type>", MComesToLife.getMessages()
+                .getLang("message.type." + v.getType().toLowerCase(), "v.getType().toLowerCase()"));
+        if (message.getString().contains("<villager_likes>")) {
+            message.replace("<villager_likes>", v.getLikes((Player) p).orElse(0).toString());
+        }
+        if (message.getString().contains("<villager_mood>")) {
+            message.replace("<villager_mood>", v.getMood().toString().toLowerCase());
+        }
+        if (message.getString().contains("<villager_hapiness>")) {
+            message.replace("<villager_hapiness>", v.getHappiness().orElse(0).toString());
+        }
+        if (message.getString().contains("<villager_sex")) {
+            message.formatSex(v.getSex());
+        }
+        return message.getString();
     }
 
     public static void MessageParsedPlaceholders(CommandSender p, dev.arubik.mctl.holders.Message message,
@@ -271,25 +300,14 @@ public class messageUtils {
             String nice = MComesToLife.getMessages().getLang("message.gender.female.nice", "beautiful");
             String type = MComesToLife.getMessages().getLang("message.gender.female.type", "girl");
 
-            if (sex.valueOf(Optional.ofNullable(DataMethods.retrivePlayerData((Player) p).get("sex")).orElse("male")
-                    .toString()) == sex.male) {
+            if (Sex.valueOf(Optional.ofNullable(DataMethods.retrivePlayerData((Player) p).get("sex")).orElse("male")
+                    .toString()) == Sex.male) {
                 nice = MComesToLife.getMessages().getLang("message.gender.male.nice", "handsome");
                 type = MComesToLife.getMessages().getLang("message.gender.male.type", "boy");
             }
             message.replace("<player_nice>", nice);
             message.replace("<player_type>", type);
-            message.replace("<villager_nice>", MComesToLife.getMessages()
-                    .getLang("message.gender." + v.getSex().toString().toLowerCase() + ".nice", "beautiful"));
-            message.replace("<villager_name>", v.getRealName());
-            message.replace("<villager_prefix>", MComesToLife.getNames().getLang().getString("names.prefix", ""));
-            message.replace("<villager_suffix>", MComesToLife.getNames().getLang().getString("names.suffix", ""));
-            message.replace("<villager_displayname>", ((String) v.getData().get("name")));
-            message.replace("<villager_sons>", DataMethods.getSonNames(v.villager));
-            message.replace("<villager_type>", MComesToLife.getMessages()
-                    .getLang("message.gender." + v.getSex().toString().toLowerCase() + ".nice", "girl"));
-            if (message.getString().contains("<villager_likes>")) {
-                message.replace("<villager_likes>", v.getLikes((Player) p).orElse(0).toString());
-            }
+            message = new dev.arubik.mctl.holders.Message(replace(v, pl, message.getString()));
             HashMap<String, Object> data = DataMethods.retriveData(v.villager);
             if (data.get("father") != null && data.get("mother") != null) {
                 if (data.get("father").toString().equalsIgnoreCase(pl.getUniqueId().toString())) {
@@ -304,6 +322,11 @@ public class messageUtils {
                     message.replace("<villager_parent_me>",
                             MComesToLife.getMessages().getLang("message.gender.male.parent", "father"));
                 }
+            } else {
+                message.replace("<villager_parent_other>",
+                        MComesToLife.getMessages().getLang("message.any", "any"));
+                message.replace("<villager_parent_me>",
+                        MComesToLife.getMessages().getLang("message.any", "any"));
             }
             LivingEntity liv = (LivingEntity) ((Player) p);
             message.replace("<spouse_name>", DataMethods.getSpouse(liv).orElse(liv).getCustomName());
@@ -314,7 +337,7 @@ public class messageUtils {
         if (message.getString().contains("<villager_sex")) {
             message.formatSex(v.getSex());
         }
-        messageUtils.MiniMessage(message.getString(), p, 0);
+        MessageUtils.MiniMessage(message.getString(), p, 0);
     }
 
     public static String StringParsedPlaceholders(Player p, dev.arubik.mctl.holders.Message message,
@@ -339,26 +362,14 @@ public class messageUtils {
             String nice = MComesToLife.getMessages().getLang("message.gender.female.nice", "beautiful");
             String type = MComesToLife.getMessages().getLang("message.gender.female.type", "girl");
 
-            if (sex.valueOf(Optional.ofNullable(DataMethods.retrivePlayerData((Player) p).get("sex")).orElse("male")
-                    .toString()) == sex.male) {
+            if (Sex.valueOf(Optional.ofNullable(DataMethods.retrivePlayerData((Player) p).get("sex")).orElse("male")
+                    .toString()) == Sex.male) {
                 nice = MComesToLife.getMessages().getLang("message.gender.male.nice", "handsome");
                 type = MComesToLife.getMessages().getLang("message.gender.male.type", "boy");
             }
             message.replace("<player_nice>", nice);
             message.replace("<player_type>", type);
-            message.replace("<villager_nice>", MComesToLife.getMessages()
-                    .getLang("message.gender." + v.getSex().toString().toLowerCase() + ".nice", "beautiful"));
-            message.replace("<villager_name>", v.getRealName());
-            message.replace("<villager_prefix>", MComesToLife.getNames().getLang().getString("names.prefix", ""));
-            message.replace("<villager_suffix>", MComesToLife.getNames().getLang().getString("names.suffix", ""));
-            message.replace("<villager_displayname>", ((String) v.getData().get("name")));
-
-            message.replace("<villager_sons>", DataMethods.getSonNames(v.villager));
-            message.replace("<villager_type>", MComesToLife.getMessages()
-                    .getLang("message.gender." + v.getSex().toString().toLowerCase() + ".nice", "girl"));
-            if (message.getString().contains("<villager_likes>")) {
-                message.replace("<villager_likes>", v.getLikes(p).orElse(0).toString());
-            }
+            message = new dev.arubik.mctl.holders.Message(replace(v, pl, message.getString()));
 
             HashMap<String, Object> data = DataMethods.retriveData(v.villager);
             if (data.get("father") != null && data.get("mother") != null) {
@@ -374,6 +385,11 @@ public class messageUtils {
                     message.replace("<villager_parent_me>",
                             MComesToLife.getMessages().getLang("message.gender.male.parent", "father"));
                 }
+            } else {
+                message.replace("<villager_parent_other>",
+                        MComesToLife.getMessages().getLang("message.any", "any"));
+                message.replace("<villager_parent_me>",
+                        MComesToLife.getMessages().getLang("message.any", "any"));
             }
             LivingEntity liv = (LivingEntity) ((Player) p);
             message.replace("<spouse_name>", DataMethods.getSpouse(liv).orElse(liv).getCustomName());

@@ -5,12 +5,12 @@ import java.util.List;
 
 import lombok.Getter;
 
-public class langFile {
+public class LangFile {
     @Getter
     private FileConfiguration lang;
 
-    public langFile(String path) {
-        lang = fileUtils.getFileConfiguration(path);
+    public LangFile(String path) {
+        lang = FileUtils.getFileConfiguration(path);
     }
 
     public String getLang(String path) {

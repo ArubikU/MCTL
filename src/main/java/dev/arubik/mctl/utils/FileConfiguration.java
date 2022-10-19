@@ -22,7 +22,7 @@ public class FileConfiguration {
     }
 
     public void save() {
-        fileUtils.saveFile(config, relative);
+        FileUtils.saveFile(config, relative);
     }
 
     public <T> T set(String path, T value) {
@@ -35,7 +35,7 @@ public class FileConfiguration {
             return config.getBoolean(path);
         }
         config.set(path, value);
-        fileUtils.saveFile(config, relative);
+        FileUtils.saveFile(config, relative);
         return value;
     }
 
@@ -54,7 +54,7 @@ public class FileConfiguration {
             return config.getString(path);
         }
         config.set(path, value);
-        fileUtils.saveFile(config, relative);
+        FileUtils.saveFile(config, relative);
         return value;
     }
 
@@ -73,7 +73,7 @@ public class FileConfiguration {
             return config.getStringList(path);
         }
         config.set(path, value);
-        fileUtils.saveFile(config, relative);
+        FileUtils.saveFile(config, relative);
         return value;
     }
 
@@ -92,7 +92,7 @@ public class FileConfiguration {
             return config.getInt(path);
         }
         config.set(path, value);
-        fileUtils.saveFile(config, relative);
+        FileUtils.saveFile(config, relative);
         return value;
     }
 
@@ -111,7 +111,7 @@ public class FileConfiguration {
             return config.getDouble(path);
         }
         config.set(path, value);
-        fileUtils.saveFile(config, relative);
+        FileUtils.saveFile(config, relative);
         return value;
     }
 
@@ -130,7 +130,7 @@ public class FileConfiguration {
             return config.getInt(path);
         }
         config.set(path, value);
-        fileUtils.saveFile(config, relative);
+        FileUtils.saveFile(config, relative);
         return value;
     }
 
@@ -149,7 +149,7 @@ public class FileConfiguration {
             return config.getConfigurationSection(path);
         }
         config.set(path, value);
-        fileUtils.saveFile(config, relative);
+        FileUtils.saveFile(config, relative);
         return value;
     }
 
@@ -167,9 +167,11 @@ public class FileConfiguration {
         config.loadFromString(contents);
     }
 
-    public Boolean Contains(@NotNull String... path){
-        for(String subPath : path){
-            if(config.contains(subPath)){return true;}
+    public Boolean Contains(@NotNull String... path) {
+        for (String subPath : path) {
+            if (config.contains(subPath)) {
+                return true;
+            }
         }
         return false;
     }

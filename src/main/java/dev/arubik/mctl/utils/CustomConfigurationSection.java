@@ -5,8 +5,14 @@ import java.util.List;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.persistence.PersistentDataType;
 
+import dev.arubik.mctl.MComesToLife;
+
 public class CustomConfigurationSection {
     private ConfigurationSection sec;
+
+    public ConfigurationSection getSection() {
+        return sec;
+    }
 
     public CustomConfigurationSection(ConfigurationSection section) {
         this.sec = section;

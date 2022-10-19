@@ -37,23 +37,28 @@ import net.skinsrestorer.api.SkinVariant;
 import net.skinsrestorer.api.exception.SkinRequestException;
 import dev.arubik.mctl.MComesToLife;
 import dev.arubik.mctl.enums.Works;
-import dev.arubik.mctl.enums.mood;
-import dev.arubik.mctl.enums.sex;
-import dev.arubik.mctl.enums.trait;
+import dev.arubik.mctl.enums.Mood;
+import dev.arubik.mctl.enums.Sex;
+import dev.arubik.mctl.enums.Trait;
 import dev.arubik.mctl.holders.EntityAi;
 import dev.arubik.mctl.holders.Message;
 import dev.arubik.mctl.holders.VillagerInventoryHolder;
-import dev.arubik.mctl.holders.timers;
+import dev.arubik.mctl.holders.Timers;
 import dev.arubik.mctl.holders.Methods.DataMethods;
 import dev.arubik.mctl.utils.FileConfiguration;
-import dev.arubik.mctl.utils.fileUtils;
-import dev.arubik.mctl.utils.messageUtils;
+import dev.arubik.mctl.utils.NumberUtils;
+import dev.arubik.mctl.utils.FileUtils;
+import dev.arubik.mctl.utils.MessageUtils;
 import dev.arubik.mctl.utils.Json.LineConfig;
 
 public class CustomVillager extends BetterEntity {
 
     public CustomVillager(LivingEntity v) {
         super(v);
+    }
+
+    public static CustomVillager getFromEntity(LivingEntity entity) {
+        return new CustomVillager(entity);
     }
 
     public Optional<Integer> getLikes(LivingEntity e) {
@@ -83,7 +88,7 @@ public class CustomVillager extends BetterEntity {
         save();
     }
 
-    public void setMood(mood m) {
+    public void setMood(Mood m) {
         data.put("mood", m.toString());
         save();
     }
@@ -97,8 +102,8 @@ public class CustomVillager extends BetterEntity {
         return (Boolean) Optional.ofNullable(data.get("zombified")).orElse(false);
     }
 
-    public mood getMood() {
-        return mood.valueOf((String) Optional.ofNullable(data.get("mood")).orElse("NEUTRAL"));
+    public Mood getMood() {
+        return Mood.valueOf((String) Optional.ofNullable(data.get("mood")).orElse("NEUTRAL"));
     }
 
     public void setWork(Works i) {
@@ -108,6 +113,10 @@ public class CustomVillager extends BetterEntity {
 
     public Works getWork() {
         return Works.valueOf((String) Optional.ofNullable(data.get("work")).orElse("NONE"));
+    }
+
+    public String getType() {
+        return (String) Optional.ofNullable(data.get("type")).orElse("NONE");
     }
 
     public void setLikes(Integer i, LivingEntity e) {
@@ -148,10 +157,6 @@ public class CustomVillager extends BetterEntity {
     @Override
     public PlayerDisguise generateDisguise() {
         if (this.data.containsKey("skin") && this.data.containsKey("sex") && this.data.containsKey("name")) {
-            SkinVariant vr = SkinVariant.SLIM;
-            if (this.getSex() == sex.male) {
-                vr = SkinVariant.CLASSIC;
-            }
             PlayerDisguise disguise = new PlayerDisguise((String) this.data.get("name"));
             if (data.containsKey("skin-type")) {
                 switch (data.get("skin-type").toString().toLowerCase()) {
@@ -159,19 +164,26 @@ public class CustomVillager extends BetterEntity {
                         disguise.setSkin(MComesToLife.getSkinHolder().getSkinFromPath(
                                 ((String) this.data.get("skin")).replace("file:", "").replace("url:", "")
                                         .replace("name:", ""),
-                                vr, disguise.getGameProfile(), this));
+                                null, disguise.getGameProfile(), this));
                         break;
                     }
                     case "url": {
-                        try {
-                            disguise.setSkin(MComesToLife.getSkinHolder().getSkinFromUrl(
-                                    ((String) this.data.get("skin")).replace("file:", "").replace("url:", "")
-                                            .replace("name:", ""),
-                                    vr, disguise.getGameProfile()));
-                        } catch (SkinRequestException e) {
-                            disguise.setSkin(((String) this.data.get("skin")).replace("file:", "").replace("url:", "")
-                                    .replace("name:", ""));
-                            e.printStackTrace();
+                        if (MComesToLife.getEnabledPlugins().isEnabled("SkinRestorer")) {
+                            SkinVariant vr = SkinVariant.SLIM;
+                            if (this.getSex() == Sex.male) {
+                                vr = SkinVariant.CLASSIC;
+                            }
+                            try {
+                                disguise.setSkin(MComesToLife.getSkinHolder().getSkinFromUrl(
+                                        ((String) this.data.get("skin")).replace("file:", "").replace("url:", "")
+                                                .replace("name:", ""),
+                                        vr, disguise.getGameProfile()));
+                            } catch (SkinRequestException e) {
+                                disguise.setSkin(
+                                        ((String) this.data.get("skin")).replace("file:", "").replace("url:", "")
+                                                .replace("name:", ""));
+                                e.printStackTrace();
+                            }
                         }
                         break;
                     }
@@ -202,28 +214,49 @@ public class CustomVillager extends BetterEntity {
             }
             VillagerInventoryHolder inv = VillagerInventoryHolder.getInstance(this);
             if (DataMethods.isCustom(this.getLivingEntity())) {
-                inv.loadInventoryNoReload();
+                inv.loadInventory();
             }
             disguise = inv.loadDisguiseDisplay(disguise);
-            messageUtils.Bukkitlog("Loaded disguise for:" + villager.getCustomName() + "{" + disguise.getSkin() + ","
-                    + disguise.getWatcher().getItemInMainHand() + "}");
+            if (MComesToLife.isDEBUG()) {
+                Bukkit.getConsoleSender()
+                        .sendMessage("Loaded disguise for:" + villager.getCustomName() + "{" + disguise.getSkin() + ","
+                                + disguise.getWatcher().getItemInMainHand() + "}");
+            }
+            disguise.setName(((String) data.get("name")));
+            disguise.setCustomDisguiseName(true);
+            disguise.setDynamicName(true);
+            disguise.setDisguiseName(((String) data.get("name")));
             return disguise;
         } else {
-            messageUtils.Bukkitlog("Failed to load disguise for:" + villager.getCustomName());
+            if (MComesToLife.isDEBUG()) {
+                MessageUtils.BukkitLog("Failed to load disguise for:" + villager.getCustomName());
+            }
             if (data.containsKey("sex"))
-                messageUtils.Bukkitlog("sex: ✅");
+                if (MComesToLife.isDEBUG()) {
+                    MessageUtils.BukkitLog("sex: ✅");
+                }
             if (!data.containsKey("sex"))
-                messageUtils.Bukkitlog("sex: <red>X");
+                if (MComesToLife.isDEBUG()) {
+                    MessageUtils.BukkitLog("sex: <red>X");
+                }
 
             if (data.containsKey("name"))
-                messageUtils.Bukkitlog("name: ✅");
+                if (MComesToLife.isDEBUG()) {
+                    MessageUtils.BukkitLog("name: ✅");
+                }
             if (!data.containsKey("name"))
-                messageUtils.Bukkitlog("name: <red>X");
+                if (MComesToLife.isDEBUG()) {
+                    MessageUtils.BukkitLog("name: <red>X");
+                }
 
             if (data.containsKey("skin"))
-                messageUtils.Bukkitlog("skin: ✅");
+                if (MComesToLife.isDEBUG()) {
+                    MessageUtils.BukkitLog("skin: ✅");
+                }
             if (!data.containsKey("skin"))
-                messageUtils.Bukkitlog("skin: <red>X");
+                if (MComesToLife.isDEBUG()) {
+                    MessageUtils.BukkitLog("skin: <red>X");
+                }
             return new PlayerDisguise((String) this.data.get("name"));
         }
     }
@@ -279,9 +312,9 @@ public class CustomVillager extends BetterEntity {
     }
 
     public static String genName() {
-        sex a = sex.male;
+        Sex a = Sex.male;
         if (DataMethods.rand(0, 1) == 1) {
-            a = sex.female;
+            a = Sex.female;
         }
 
         ArrayList<String> nList = (ArrayList<String>) MComesToLife.getNames().getLang()
@@ -292,34 +325,20 @@ public class CustomVillager extends BetterEntity {
     }
 
     public void loadVillager(Boolean reApplySkin) {
-        if (MComesToLife.getEnabledPlugins().isEnabled("MythicMobs")) {
-            if (MythicBukkit.inst().getMobManager().isActiveMob(villager.getUniqueId())) {
-                return;
-            }
-        }
-        if (MComesToLife.getEnabledPlugins().isEnabled("Citizens")) {
-            if (CitizensAPI.getNPCRegistry().isNPC(villager)) {
-                return;
-            }
-        }
-
-        if (MComesToLife.getEnabledPlugins().isEnabled("ShopKeepers")) {
-            if (ShopkeepersAPI.getShopkeeperRegistry().isShopkeeper(villager)) {
-                return;
-            }
-        }
+        if (!DataMethods.avaliable(villager))
+            return;
 
         if (MComesToLife.getPlugin().getConfig().getConfigurationSection("config.attributes") != null) {
             for (Attribute temp : Attribute.values()) {
-                if (MComesToLife.config.getConfig()
+                if (MComesToLife.getMainConfig().getConfig()
                         .getString("config.attributes." + temp.toString().toLowerCase()) != null) {
-                    this.setAttribute(temp, MComesToLife.config.getConfig()
+                    this.setAttribute(temp, MComesToLife.getMainConfig().getConfig()
                             .getDouble("config.attributes." + temp.toString().toLowerCase()));
                 }
             }
         }
 
-        if (fileUtils.getFileConfiguration("data.yml").getConfig().contains(path())) {
+        if (FileUtils.getFileConfiguration("data.yml").getConfig().contains(path())) {
             load();
             if (reApplySkin) {
                 if (this.villager instanceof Villager) {
@@ -330,12 +349,10 @@ public class CustomVillager extends BetterEntity {
                     Disguise();
                 }
             }
-            villager.setCustomName(getRealName());
         } else {
             setupVillager();
-            this.villager.setPersistent(true);
+            save();
             preDisguise();
-            villager.setCustomName(getRealName());
             if (reApplySkin) {
                 if (this.villager instanceof Villager) {
                     if (((Villager) this.villager).isAdult()) {
@@ -346,23 +363,36 @@ public class CustomVillager extends BetterEntity {
                 }
             }
             save();
+            VillagerInventoryHolder vi = VillagerInventoryHolder.getInstance(this);
+            vi.loadInventoryNoReload();
+            if (NumberUtils.probability(MComesToLife.getMainConfig().getInt("config.equip-percent", 0))) {
+                if (this.getLivingEntity() instanceof Villager) {
+                    vi.giveItem(EntityAi.getRandomItem(((Villager) vi.getLivingEntity()).getProfession()));
+                } else {
+                    vi.giveItem(EntityAi.getRandomItem(vi.getLivingEntity().getType()));
+                }
+            }
         }
 
+        this.villager.setPersistent(true);
+        villager.setCustomName(((String) data.get("name")));
         if (this.getLivingEntity().getChunk().isLoaded()) {
             EntityAi.updateVillagerDefend(this.getMob());
         }
     }
 
-    public sex getSex() {
+    public Sex getSex() {
+        if (!data.containsKey("sex"))
+            return Sex.male;
         if (data.get("sex") != "any") {
             if (data.get("sex").toString().equalsIgnoreCase("male")) {
-                return sex.male;
+                return Sex.male;
             }
             if (data.get("sex").toString().equalsIgnoreCase("female")) {
-                return sex.female;
+                return Sex.female;
             }
         }
-        return sex.male;
+        return Sex.male;
     }
 
     public void divorce(LivingEntity a) {
@@ -375,26 +405,26 @@ public class CustomVillager extends BetterEntity {
                                 UUID.fromString((String) DataMethods.getRelationMap(a).get("spouse"))))) {
                     Player spouse = (Player) MComesToLife.getPlugin().getServer().getOfflinePlayer(
                             UUID.fromString((String) DataMethods.getRelationMap(a).get("spouse")));
-                    messageUtils.MessageParsedPlaceholders((CommandSender) spouse, "cmd.divorce.reciver",
+                    MessageUtils.MessageParsedPlaceholders((CommandSender) spouse, "cmd.divorce.reciver",
                             "<prefix><gray><spouse_name> se a divorciado de ti</gray>");
-                    messageUtils.MessageParsedPlaceholders((CommandSender) a, "cmd.divorce.sender",
+                    MessageUtils.MessageParsedPlaceholders((CommandSender) a, "cmd.divorce.sender",
                             "<prefix><gray>Te has divorciado de <spouse_name></gray>");
                     DataMethods.setData("spouse", null, a);
                     DataMethods.setData("spouse", null, (LivingEntity) spouse);
-                    if (MComesToLife.config.getBoolean("config.divorce.broadcast.all", false)) {
+                    if (MComesToLife.getMainConfig().getBoolean("config.divorce.broadcast.all", false)) {
                         Message msg = new Message(MComesToLife.getMessages().getLang("cmd.divorce.broadcast",
                                 "<prefix><gray><spouse_one> se a divorciado de <spouse_two></gray>"));
                         msg.replace("<spouse_one>", a.getName());
                         msg.replace("<spouse_two>", spouse.getName());
-                        if (MComesToLife.config.getBoolean("config.divorce.broadcast.ignore_spouses", false)) {
+                        if (MComesToLife.getMainConfig().getBoolean("config.divorce.broadcast.ignore_spouses", false)) {
                             for (Player p : Bukkit.getServer().getOnlinePlayers()) {
                                 if (p.getUniqueId() != a.getUniqueId() && p.getUniqueId() != spouse.getUniqueId()) {
-                                    messageUtils.MessageParsedPlaceholders(p, msg);
+                                    MessageUtils.MessageParsedPlaceholders(p, msg);
                                 }
                             }
                         } else {
                             for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-                                messageUtils.MessageParsedPlaceholders(p, msg);
+                                MessageUtils.MessageParsedPlaceholders(p, msg);
                             }
                         }
                     }
@@ -403,7 +433,7 @@ public class CustomVillager extends BetterEntity {
 
                 if (Bukkit.getServer()
                         .getEntity(UUID.fromString((String) DataMethods.getRelationMap(a).get("spouse"))) != null) {
-                    messageUtils.MessageParsedPlaceholders((CommandSender) a, "cmd.divorce.sender",
+                    MessageUtils.MessageParsedPlaceholders((CommandSender) a, "cmd.divorce.sender",
                             "<prefix><gray>Te has divorciado de <spouse_name></gray>");
                     DataMethods.setData("spouse", null, a);
                     DataMethods.setData("spouse", null, (LivingEntity) Bukkit.getServer()
@@ -415,17 +445,17 @@ public class CustomVillager extends BetterEntity {
                             Bukkit.getServer()
                                     .getEntity(UUID.fromString((String) DataMethods.getRelationMap(a).get("spouse")))
                                     .getName());
-                    if (MComesToLife.config.getBoolean("config.divorce.broadcast.ignore_spouses", false)) {
+                    if (MComesToLife.getMainConfig().getBoolean("config.divorce.broadcast.ignore_spouses", false)) {
                         for (Player p : Bukkit.getServer().getOnlinePlayers()) {
                             if (p.getUniqueId() != a.getUniqueId() && p.getUniqueId() != Bukkit.getServer()
                                     .getEntity(UUID.fromString((String) DataMethods.getRelationMap(a).get("spouse")))
                                     .getUniqueId()) {
-                                messageUtils.MessageParsedPlaceholders(p, msg);
+                                MessageUtils.MessageParsedPlaceholders(p, msg);
                             }
                         }
                     } else {
                         for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-                            messageUtils.MessageParsedPlaceholders(p, msg);
+                            MessageUtils.MessageParsedPlaceholders(p, msg);
                         }
                     }
                 }
@@ -460,48 +490,46 @@ public class CustomVillager extends BetterEntity {
     };
 
     public void setupVillager() {
-        if (fileUtils.getBoolean("config.yml", "config.autoChangeVillagers")) {
-            try {
-                String sex = "female";
-                if ((new Random()).nextInt(2) + 1 == 2)
-                    sex = "male";
-                String type = "none";
-                if (villager instanceof Villager) {
-                    Villager vil = (Villager) villager;
-                    if (vil.getProfession().equals(Villager.Profession.NONE)) {
-                        Villager.Profession[] split = Villager.Profession.values();
-                        ArrayList<Villager.Profession> list = new ArrayList<>();
-                        for (int i = 0; i < split.length; i++) {
-                            if (!split[i].equals(Villager.Profession.NONE))
-                                list.add(split[i]);
-                        }
-                        Profession p = list.get(DataMethods.rand(1, list.size()) - 1);
-                        vil.setProfession(p);
-                        ((Villager) villager).setProfession(p);
-                        ((Villager) this.villager).setVillagerLevel(2);
-                        ((Villager) this.villager).setVillagerExperience(10);
-                        ((Villager) villager).setProfession(p);
+        try {
+            String sex = "female";
+            if ((new Random()).nextInt(2) + 1 == 2)
+                sex = "male";
+            String type = "none";
+            if (villager instanceof Villager) {
+                Villager vil = (Villager) villager;
+                if (vil.getProfession().equals(Villager.Profession.NONE)) {
+                    Villager.Profession[] split = Villager.Profession.values();
+                    ArrayList<Villager.Profession> list = new ArrayList<>();
+                    for (int i = 0; i < split.length; i++) {
+                        if (!split[i].equals(Villager.Profession.NONE))
+                            list.add(split[i]);
                     }
-                    type = vil.getProfession().toString().toLowerCase();
-                } else {
-                    type = villager.getType().toString().toLowerCase();
+                    Profession p = list.get(DataMethods.rand(1, list.size()) - 1);
+                    vil.setProfession(p);
+                    ((Villager) villager).setProfession(p);
+                    ((Villager) this.villager).setVillagerLevel(2);
+                    ((Villager) this.villager).setVillagerExperience(10);
+                    ((Villager) villager).setProfession(p);
                 }
-                trait t = trait.values()[DataMethods.rand(1, trait.values().length - 1)];
-                mood m = mood.values()[DataMethods.rand(1, mood.values().length - 1)];
-                String skin = getSkin(sex, type);
-                String name = getName(sex);
-                setData("mood", m.toString());
-                setData("sex", sex);
-                setData("trait", t.toString());
-                setData("skin", skin);
-                setData("name", name);
-                setData("type", type);
-                setData("tittle", MComesToLife.getProffesions().getLang("prefix", "")
-                        + MComesToLife.getProffesions().getLang(type, type.toLowerCase().replace("_", " ")));
-
-            } catch (Exception e) {
-                e.printStackTrace();
+                type = vil.getProfession().toString().toLowerCase();
+            } else {
+                type = villager.getType().toString().toLowerCase();
             }
+            Trait t = Trait.values()[DataMethods.rand(1, Trait.values().length - 1)];
+            Mood m = Mood.values()[DataMethods.rand(1, Mood.values().length - 1)];
+            String skin = getSkin(sex, type);
+            String name = getName(sex);
+            setData("mood", m.toString());
+            setData("sex", sex);
+            setData("trait", t.toString());
+            setData("skin", skin);
+            setData("name", name);
+            setData("type", type);
+            setData("tittle", MComesToLife.getProffesions().getLang("prefix", "")
+                    + MComesToLife.getProffesions().getLang(type, type.toLowerCase().replace("_", " ")));
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -517,7 +545,7 @@ public class CustomVillager extends BetterEntity {
             }
             opt.ifPresent(player -> {
                 Message death;
-                if (DataMethods.getSex(player) == sex.male) {
+                if (DataMethods.getSex(player) == Sex.male) {
                     death = new Message(MComesToLife.messages.getLang("cmd.villager.death-female",
                             "<prefix><gray>Tu esposa <spouse_name> a muerto"));
                 } else {

@@ -3,9 +3,13 @@ package dev.arubik.mctl.utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -15,6 +19,7 @@ import org.bukkit.util.io.BukkitObjectOutputStream;
 import org.jetbrains.annotations.NotNull;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
+import io.lumine.mythic.bukkit.compatibility.MMOItemsSupport;
 import io.lumine.mythic.lib.adventure.text.Component;
 import io.lumine.mythic.lib.adventure.text.TextComponent;
 import io.lumine.mythic.lib.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -23,8 +28,17 @@ import io.lumine.mythic.lib.api.item.NBTItem;
 import io.lumine.mythic.lib.api.util.LegacyComponent;
 import io.th0rgal.oraxen.items.OraxenItems;
 import me.clip.placeholderapi.PlaceholderAPI;
+import net.Indyuce.mmoitems.ItemStats;
+import net.Indyuce.mmoitems.MMOItems;
+import net.Indyuce.mmoitems.api.MMOItemsAPI;
+import net.Indyuce.mmoitems.api.item.mmoitem.LiveMMOItem;
+import net.Indyuce.mmoitems.api.item.mmoitem.MMOItem;
+import net.Indyuce.mmoitems.api.item.mmoitem.VolatileMMOItem;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
 import dev.arubik.mctl.MComesToLife;
 import dev.arubik.mctl.holders.Message;
+import dev.arubik.mctl.holders.Methods.DataMethods;
 import dev.lone.itemsadder.api.CustomStack;
 
 import java.io.ByteArrayInputStream;
@@ -38,6 +52,8 @@ public class ItemSerializer {
 
         public static ItemStack putData(ItemStack item, String tag, Object object) {
                 ItemStack stack = item;
+                if (!item.hasItemMeta())
+                        return item;
                 if (object.getClass().getName().equals("java.lang.String")) {
                         stack.getItemMeta().getPersistentDataContainer().set(
                                         new NamespacedKey(MComesToLife.getPlugin(), tag), PersistentDataType.STRING,
@@ -68,8 +84,8 @@ public class ItemSerializer {
                                         (Byte) object);
                 } else if (object.getClass().getName().equals("java.lang.Boolean")) {
                         stack.getItemMeta().getPersistentDataContainer().set(
-                                        new NamespacedKey(MComesToLife.getPlugin(), tag), PersistentDataType.BYTE,
-                                        (Byte) object);
+                                        new NamespacedKey(MComesToLife.getPlugin(), tag), PersistentDataType.STRING,
+                                        object.toString());
                 }
 
                 return stack;
@@ -103,8 +119,9 @@ public class ItemSerializer {
                         return (T) item.getItemMeta().getPersistentDataContainer()
                                         .get(new NamespacedKey(MComesToLife.getPlugin(), tag), PersistentDataType.BYTE);
                 } else if (Type.getName().equals("java.lang.Boolean")) {
-                        return (T) item.getItemMeta().getPersistentDataContainer()
-                                        .get(new NamespacedKey(MComesToLife.getPlugin(), tag), PersistentDataType.BYTE);
+                        return (T) Boolean.valueOf(item.getItemMeta().getPersistentDataContainer()
+                                        .get(new NamespacedKey(MComesToLife.getPlugin(), tag),
+                                                        PersistentDataType.STRING));
                 }
                 return null;
         }
@@ -142,18 +159,42 @@ public class ItemSerializer {
 
         @Nullable
         public static ItemStack getFromConfigurationSection(ConfigurationSection section) {
-                CustomConfigurationSection configB = new CustomConfigurationSection(section);
-                try {
-                        Material.valueOf(configB.getString(new String[] { "Material", "MATERIAL", "MATERIAL" },
-                                        "DIAMOND"));
-                } catch (IllegalArgumentException e) {
-                        return null;
-                }
 
-                Material a = Material
-                                .valueOf(configB.getString(new String[] { "Material", "MATERIAL", "MATERIAL" },
-                                                "DIAMOND"));
-                ItemStack b = new ItemStack(a);
+                CustomConfigurationSection configB = new CustomConfigurationSection(section);
+                Material a = Material.DIAMOND;
+                ItemStack b = null;
+                String mat = configB.getString(new String[] { "Material", "MATERIAL", "MATERIAL" },
+                                "DIAMOND");
+
+                if (Material.getMaterial(mat) == null) {
+                        if (MComesToLife.getEnabledPlugins().isEnabled("ItemsAdder")
+                                        || MComesToLife.getEnabledPlugins().isEnabled("ItemsAdders")) {
+                                if (CustomStack.getInstance(mat) != null) {
+                                        b = CustomStack.getInstance(mat).getItemStack();
+                                } else {
+                                        a = Material.getMaterial(configB.getString(
+                                                        new String[] { "Material", "MATERIAL", "MATERIAL" },
+                                                        "DIAMOND"));
+                                        b = new ItemStack(a);
+                                }
+                        }
+                        if (MComesToLife.getEnabledPlugins().isEnabled("Oraxen")
+                                        || MComesToLife.getEnabledPlugins().isEnabled("OraxenPlugin")) {
+                                if (OraxenItems.exists(mat)) {
+                                        b = OraxenItems.getItemById(mat).build();
+                                } else {
+                                        a = Material.getMaterial(configB.getString(
+                                                        new String[] { "Material", "MATERIAL", "MATERIAL" },
+                                                        "DIAMOND"));
+                                        b = new ItemStack(a);
+                                }
+                        }
+
+                } else {
+                        a = Material.getMaterial(configB.getString(new String[] { "Material", "MATERIAL", "MATERIAL" },
+                                        "DIAMOND"));
+                        b = new ItemStack(a);
+                }
 
                 // add enchants from config section "enchants"
                 if (section.getConfigurationSection("enchants") != null) {
@@ -193,8 +234,8 @@ public class ItemSerializer {
                         for (String key : section.getConfigurationSection("persistent-data").getKeys(false)) {
                                 Plugin pluginToKey = Bukkit.getPluginManager().getPlugin(configB.getString(
                                                 new String[] { "persistent-data." + key + ".plugin",
-                                                                "persistent-data." + key + "plug" },
-                                                MComesToLife.getPlugin().getName())) == null ? MComesToLife.plugin
+                                                                "persistent-data." + key + ".plug" },
+                                                MComesToLife.getPlugin().getName())) == null ? MComesToLife.getPlugin()
                                                                 : (Plugin) Bukkit.getPluginManager()
                                                                                 .getPlugin(configB.getString(
                                                                                                 new String[] { "plugin",
@@ -272,32 +313,50 @@ public class ItemSerializer {
                 return z.toItem();
         }
 
+        public static ItemStack generateItem(ItemStack stack) {
+                ItemStack clone = stack.clone();
+                NBTItem z = NBTItem.get(clone);
+                if (clone.getItemMeta().hasDisplayName()) {
+                        z.setDisplayNameComponent(LegacyComponent.parse(clone.getItemMeta().getDisplayName()));
+                }
+                if (clone.getItemMeta().hasLore()) {
+                        List<Component> lore = new ArrayList<>();
+                        clone.getItemMeta().getLore().forEach(line -> {
+                                lore.add(LegacyComponent.parse(line));
+                        });
+                        z.setLoreComponents(lore);
+                }
+                return z.toItem();
+        }
+
         public static ItemStack generateItem(ItemStack stack, Player p) {
+                if (!stack.hasItemMeta())
+                        return stack;
                 ItemStack clone = stack.clone();
                 NBTItem z = NBTItem.get(clone);
                 if (clone.getItemMeta().hasDisplayName()) {
 
-                        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+                        if (MComesToLife.getEnabledPlugins().isEnabled("PlaceholderAPI")) {
                                 z.setDisplayNameComponent(LegacyComponent.parse(PlaceholderAPI.setPlaceholders(p,
-                                                messageUtils.StringParsedPlaceholders(p,
+                                                MessageUtils.StringParsedPlaceholders(p,
                                                                 new Message(clone.getItemMeta()
                                                                                 .getDisplayName()),
-                                                                MComesToLife.getlastClickedEntity(
+                                                                DataMethods.getlastClickedEntity(
                                                                                 p)))));
                         } else {
-                                z.setDisplayNameComponent(LegacyComponent.parse(messageUtils.StringParsedPlaceholders(p,
+                                z.setDisplayNameComponent(LegacyComponent.parse(MessageUtils.StringParsedPlaceholders(p,
                                                 new Message(clone.getItemMeta().getDisplayName()),
-                                                MComesToLife.getlastClickedEntity(p))));
+                                                DataMethods.getlastClickedEntity(p))));
                         }
                 }
                 if (clone.getItemMeta().hasLore()) {
                         List<Component> lore = new ArrayList<>();
                         clone.getItemMeta().getLore().forEach(line -> {
-                                String a = messageUtils.StringParsedPlaceholders(p, new Message(line),
-                                                MComesToLife.getlastClickedEntity(p));
-                                if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-                                        a = PlaceholderAPI.setPlaceholders(p, messageUtils.StringParsedPlaceholders(p,
-                                                        new Message(line), MComesToLife.getlastClickedEntity(p)));
+                                String a = MessageUtils.StringParsedPlaceholders(p, new Message(line),
+                                                DataMethods.getlastClickedEntity(p));
+                                if (MComesToLife.getEnabledPlugins().isEnabled("PlaceholderAPI")) {
+                                        a = PlaceholderAPI.setPlaceholders(p, MessageUtils.StringParsedPlaceholders(p,
+                                                        new Message(line), DataMethods.getlastClickedEntity(p)));
                                 }
                                 lore.add(LegacyComponent.parse(a));
                         });
@@ -309,24 +368,31 @@ public class ItemSerializer {
 
         @NotNull
         public static String getType(ItemStack stack) {
+                String type = "NULL";
                 if (MComesToLife.getEnabledPlugins().isEnabled("ItemsAdder")
                                 || MComesToLife.getEnabledPlugins().isEnabled("ItemsAdders")) {
                         if (CustomStack.byItemStack(stack) != null) {
-                                return CustomStack.byItemStack(stack).getNamespacedID().toUpperCase();
+                                type = CustomStack.byItemStack(stack).getNamespacedID().toUpperCase();
                         }
                 }
                 if (MComesToLife.getEnabledPlugins().isEnabled("Oraxen")
                                 || MComesToLife.getEnabledPlugins().isEnabled("OraxenPlugin")) {
-                        if (OraxenItems.getIdByItem(stack) != null) {
-                                return OraxenItems.getIdByItem(stack).toUpperCase();
+                        if (OraxenItems.exists(stack)) {
+                                type = OraxenItems.getIdByItem(stack).toUpperCase();
                         }
                 }
-                if (stack.getItemMeta().hasCustomModelData()) {
-                        if (stack.getItemMeta().getCustomModelData() > 0) {
-                                return stack.getType().toString().toUpperCase() + "_"
-                                                + stack.getItemMeta().getCustomModelData();
+                if (stack.hasItemMeta()) {
+                        if (stack.getItemMeta().hasCustomModelData()) {
+                                if (stack.getItemMeta().getCustomModelData() > 0) {
+                                        type = stack.getType().toString().toUpperCase() + "_"
+                                                        + stack.getItemMeta().getCustomModelData();
+                                }
                         }
                 }
+                if (type != "NULL")
+                        return type;
+                if (stack == null)
+                        return "NULL";
 
                 return stack.getType().toString().toUpperCase();
         }
@@ -339,5 +405,191 @@ public class ItemSerializer {
                         }
                 }
                 return 0;
+        }
+
+        public static float getDamage(ItemStack stack) {
+                float a = 0f;
+                if (MComesToLife.getEnabledPlugins().isEnabled("MMOItems")) {
+                        if (NBTItem.get(stack).hasTag("MMOITEMS_ITEM_ID")) {
+                                VolatileMMOItem mmoitem = new VolatileMMOItem(NBTItem.get(stack));
+                                if (NumberUtils.isCreatable(mmoitem.getData(ItemStats.ATTACK_DAMAGE).toString())) {
+                                        a = Float.parseFloat(mmoitem.getData(ItemStats.ATTACK_DAMAGE).toString());
+                                }
+                        }
+                }
+                if (NBTItem.get(stack).hasTag("MMOITEMS_ATTACK_DAMAGE")) {
+                        a = (float) NBTItem.get(stack).getInteger("MMOITEMS_ATTACK_DAMAGE");
+                        return a;
+                }
+                if (stack.hasItemMeta()) {
+                        for (AttributeModifier b : stack.getItemMeta()
+                                        .getAttributeModifiers(Attribute.GENERIC_ATTACK_DAMAGE)) {
+                                a += (float) b.getAmount();
+                        }
+                } else {
+                        for (Attribute b : stack.getType().getDefaultAttributeModifiers(EquipmentSlot.HAND).asMap()
+                                        .keySet()) {
+                                if (b.equals(Attribute.GENERIC_ATTACK_DAMAGE)) {
+                                        a += (float) stack.getType().getDefaultAttributeModifiers(EquipmentSlot.HAND)
+                                                        .asMap().get(b).iterator().next().getAmount();
+                                }
+                        }
+                }
+
+                // apply sharpness formula
+                if (getEnchantmentLevel(stack, SerializedEnchantment.SHARPNESS.getEnchantmentName()) > 0) {
+                        a += (float) (getEnchantmentLevel(stack, SerializedEnchantment.SHARPNESS.getEnchantmentName())
+                                        * 1.25);
+                }
+
+                return a;
+        }
+
+        public static float getDamage(ItemStack stack, net.minecraft.world.entity.LivingEntity target) {
+                float a = getDamage(stack);
+
+                if (getEnchantmentLevel(stack, SerializedEnchantment.SMITE.getEnchantmentName()) > 0
+                                && target.getType().equals(EntityType.ZOMBIE)) {
+                        a += (float) (getEnchantmentLevel(stack, SerializedEnchantment.SMITE.getEnchantmentName())
+                                        * 1.25);
+                }
+                if (getEnchantmentLevel(stack, SerializedEnchantment.SMITE.getEnchantmentName()) > 0
+                                && target.getType().equals(EntityType.SKELETON)) {
+                        a += (float) (getEnchantmentLevel(stack, SerializedEnchantment.SMITE.getEnchantmentName())
+                                        * 1.25);
+                }
+                if (getEnchantmentLevel(stack, SerializedEnchantment.SMITE.getEnchantmentName()) > 0
+                                && target.getType().equals(EntityType.WITHER_SKELETON)) {
+                        a += (float) (getEnchantmentLevel(stack, SerializedEnchantment.SMITE.getEnchantmentName())
+                                        * 1.25);
+                }
+                if (getEnchantmentLevel(stack, SerializedEnchantment.SMITE.getEnchantmentName()) > 0
+                                && target.getType().equals(EntityType.ZOMBIE_VILLAGER)) {
+                        a += (float) (getEnchantmentLevel(stack, SerializedEnchantment.SMITE.getEnchantmentName())
+                                        * 1.25);
+                }
+                if (getEnchantmentLevel(stack, SerializedEnchantment.SMITE.getEnchantmentName()) > 0
+                                && target.getType().equals(EntityType.HUSK)) {
+                        a += (float) (getEnchantmentLevel(stack, SerializedEnchantment.SMITE.getEnchantmentName())
+                                        * 1.25);
+                }
+                if (getEnchantmentLevel(stack, SerializedEnchantment.SMITE.getEnchantmentName()) > 0
+                                && target.getType().equals(EntityType.DROWNED)) {
+                        a += (float) (getEnchantmentLevel(stack, SerializedEnchantment.SMITE.getEnchantmentName())
+                                        * 1.25);
+                }
+                if (getEnchantmentLevel(stack, SerializedEnchantment.SMITE.getEnchantmentName()) > 0
+                                && target.getType().equals(EntityType.ZOMBIFIED_PIGLIN)) {
+                        a += (float) (getEnchantmentLevel(stack, SerializedEnchantment.SMITE.getEnchantmentName())
+                                        * 1.25);
+                }
+                if (getEnchantmentLevel(stack, SerializedEnchantment.SMITE.getEnchantmentName()) > 0
+                                && target.getType().equals(EntityType.PHANTOM)) {
+                        a += (float) (getEnchantmentLevel(stack, SerializedEnchantment.SMITE.getEnchantmentName())
+                                        * 1.25);
+                }
+                if (getEnchantmentLevel(stack, SerializedEnchantment.BANE_OF_ARTHROPODS.getEnchantmentName()) > 0
+                                && target.getType().equals(EntityType.SPIDER)) {
+                        a += (float) (getEnchantmentLevel(stack,
+                                        SerializedEnchantment.BANE_OF_ARTHROPODS.getEnchantmentName()) * 1.25);
+                }
+                if (getEnchantmentLevel(stack, SerializedEnchantment.BANE_OF_ARTHROPODS.getEnchantmentName()) > 0
+                                && target.getType().equals(EntityType.CAVE_SPIDER)) {
+                        a += (float) (getEnchantmentLevel(stack,
+                                        SerializedEnchantment.BANE_OF_ARTHROPODS.getEnchantmentName()) * 1.25);
+                }
+                if (getEnchantmentLevel(stack, SerializedEnchantment.BANE_OF_ARTHROPODS.getEnchantmentName()) > 0
+                                && target.getType().equals(EntityType.SILVERFISH)) {
+                        a += (float) (getEnchantmentLevel(stack,
+                                        SerializedEnchantment.BANE_OF_ARTHROPODS.getEnchantmentName()) * 1.25);
+                }
+
+                return a;
+        }
+
+        public enum SerializedEnchantment {
+                PROTECTION(Enchantment.PROTECTION_ENVIRONMENTAL),
+                FIRE_PROTECTION(Enchantment.PROTECTION_FIRE),
+                FEATHER_FALLING(Enchantment.PROTECTION_FALL),
+                BLAST_PROTECTION(Enchantment.PROTECTION_EXPLOSIONS),
+                PROJECTILE_PROTECTION(Enchantment.PROTECTION_PROJECTILE),
+                RESPIRATION(Enchantment.OXYGEN),
+                AQUA_AFFINITY(Enchantment.WATER_WORKER),
+                THORNS(Enchantment.THORNS),
+                DEPTH_STRIDER(Enchantment.DEPTH_STRIDER),
+                FROST_WALKER(Enchantment.FROST_WALKER),
+                BINDING_CURSE(Enchantment.BINDING_CURSE),
+                SOUL_SPEED(Enchantment.SOUL_SPEED),
+                SHARPNESS(Enchantment.DAMAGE_ALL),
+                SMITE(Enchantment.DAMAGE_UNDEAD),
+                BANE_OF_ARTHROPODS(Enchantment.DAMAGE_ARTHROPODS),
+                KNOCKBACK(Enchantment.KNOCKBACK),
+                FIRE_ASPECT(Enchantment.FIRE_ASPECT),
+                LOOTING(Enchantment.LOOT_BONUS_MOBS),
+                SWEEPING_EDGE(Enchantment.SWEEPING_EDGE),
+                EFFICIENCY(Enchantment.DIG_SPEED),
+                SILK_TOUCH(Enchantment.SILK_TOUCH),
+                UNBREAKING(Enchantment.DURABILITY),
+                FORTUNE(Enchantment.LOOT_BONUS_BLOCKS),
+                POWER(Enchantment.ARROW_DAMAGE),
+                PUNCH(Enchantment.ARROW_KNOCKBACK),
+                FLAME(Enchantment.ARROW_FIRE),
+                INFINITY(Enchantment.ARROW_INFINITE),
+                LUCK_OF_THE_SEA(Enchantment.LUCK),
+                LURE(Enchantment.LURE),
+                LOYALTY(Enchantment.LOYALTY),
+                IMPALING(Enchantment.IMPALING),
+                RIPTIDE(Enchantment.RIPTIDE),
+                CHANNELING(Enchantment.CHANNELING),
+                MULTISHOT(Enchantment.MULTISHOT),
+                QUICK_CHARGE(Enchantment.QUICK_CHARGE),
+                PIERCING(Enchantment.PIERCING),
+                MENDING(Enchantment.MENDING),
+                VANISHING_CURSE(Enchantment.VANISHING_CURSE);
+
+                private Enchantment nmsEnchantment;
+
+                private SerializedEnchantment(Enchantment enchantment) {
+                        this.nmsEnchantment = enchantment;
+                }
+
+                public Enchantment getEnchantment() {
+                        return this.nmsEnchantment;
+                }
+
+                public String getEnchantmentName() {
+                        return this.nmsEnchantment.toString().toLowerCase();
+                }
+        }
+
+        public static Long getCooldown(ItemStack stack) {
+                Long returned = 20L;
+                if (stack.getType().toString().toLowerCase().contains("bow"))
+                        returned = 15L;
+                if (stack.getType().toString().toLowerCase().contains("bow") && getEnchantmentLevel(stack,
+                                SerializedEnchantment.QUICK_CHARGE.getEnchantmentName()) > 0) {
+                        returned -= (getEnchantmentLevel(stack,
+                                        SerializedEnchantment.QUICK_CHARGE.getEnchantmentName()));
+                }
+
+                return returned;
+        }
+
+        public static Long getCooldown(ItemStack stack, Entity mob) {
+                Long returned = 30L;
+                if (stack.getType().toString().toLowerCase().contains("bow"))
+                        returned = 15L;
+                if (stack.getType().toString().toLowerCase().contains("bow") && getEnchantmentLevel(stack,
+                                SerializedEnchantment.QUICK_CHARGE.getEnchantmentName()) > 0) {
+                        returned -= (getEnchantmentLevel(stack,
+                                        SerializedEnchantment.QUICK_CHARGE.getEnchantmentName()));
+                }
+                if (mob.isInWater() && getEnchantmentLevel(stack,
+                                SerializedEnchantment.AQUA_AFFINITY.getEnchantmentName()) > 0) {
+                        returned -= (getEnchantmentLevel(stack,
+                                        SerializedEnchantment.AQUA_AFFINITY.getEnchantmentName()));
+                }
+
+                return returned;
         }
 }

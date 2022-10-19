@@ -1,3 +1,6 @@
 {
-    "java.configuration.updateBuildConfiguration": "automatic"
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "yaml.schemas": {
+        "https://json.schemastore.org/bukkit-plugin.json": "file:///c%3A/Users/ejane/Documents/MCTL/src/main/resources/plugin.yml"
+    }
 }

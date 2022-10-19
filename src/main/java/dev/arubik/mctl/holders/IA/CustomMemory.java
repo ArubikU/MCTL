@@ -20,6 +20,7 @@ public final class CustomMemory<T> implements Memory<T> {
     public static final CustomMemory<Boolean> SHIELDING = new CustomMemory<>(Boolean.class, "shield_using");
     public static final CustomMemory<Boolean> NEXT_SHIELDING = new CustomMemory<>(Boolean.class, "next_shield_using");
     public static final CustomMemory<String> CROSSBOW = new CustomMemory<>(String.class, "cross_bow");
+    public static final CustomMemory<String> TARGET_UUID = new CustomMemory<>(String.class, "target_uuid");
 
 
     private final Class<T> bukkit;

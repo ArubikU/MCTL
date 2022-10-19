@@ -10,8 +10,8 @@ import java.util.stream.Stream;
 
 import dev.arubik.mctl.MComesToLife;
 import dev.arubik.mctl.entity.CustomVillager;
-import dev.arubik.mctl.enums.mood;
-import dev.arubik.mctl.enums.sex;
+import dev.arubik.mctl.enums.Mood;
+import dev.arubik.mctl.enums.Sex;
 import dev.arubik.mctl.utils.CustomConfigurationSection;
 import dev.arubik.mctl.utils.MultiThings.BiObject;
 import io.lumine.mythic.bukkit.utils.files.Folders;
@@ -40,7 +40,7 @@ public class SkinGenerator {
         String path = "";
         HashMap<String, String> DataMap = (HashMap<String, String>) MaleMap.clone();
         List<String> ColorMap = MaleSkinColors;
-        if (villager.getSex() == sex.female) {
+        if (villager.getSex() == Sex.female) {
             DataMap = (HashMap<String, String>) FemaleMap.clone();
             ColorMap = FemaleSkinColors;
         }
@@ -48,7 +48,7 @@ public class SkinGenerator {
         // generate a path
         Path skinPath = Path.of(MComesToLife.getPlugin().getDataFolder().getPath(), DataMap.get("skin").toString());
         Stream<Path> paths = java.nio.file.Files.list(skinPath);
-        int random = mood.rand(0, paths.toArray().length);
+        int random = Mood.rand(0, paths.toArray().length);
         // png file
         String skin = paths.toArray()[random].toString();
         File skinFile = new File(skin);

@@ -24,7 +24,7 @@ import dev.arubik.mctl.events.Listener;
 import dev.arubik.mctl.holders.Methods.DataMethods;
 import me.libraryaddict.disguise.DisguiseAPI;
 
-public class PacketListener extends Listener {
+public class PacketListener extends dev.arubik.mctl.events.event.PacketListener {
     static {
         type = "PROTOCOL";
     }
@@ -39,12 +39,12 @@ public class PacketListener extends Listener {
             PacketType.Play.Server.REL_ENTITY_MOVE_LOOK);
 
     @Override
-    public void unregister() {
+    public void unregisterPacket() {
         ProtocolLibrary.getProtocolManager().removePacketListeners(MComesToLife.getPlugin());
     }
 
     @Override
-    public void register() {
+    public void registerPacket() {
         ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(MComesToLife.getPlugin(),
                 ListenerPriority.HIGHEST,
                 PacketType.Play.Server.SPAWN_ENTITY,
@@ -79,14 +79,14 @@ public class PacketListener extends Listener {
                 if (!DataMethods.isCustom(entity))
                     return;
 
-                if (type.toString().toUpperCase().contains("SPAWN")) {
-                    // event.setCancelled(true);
-                    return;
-                }
+                // if (type.toString().toUpperCase().contains("SPAWN")) {
+                // // event.setCancelled(true);
+                // return;
+                // }
                 if (DisguiseAPI.getDisguise(player, entity) == null) {
                     CustomVillager vil = new CustomVillager((LivingEntity) entity);
-                    vil.loadVillager(false);
-                    vil.Disguise(player);
+                    vil.loadVillager(true);
+                    //vil.Disguise(player);
                 }
             }
         });

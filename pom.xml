@@ -157,14 +157,8 @@
         </dependency>
         <dependency>
             <groupId>me.gamercoder215</groupId>
-            <artifactId>mobchip-base</artifactId>
-            <version>1.5.1-20220916.221615-1</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>me.gamercoder215</groupId>
             <artifactId>mobchip-bukkit</artifactId>
-            <version>1.5.1-20220916.221615-1</version>
+            <version>1.6.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -242,6 +236,12 @@
             <version>1.0</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/libs/mythicmobs.jar</systemPath>
+        </dependency>
+       <dependency>
+            <groupId>net.Indyuce</groupId>
+            <artifactId>MMOItems-API</artifactId>
+            <version>6.8.1-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.libc</groupId>

@@ -169,6 +169,35 @@ public class LineConfig {
         }
     }
 
+    public Object get(String key) {
+        return get(key, null);
+    }
+
+    public Object get(String[] key) {
+        return get(key, null, new String[0]);
+    }
+
+    public Object get(String key, Object def) {
+        String s = this.config.get(key.toLowerCase());
+        if (s == null)
+            return def;
+        return s;
+    }
+
+    public Object get(String[] key, Object def, String... args) {
+        String s = null;
+        for (String k : key) {
+            s = this.config.get(k.toLowerCase());
+            if (s != null)
+                return s;
+        }
+        for (String a : args) {
+            if (a != null)
+                return a;
+        }
+        return def;
+    }
+
     public String getString(String key) {
         return getString(key, null);
     }

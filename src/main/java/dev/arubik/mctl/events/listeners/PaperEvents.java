@@ -13,9 +13,9 @@ public class PaperEvents extends Listener {
 
     @EventHandler
     public void EntityPortalEvent(EntityPortalReadyEvent event) {
-        if (dev.arubik.mctl.holders.timers.entEnabled(event.getEntity())
+        if (dev.arubik.mctl.holders.Timers.entEnabled(event.getEntity())
                 && DataMethods.avaliable(event.getEntity())) {
-            Bukkit.getScheduler().runTaskLater(MComesToLife.plugin, new Runnable() {
+            Bukkit.getScheduler().runTaskLater(MComesToLife.getPlugin(), new Runnable() {
 
                 @Override
                 public void run() {

@@ -33,13 +33,14 @@ import dev.arubik.mctl.holders.EntityAi;
 import dev.arubik.mctl.holders.Message;
 import dev.arubik.mctl.holders.VillagerInventoryHolder;
 import dev.arubik.mctl.holders.WaitTimePerAction;
-import dev.arubik.mctl.holders.timers;
+import dev.arubik.mctl.holders.Timers;
 import dev.arubik.mctl.holders.Methods.DataMethods;
 import dev.arubik.mctl.utils.CustomConfigurationSection;
-import dev.arubik.mctl.utils.fileUtils;
-import dev.arubik.mctl.utils.messageUtils;
+import dev.arubik.mctl.utils.TimeUtils;
+import dev.arubik.mctl.utils.FileUtils;
+import dev.arubik.mctl.utils.MessageUtils;
 
-public enum mood {
+public enum Mood {
     HAPPY,
     NEUTRAL,
     SADNESS,
@@ -47,7 +48,7 @@ public enum mood {
     FATIGUE;
 
     public static Boolean contains(String arg) {
-        for (mood arg0 : mood.values()) {
+        for (Mood arg0 : Mood.values()) {
             if (arg0.toString().equalsIgnoreCase(arg)) {
                 return true;
             }
@@ -55,7 +56,7 @@ public enum mood {
         return false;
     }
 
-    private static WaitTimePerAction waitTimes = new WaitTimePerAction("interact");
+    public static WaitTimePerAction waitTimes = new WaitTimePerAction("interact");
 
     public static HashMap<String, String> sameAction = new HashMap<String, String>();
 
@@ -65,7 +66,7 @@ public enum mood {
 
     public static String getText(String type, String family) {
         String message = "null";
-        Bukkit.getConsoleSender().sendMessage("type: " + type.toLowerCase());
+        MessageUtils.BukkitLog("type: " + type.toLowerCase());
         List<String> talkList = MComesToLife.getVillagers()
                 .getLangList("speech" + family + "." + type.toLowerCase(), new ArrayList<String>());
         int index = rand(0, talkList.size() - 1);
@@ -74,19 +75,19 @@ public enum mood {
     }
 
     private boolean sameCheck(LivingEntity p, String type) {
-        if (mood.sameAction.containsKey(p.getUniqueId().toString())) {
-            if (((String) mood.sameAction.get(p.getUniqueId().toString())).contains(type)) {
-                int times = Integer.parseInt(((String) mood.sameAction.get(p.getUniqueId().toString())).split(":")[1])
+        if (Mood.sameAction.containsKey(p.getUniqueId().toString())) {
+            if (((String) Mood.sameAction.get(p.getUniqueId().toString())).contains(type)) {
+                int times = Integer.parseInt(((String) Mood.sameAction.get(p.getUniqueId().toString())).split(":")[1])
                         + 1;
-                mood.sameAction.put(p.getUniqueId().toString(), String.valueOf(type) + ":" + times);
+                Mood.sameAction.put(p.getUniqueId().toString(), String.valueOf(type) + ":" + times);
 
-                if (times >= MComesToLife.config.getInt("config.interactions.max", 6))
+                if (times >= MComesToLife.getMainConfig().getInt("config.interactions.max", 6))
                     return true;
             } else {
-                mood.sameAction.put(p.getUniqueId().toString(), String.valueOf(type) + ":1");
+                Mood.sameAction.put(p.getUniqueId().toString(), String.valueOf(type) + ":1");
             }
         } else {
-            mood.sameAction.put(p.getUniqueId().toString(), String.valueOf(type) + ":1");
+            Mood.sameAction.put(p.getUniqueId().toString(), String.valueOf(type) + ":1");
         }
         return false;
     }
@@ -101,22 +102,22 @@ public enum mood {
         if (event.isCancelled())
             return;
         if (waitTimes.Enabled()) {
-            Long timeToP = MComesToLife.getTimeFromConfig(new CustomConfigurationSection(
-                    MComesToLife.config.getConfig().getConfigurationSection("config.time-interact")));
+            Long timeToP = TimeUtils.getTimeFromConfig(new CustomConfigurationSection(
+                    MComesToLife.getMainConfig().getConfig().getConfigurationSection("config.time-interact")));
             if (!waitTimes.able((Player) interacter, timeToP)) {
 
                 Message timetoWait = new Message(
                         MComesToLife.getMessages().getLang("cmd.timeout",
                                 "<prefix><gray>Debes Esperar <day_amount> <day_format> <hours_amount> <hours_format> <minutes_amount> <minutes_format> <seconds_amount> <seconds_format>/gray>"));
                 timetoWait.setupTimePlaceholder(timeToP);
-                messageUtils.MessageParsedPlaceholders((Player) interacter, timetoWait);
+                MessageUtils.MessageParsedPlaceholders((Player) interacter, timetoWait);
                 return;
             }
             waitTimes.addToTime((Player) interacter);
         }
 
         if (playersToInteract.contains(interacter.getUniqueId().toString())) {
-            Bukkit.getScheduler().runTaskLater(MComesToLife.plugin, new Runnable() {
+            Bukkit.getScheduler().runTaskLater(MComesToLife.getPlugin(), new Runnable() {
                 @Override
                 public void run() {
                     if (playersToInteract.contains(interacter.getUniqueId().toString())) {
@@ -129,6 +130,15 @@ public enum mood {
             return;
         }
         playersToInteract.add(interacter.getUniqueId().toString());
+        Bukkit.getScheduler().runTaskLater(MComesToLife.getPlugin(), new Runnable() {
+            @Override
+            public void run() {
+                if (playersToInteract.contains(interacter.getUniqueId().toString())) {
+                    playersToInteract.remove(interacter.getUniqueId().toString());
+                }
+            }
+
+        }, 1L);
 
         if (type.equalsIgnoreCase("PROCREATE")) {
             Long p1l = (Long) DataMethods.retrivePlayerData((Player) interacter)
@@ -148,21 +158,21 @@ public enum mood {
 
                     // spawn baby
 
-                    messageUtils.MessageParsedPlaceholders((CommandSender) ((Player) interacter), new Message(
+                    MessageUtils.MessageParsedPlaceholders((CommandSender) ((Player) interacter), new Message(
                             this.getText("procreate-yes",
                                     DataMethods.getFamily(type, (Player) interacter, cv.getLivingEntity()))),
                             cv);
                     Bukkit.getScheduler().runTaskLater(MComesToLife.getPlugin(), new Runnable() {
                         @Override
                         public void run() {
-                            if (DataMethods.getSex((Player) interacter) == sex.male) {
+                            if (DataMethods.getSex((Player) interacter) == Sex.male) {
                                 DataMethods.loadBabyVillager(true, interacter, cv.getLivingEntity());
                             } else {
                                 DataMethods.loadBabyVillager(true, cv.getLivingEntity(), interacter);
                             }
 
                             // tell message your baby grow up
-                            messageUtils.MessageParsedPlaceholders((CommandSender) interacter,
+                            MessageUtils.MessageParsedPlaceholders((CommandSender) interacter,
                                     new Message(
                                             MComesToLife.getMessages().getLang(
                                                     "cmd.marry.procreate.success",
@@ -172,14 +182,14 @@ public enum mood {
                     }, 4L);
                 } else {
                     // your spouse is too far
-                    messageUtils.MessageParsedPlaceholders((CommandSender) interacter,
+                    MessageUtils.MessageParsedPlaceholders((CommandSender) interacter,
                             new Message(
                                     MComesToLife.getMessages().getLang(
                                             "cmd.marry.procreate.too-far",
                                             "<prefix><gray>Tu pareja esta muy lejos para procrear</gray>")));
                 }
-            } else if (p2l >= p2l + MComesToLife.getTimeOutProcreate()) {
-                messageUtils.MessageParsedPlaceholders((CommandSender) interacter,
+            } else if (p2l >= p2l + TimeUtils.getTimeOutProcreate()) {
+                MessageUtils.MessageParsedPlaceholders((CommandSender) interacter,
                         new Message(
                                 MComesToLife.getMessages().getLang(
                                         "cmd.marry.procreate.timeout",
@@ -188,12 +198,12 @@ public enum mood {
                 Message timetoWait = new Message(
                         MComesToLife.getMessages().getLang("cmd.timeout",
                                 "<prefix><gray>Debes Esperar <day_amount> <day_format> <hours_amount> <hours_format> <minutes_amount> <minutes_format> <seconds_amount> <seconds_format>/gray>"));
-                Long currentTime = p2l + MComesToLife.getTimeOutProcreate()
+                Long currentTime = p2l + TimeUtils.getTimeOutProcreate()
                         - System.currentTimeMillis();
                 timetoWait.setupTimePlaceholder(currentTime);
-                messageUtils.MessageParsedPlaceholders((CommandSender) interacter, timetoWait);
-            } else if (p1l >= p2l + MComesToLife.getTimeOutProcreate()) {
-                messageUtils.MessageParsedPlaceholders((CommandSender) interacter,
+                MessageUtils.MessageParsedPlaceholders((CommandSender) interacter, timetoWait);
+            } else if (p1l >= p2l + TimeUtils.getTimeOutProcreate()) {
+                MessageUtils.MessageParsedPlaceholders((CommandSender) interacter,
                         new Message(
                                 MComesToLife.getMessages().getLang(
                                         "cmd.marry.procreate.timeout",
@@ -202,19 +212,18 @@ public enum mood {
                 Message timetoWait = new Message(
                         MComesToLife.getMessages().getLang("cmd.timeout",
                                 "<prefix><gray>Debes Esperar <day_amount> <day_format> <hours_amount> <hours_format> <minutes_amount> <minutes_format> <seconds_amount> <seconds_format>/gray>"));
-                Long currentTime = p2l + MComesToLife.getTimeOutProcreate()
+                Long currentTime = p2l + TimeUtils.getTimeOutProcreate()
                         - System.currentTimeMillis();
                 timetoWait.setupTimePlaceholder(currentTime);
-                messageUtils.MessageParsedPlaceholders((CommandSender) interacter, timetoWait);
+                MessageUtils.MessageParsedPlaceholders((CommandSender) interacter, timetoWait);
 
             }
 
         }
         VillagerInventoryHolder vil = VillagerInventoryHolder.getInstance(cv);
-        vil.loadInventoryNoReload();
+        vil.loadInventory();
 
         if (type.equalsIgnoreCase("GIFT")) {
-
             vil.giveItem((Player) interacter);
         }
         if (type.equalsIgnoreCase("UNEQUIPHAT")) {
@@ -243,7 +252,7 @@ public enum mood {
         }
 
         if (type.equalsIgnoreCase("follow")) {
-            messageUtils.MessageParsedPlaceholders((CommandSender) ((Player) interacter), new Message(
+            MessageUtils.MessageParsedPlaceholders((CommandSender) ((Player) interacter), new Message(
                     this.getText("follow", DataMethods.getFamily(type, (Player) interacter, cv.getLivingEntity()))),
                     cv);
             cv.getLivingEntity().removePotionEffect(PotionEffectType.SLOW);
@@ -275,15 +284,15 @@ public enum mood {
             int min = 1;
             int max = 6;
 
-            if (vil.getMood() == mood.ANGER)
+            if (vil.getMood() == Mood.ANGER)
                 max -= 1;
-            if (vil.getMood() == mood.FATIGUE)
+            if (vil.getMood() == Mood.FATIGUE)
                 max -= 2;
-            if (vil.getMood() == mood.HAPPY)
+            if (vil.getMood() == Mood.HAPPY)
                 max += 3;
-            if (vil.getMood() == mood.NEUTRAL)
+            if (vil.getMood() == Mood.NEUTRAL)
                 max += 1;
-            if (vil.getMood() == mood.SADNESS)
+            if (vil.getMood() == Mood.SADNESS)
                 max -= 2;
 
             if (cv.getLivingEntity() instanceof Villager
@@ -325,13 +334,13 @@ public enum mood {
                 }
                 int r = (new Random()).nextInt(max - min + 1) + min;
                 if (r == 1) {
-                    messageUtils.MessageParsedPlaceholders((CommandSender) ((Player) interacter), new Message(this
+                    MessageUtils.MessageParsedPlaceholders((CommandSender) ((Player) interacter), new Message(this
                             .getText(type + "-good",
                                     DataMethods.getFamily(type, (Player) interacter, cv.getLivingEntity()))),
                             cv);
                     cv.addLikes(rand(1, 10), interacter);
                 } else {
-                    messageUtils.MessageParsedPlaceholders((CommandSender) ((Player) interacter), new Message(this
+                    MessageUtils.MessageParsedPlaceholders((CommandSender) ((Player) interacter), new Message(this
                             .getText(type + "-bad",
                                     DataMethods.getFamily(type, (Player) interacter, cv.getLivingEntity()))),
                             cv);
@@ -364,13 +373,13 @@ public enum mood {
                     max = 1;
                 int r = (new Random()).nextInt(max - min + 1) + min;
                 if (r == 1) {
-                    messageUtils.MessageParsedPlaceholders((CommandSender) ((Player) interacter), new Message(this
+                    MessageUtils.MessageParsedPlaceholders((CommandSender) ((Player) interacter), new Message(this
                             .getText(type + "-good",
                                     DataMethods.getFamily(type, (Player) interacter, cv.getLivingEntity()))),
                             cv);
                     cv.addLikes(rand(1, 10), interacter);
                 } else {
-                    messageUtils.MessageParsedPlaceholders((CommandSender) ((Player) interacter), new Message(this
+                    MessageUtils.MessageParsedPlaceholders((CommandSender) ((Player) interacter), new Message(this
                             .getText(type + "-bad",
                                     DataMethods.getFamily(type, (Player) interacter, cv.getLivingEntity()))),
                             cv);
@@ -415,13 +424,13 @@ public enum mood {
                 }
                 int r = (new Random()).nextInt(max - min + 1) + min;
                 if (r == 1) {
-                    messageUtils.MessageParsedPlaceholders((CommandSender) ((Player) interacter), new Message(this
+                    MessageUtils.MessageParsedPlaceholders((CommandSender) ((Player) interacter), new Message(this
                             .getText(type + "-good",
                                     DataMethods.getFamily(type, (Player) interacter, cv.getLivingEntity()))),
                             cv);
                     cv.addLikes(rand(1, 10), interacter);
                 } else {
-                    messageUtils.MessageParsedPlaceholders((CommandSender) ((Player) interacter), new Message(this
+                    MessageUtils.MessageParsedPlaceholders((CommandSender) ((Player) interacter), new Message(this
                             .getText(type + "-bad",
                                     DataMethods.getFamily(type, (Player) interacter, cv.getLivingEntity()))),
                             cv);
@@ -473,20 +482,20 @@ public enum mood {
                 }
                 int r = (new Random()).nextInt(max - min + 1) + min;
                 if (r == 1) {
-                    messageUtils.MessageParsedPlaceholders((CommandSender) ((Player) interacter), new Message(this
+                    MessageUtils.MessageParsedPlaceholders((CommandSender) ((Player) interacter), new Message(this
                             .getText(type + "-good",
                                     DataMethods.getFamily(type, (Player) interacter, cv.getLivingEntity()))),
                             cv);
                     cv.addLikes(rand(5, 15), interacter);
                 } else {
-                    messageUtils.MessageParsedPlaceholders((CommandSender) ((Player) interacter), new Message(this
+                    MessageUtils.MessageParsedPlaceholders((CommandSender) ((Player) interacter), new Message(this
                             .getText(type + "-bad",
                                     DataMethods.getFamily(type, (Player) interacter, cv.getLivingEntity()))),
                             cv);
                     cv.takeLikes(rand(5, 15), interacter);
                 }
             } else if (type.equalsIgnoreCase("insult")) {
-                messageUtils.MessageParsedPlaceholders((CommandSender) ((Player) interacter), new Message(
+                MessageUtils.MessageParsedPlaceholders((CommandSender) ((Player) interacter), new Message(
                         this.getText("insult", DataMethods.getFamily(type, (Player) interacter, cv.getLivingEntity()))),
                         cv);
                 cv.takeLikes(rand(1, 15), interacter);

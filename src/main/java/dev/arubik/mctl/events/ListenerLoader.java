@@ -17,7 +17,8 @@ import javax.tools.ToolProvider;
 import com.comphenix.protocol.ProtocolLibrary;
 
 import dev.arubik.mctl.MComesToLife;
-import dev.arubik.mctl.utils.messageUtils;
+import dev.arubik.mctl.events.event.PacketListener;
+import dev.arubik.mctl.utils.MessageUtils;
 
 public class ListenerLoader {
     public static HashMap<String, Listener> listeners = new HashMap<String, Listener>();
@@ -76,15 +77,23 @@ public class ListenerLoader {
 
     public void RegisterListener() {
         for (String listener : listeners.keySet()) {
-            listeners.get(listener).register();
-            messageUtils.log("Registered listener: " + listener);
+            if (listeners.get(listener) instanceof PacketListener) {
+                ((PacketListener) listeners.get(listener)).registerPacket();
+            } else {
+                listeners.get(listener).register();
+            }
+            MessageUtils.log("Registered listener: " + listener);
         }
     }
 
     public void removeListener() {
         for (String listener : listeners.keySet()) {
-            listeners.get(listener).unregister();
-            messageUtils.log("Unregistered listener: " + listener);
+            if (listeners.get(listener) instanceof PacketListener) {
+                ((PacketListener) listeners.get(listener)).unregisterPacket();
+            } else {
+                listeners.get(listener).register();
+            }
+            MessageUtils.log("Unregistered listener: " + listener);
         }
     }
 }

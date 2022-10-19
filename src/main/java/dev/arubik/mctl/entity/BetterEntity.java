@@ -1,6 +1,7 @@
 package dev.arubik.mctl.entity;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Material;
@@ -11,13 +12,16 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
 import dev.arubik.mctl.MComesToLife;
+import dev.arubik.mctl.enums.Version;
 import dev.arubik.mctl.holders.EntityAi;
 import dev.arubik.mctl.holders.Nms;
 import dev.arubik.mctl.holders.VillagerInventoryHolder;
+import dev.arubik.mctl.holders.IA.CustomMemory;
 import dev.arubik.mctl.holders.Methods.DataMethods;
 import dev.arubik.mctl.utils.ItemSerializer;
 import me.gamercoder215.mobchip.ai.EntityAI;
@@ -25,6 +29,7 @@ import me.gamercoder215.mobchip.ai.memories.EntityMemory;
 import me.libraryaddict.disguise.disguisetypes.PlayerDisguise;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.monster.CrossbowAttackMob;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -38,6 +43,10 @@ import net.minecraft.world.item.SwordItem;
 public class BetterEntity extends AIEntity implements EntityMethods, CrossbowAttackMob {
     public BetterEntity(LivingEntity v) {
         super(v);
+    }
+
+    public static BetterEntity getFromEntity(LivingEntity v) {
+        return new BetterEntity(v);
     }
 
     public void regen() {
@@ -129,6 +138,52 @@ public class BetterEntity extends AIEntity implements EntityMethods, CrossbowAtt
         return closest;
     }
 
+    public LivingEntity getLivingNearbyOfLivingEntityes(List<LivingEntity> entities) {
+        if (entities.isEmpty()) {
+            return null;
+        }
+        LivingEntity closest = null;
+        double distance = Double.MAX_VALUE;
+        for (LivingEntity e : entities) {
+            if (e.getLocation().distance(getLivingEntity().getLocation()) < distance) {
+                closest = e;
+                distance = e.getLocation().distance(getLivingEntity().getLocation());
+            }
+        }
+        return closest;
+    }
+
+    public List<LivingEntity> sortLivingEntityFromDistance(List<LivingEntity> entities) {
+        List<LivingEntity> sorted = entities;
+        for (int i = 0; i < sorted.size(); i++) {
+            for (int j = 0; j < sorted.size(); j++) {
+                if (sorted.get(i).getLocation().distance(getLivingEntity().getLocation()) < sorted.get(j)
+                        .getLocation().distance(getLivingEntity().getLocation())) {
+                    LivingEntity temp = sorted.get(i);
+                    sorted.set(i, sorted.get(j));
+                    sorted.set(j, temp);
+                }
+            }
+        }
+        return sorted;
+    }
+
+    public LivingEntity getLivingNearbyOfEntityesExcludingEntity(List<LivingEntity> entities, LivingEntity[] exclude) {
+        LivingEntity closest = null;
+        double distance = Double.MAX_VALUE;
+        for (Entity e : entities) {
+            if (e instanceof LivingEntity) {
+                if (e.getLocation().distance(getLivingEntity().getLocation()) < distance) {
+                    if (!Set.of(exclude).contains(e)) {
+                        closest = (LivingEntity) e;
+                        distance = e.getLocation().distance(getLivingEntity().getLocation());
+                    }
+                }
+            }
+        }
+        return closest;
+    }
+
     private void shootBow(net.minecraft.world.entity.LivingEntity target, Projectile projectile) {
         double deltaX = target.getX() - this.getNMSEntity().getX();
         double deltaY = target.getY(0.3333333333333333d) - projectile.getY();
@@ -157,7 +212,7 @@ public class BetterEntity extends AIEntity implements EntityMethods, CrossbowAtt
             return;
         }
         boolean hasInfinity = false;
-        if (!MComesToLife.config.getBoolean("config.infinite-arrows", false)) {
+        if (!MComesToLife.getMainConfig().getBoolean("config.infinite-arrows", false)) {
             hasInfinity = ItemSerializer.getEnchantmentLevel(this.getLivingEntity().getEquipment().getItemInMainHand(),
                     "INFINITY") > 0;
         }
@@ -188,20 +243,37 @@ public class BetterEntity extends AIEntity implements EntityMethods, CrossbowAtt
 
         org.bukkit.inventory.ItemStack arrowA = new org.bukkit.inventory.ItemStack(Material.ARROW);
         if (!hasInfinity) {
-            org.bukkit.inventory.ItemStack ba = this.getInventoryHolder().consumeItem("ARROW");
-            if (ba != null) {
-                arrowA = ba;
-                ItemStack temp = MComesToLife.getNms().castMethod(
-                        "org.bukkit.craftbukkit.{version}.inventory.CraftItemStack",
-                        "asNMSCopy", ItemStack.class, ba);
-                if (temp != null) {
-                    arrow = temp;
+            if (ItemSerializer.getType(handItem).toUpperCase().contains("ROCKET")
+                    && getLivingEntity().getEquipment().getItemInMainHand().getType() == Material.CROSSBOW) {
+                arrow = new ItemStack(Items.FIREWORK_ROCKET);
+
+                org.bukkit.inventory.ItemStack ba = this.getInventoryHolder().consumeItem("ROCKET");
+                if (ba != null) {
+                    arrowA = ba;
+                    ItemStack temp = MComesToLife.getNms().getNMSStackFromStack(ba);
+                    if (temp != null) {
+                        arrow = temp;
+                    }
+                }
+            } else {
+
+                org.bukkit.inventory.ItemStack ba = this.getInventoryHolder().consumeItem("ARROW");
+                if (ba != null) {
+                    arrowA = ba;
+                    ItemStack temp = MComesToLife.getNms().getNMSStackFromStack(ba);
+                    if (temp != null) {
+                        arrow = temp;
+                    }
                 }
             }
+
         }
 
         ArrowItem arrowAsItem = (ArrowItem) (arrow.getItem() instanceof ArrowItem ? arrow.getItem() : Items.ARROW);
-
+        if (ItemSerializer.getType(handItem).toUpperCase().contains("ROCKET")
+                && getLivingEntity().getEquipment().getItemInMainHand().getType() == Material.CROSSBOW) {
+            arrowAsItem = (ArrowItem) (arrow.getItem() instanceof ArrowItem ? arrow.getItem() : Items.FIREWORK_ROCKET);
+        }
         AbstractArrow projectile;
         if (isBow) {
             projectile = arrowAsItem.createArrow(this.getNMSEntity().getLevel(), arrow, this.getNMSEntity());
@@ -228,7 +300,7 @@ public class BetterEntity extends AIEntity implements EntityMethods, CrossbowAtt
 
         weapon.hurtAndBreak(arrow.is(Items.FIREWORK_ROCKET) ? 3 : 1, this.getNMSEntity(),
                 (npc) -> npc.broadcastBreakEvent(hand));
-        // MComesToLife.config.getBoolean("config.infinite-arrows", false)
+        // MComesToLife.getMainConfig().getBoolean("config.infinite-arrows", false)
         EquipmentSlot slot = EquipmentSlot.HAND;
         if (this.getNMSEntity().getUsedItemHand() == InteractionHand.OFF_HAND)
             slot = EquipmentSlot.OFF_HAND;
@@ -248,8 +320,8 @@ public class BetterEntity extends AIEntity implements EntityMethods, CrossbowAtt
         }
 
         if (event.isCancelled()) {
-            if(event.getProjectile()!=null){
-                if(!event.getProjectile().isDead()){
+            if (event.getProjectile() != null) {
+                if (!event.getProjectile().isDead()) {
                     event.getProjectile().remove();
                 }
             }
@@ -263,10 +335,33 @@ public class BetterEntity extends AIEntity implements EntityMethods, CrossbowAtt
 
     @Override
     public net.minecraft.world.entity.LivingEntity getTarget() {
-        if (this.getMemory(EntityMemory.ATTACK_TARGET) == null) {
+        if (this.getNBT(CustomMemory.TARGET_UUID) == null) {
             return null;
         }
-        return new BetterEntity(this.getMemory(EntityMemory.ATTACK_TARGET)).getNMSEntity();
+        if (this.getLivingEntity().getWorld()
+                .getEntity(UUID.fromString(this.getNBT(CustomMemory.TARGET_UUID))) == null) {
+            return null;
+        }
+        if (!(this.getLivingEntity().getWorld()
+                .getEntity(UUID.fromString(this.getNBT(CustomMemory.TARGET_UUID))) instanceof LivingEntity))
+            return null;
+        return new BetterEntity((LivingEntity) this.getLivingEntity().getWorld()
+                .getEntity(UUID.fromString(this.getNBT(CustomMemory.TARGET_UUID)))).getNMSEntity();
+    }
+
+    public LivingEntity getLivingTarget() {
+        if (this.getNBT(CustomMemory.TARGET_UUID) == null) {
+            return null;
+        }
+        if (this.getLivingEntity().getWorld()
+                .getEntity(UUID.fromString(this.getNBT(CustomMemory.TARGET_UUID))) == null) {
+            return null;
+        }
+        if (!(this.getLivingEntity().getWorld()
+                .getEntity(UUID.fromString(this.getNBT(CustomMemory.TARGET_UUID))) instanceof LivingEntity))
+            return null;
+        return (LivingEntity) this.getLivingEntity().getWorld()
+                .getEntity(UUID.fromString(this.getNBT(CustomMemory.TARGET_UUID)));
     }
 
     @Override
@@ -310,14 +405,48 @@ public class BetterEntity extends AIEntity implements EntityMethods, CrossbowAtt
 
     public boolean canFireProjectileWeapon(ProjectileWeaponItem item) {
         return (item == Items.BOW || item == Items.CROSSBOW) &&
-                (!MComesToLife.config.getBoolean("config.infinite-arrows", false)
-                        || getInventoryHolder().hasAnyOf("ARROW"));
-    }
-
-    public void test() {
+                (!MComesToLife.getMainConfig().getBoolean("config.infinite-arrows", false)
+                        || getInventoryHolder().hasAnyOf("ARROW")
+                        || (getLivingEntity().getEquipment().getItemInMainHand().getType() == Material.CROSSBOW
+                                && getInventoryHolder().hasAnyOf("ROCKET")));
     }
 
     public void reloadDefenseIA() {
         EntityAi.updateVillagerDefend(this.getMob());
+    }
+
+    public void performAttack(LivingEntity target) {
+        float damage = ItemSerializer
+                .getDamage(this.getLivingEntity().getEquipment().getItemInMainHand(),
+                        BetterEntity.getNmsEntity(target));
+
+        // org.bukkit.event.entity
+        org.bukkit.event.entity.EntityDamageByEntityEvent event = new org.bukkit.event.entity.EntityDamageByEntityEvent(
+                this.getLivingEntity(), target, org.bukkit.event.entity.EntityDamageEvent.DamageCause.ENTITY_ATTACK,
+                damage);
+
+        event.callEvent();
+        if (event.isCancelled()) {
+            return;
+        }
+        damage = (float) event.getDamage();
+        BetterEntity targetE = new BetterEntity(target);
+        getNMSEntity().swing(net.minecraft.world.InteractionHand.MAIN_HAND);
+        // targetE.getNMSEntity().hurt(DamageSource.mobAttack(getNMSEntity()), damage);
+        if (targetE.getNMSEntity().getHealth() - damage <= 0) {
+            targetE.getNMSEntity().die(DamageSource.mobAttack(getNMSEntity()));
+        } else {
+            targetE.getNMSEntity().setHealth(targetE.getNMSEntity().getMaxHealth() - damage);
+        }
+        this.setNBT(CustomMemory.TARGET_UUID, targetE.getLivingEntity().getUniqueId().toString());
+    }
+
+    public void releaseUsingItem(Version version) {
+        if (version == Version.v1_19_R1) {
+            MComesToLife.getNms().forceMethod(this.getNMSEntity(), "eR");
+            return;
+        } else {
+            MComesToLife.getNms().forceMethod(this.getNMSEntity(), "releaseUsingItem");
+        }
     }
 }

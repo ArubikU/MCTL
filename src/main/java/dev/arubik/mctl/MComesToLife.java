@@ -2,19 +2,22 @@ package dev.arubik.mctl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandMap;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import lombok.Getter;
 import lombok.Setter;
-import dev.arubik.mctl.entity.CustomVillager;
 import dev.arubik.mctl.entity.WorldEntityLoader;
+import dev.arubik.mctl.enums.Mood;
 import dev.arubik.mctl.events.ListenerLoader;
 import dev.arubik.mctl.events.listeners.EntityListener;
 import dev.arubik.mctl.events.listeners.GuiListener;
@@ -22,49 +25,106 @@ import dev.arubik.mctl.events.listeners.PacketListener;
 import dev.arubik.mctl.events.listeners.PaperEvents;
 import dev.arubik.mctl.holders.CommandHolder;
 import dev.arubik.mctl.holders.EnabledPlugins;
+import dev.arubik.mctl.holders.EntityAi;
 import dev.arubik.mctl.holders.Nms;
-import dev.arubik.mctl.holders.timers;
+import dev.arubik.mctl.holders.WaitTimePerAction;
+import dev.arubik.mctl.holders.Timers;
 import dev.arubik.mctl.holders.Abstract.SkinHolder;
-import dev.arubik.mctl.holders.Methods.DataMethods;
-import dev.arubik.mctl.utils.CustomConfigurationSection;
+import dev.arubik.mctl.placeholderApi.MarryPlaceholder;
+import dev.arubik.mctl.placeholderApi.PlaceholderBase;
+import dev.arubik.mctl.placeholderApi.VillagerPlaceholder;
 import dev.arubik.mctl.utils.FileConfiguration;
 import dev.arubik.mctl.utils.GuiCreator;
-import dev.arubik.mctl.utils.Target;
-import dev.arubik.mctl.utils.fileUtils;
-import dev.arubik.mctl.utils.langFile;
-import dev.arubik.mctl.utils.messageUtils;
+import dev.arubik.mctl.utils.FileUtils;
+import dev.arubik.mctl.utils.LangFile;
+import dev.arubik.mctl.utils.MessageUtils;
 
 public final class MComesToLife extends JavaPlugin {
 
-    @Getter
-    @Setter
-    public static JavaPlugin plugin;
+    private static JavaPlugin plugin;
 
-    @Getter
+    public static JavaPlugin getPlugin() {
+        return plugin;
+    }
+
+    public static List<PlaceholderBase> getPlaceholders() {
+        return placeholders;
+    }
+
+    public static Nms getNms() {
+        return nms;
+    }
+
+    public static String getServerVersion() {
+        return ServerVersion;
+    }
+
+    public static LangFile getProffesions() {
+        return proffesions;
+    }
+
+    public static LangFile getMessages() {
+        return messages;
+    }
+
+    public static LangFile getVillagers() {
+        return villagers;
+    }
+
+    public static LangFile getSkins() {
+        return skins;
+    }
+
+    public static LangFile getNames() {
+        return names;
+    }
+
+    public static ListenerLoader getLoader() {
+        return loader;
+    }
+
+    public static boolean isPAPER() {
+        return PAPER;
+    }
+
+    public static boolean isDEBUG() {
+        return DEBUG;
+    }
+
+    public static GuiCreator getMaingui() {
+        return Maingui;
+    }
+
+    public static EnabledPlugins getEnabledPlugins() {
+        return enabledPlugins;
+    }
+
+    public static SkinHolder getSkinHolder() {
+        return skinHolder;
+    }
+
+    private static List<PlaceholderBase> placeholders = new ArrayList<>();
     public static Nms nms;
-
-    @Getter
     private static String ServerVersion;
-
-    public static FileConfiguration config;
-    @Getter
-    public static langFile proffesions;
-    @Getter
-    public static langFile messages;
-    @Getter
-    public static langFile villagers;
-    @Getter
-    public static langFile skins;
-    @Getter
-    public static langFile names;
-    @Getter
+    private static FileConfiguration config;
+    public static LangFile proffesions;
+    public static LangFile messages;
+    public static LangFile villagers;
+    public static LangFile skins;
+    public static LangFile names;
     public static ListenerLoader loader;
 
-    @Getter
+    public static boolean PAPER = false;
+    public static boolean DEBUG = false;
+
     public static EnabledPlugins enabledPlugins;
     public static GuiCreator Maingui;
-    @Getter
+
     public static SkinHolder skinHolder;
+
+    public static FileConfiguration getMainConfig() {
+        return config;
+    }
 
     @Override
     public org.bukkit.configuration.file.FileConfiguration getConfig() {
@@ -74,54 +134,45 @@ public final class MComesToLife extends JavaPlugin {
     @Getter
     public static HashMap<String, Entity> lastClickedEntity = new HashMap<String, Entity>();
 
+    public void loadCompatibilities() {
+        if (!config.getConfig().contains("config.compatibility"))
+            return;
+        config.getConfig().getConfigurationSection("config.compatibility").getKeys(false).forEach(key -> {
+            if (!config.getBoolean("config.compatibility." + key, true))
+                enabledPlugins.forceDisable(key);
+        });
+    }
+
+    public void addPlaceholders() {
+        new VillagerPlaceholder().register();
+        new MarryPlaceholder().register();
+    }
+
     @Override
     public void onEnable() {
         plugin = this;
-        enabledPlugins = new EnabledPlugins();
         ServerVersion = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3].substring(1);
-        proffesions = new langFile("proffesion.yml");
-        config = fileUtils.getFileConfiguration("config.yml");
-        messages = new langFile(config.getString("config.lang-file", "messages.yml"));
-        skins = new langFile(config.getString("config.skins-file", "skins.yml"));
-        names = new langFile(config.getString("config.names-file", "names.yml"));
-        villagers = new langFile(config.getString("config.speech-file", "speech.yml"));
-        skinHolder = new SkinHolder();
-        nms = new Nms();
-        skinHolder.preLoadSkins(config.getStringList("config.file-skins", new ArrayList<String>()));
-
-        // register TabExecutor "holders/CommandHolder.java"
-
-        // get all aliases from command mctl in plugin.yml
+        load();
         String[] aliases = new String[] { "mctl", "mctolife", "mctol", "mct" };
         for (String alias : aliases) {
             this.getCommand(alias).setExecutor(new CommandHolder());
             this.getCommand(alias).setTabCompleter(new CommandHolder());
         }
-        enabledPlugins = new EnabledPlugins();
-        // register events
         loader = new ListenerLoader();
         loader.addListener(new EntityListener());
         loader.addListener(new GuiListener());
         loader.addListener(new PacketListener());
         try {
             if (Class.forName("io.papermc.paper.event.entity.EntityPortalReadyEvent") != null) {
+                PAPER = true;
                 loader.addListener(new PaperEvents());
             }
         } catch (ClassNotFoundException e) {
-            messageUtils.log("[MCTL] PaperEvents Listener dont register because is not paper server");
+            MessageUtils.log("[MCTL] PaperEvents Listener dont register because is not paper server");
         }
-        // loader.loadAllListeners();
         loader.RegisterListener();
-
-        // load villagers from worlds
         WorldEntityLoader.makeVillagers();
-
-        Maingui = new GuiCreator(
-                fileUtils.getFileConfiguration(MComesToLife.config.getString("config.main-gui", "example-gui.yml"))
-                        .getConfig().getConfigurationSection("gui"),
-                MComesToLife.config.getString("config.main-gui", "example-gui.yml"));
-        Maingui.setupInv();
-        timers.startTimers();
+        Timers.startTimers();
     }
 
     @Override
@@ -129,82 +180,44 @@ public final class MComesToLife extends JavaPlugin {
         // Plugin shutdown logic
     }
 
-    public void reload() {
+    public void load() {
         enabledPlugins = new EnabledPlugins();
-        proffesions = new langFile("proffesion.yml");
-        config = fileUtils.getFileConfiguration("config.yml");
-        messages = new langFile(config.getString("config.lang-file", "messages_en.yml"));
-        skins = new langFile(config.getString("config.skins-file", "skins.yml"));
-        names = new langFile(config.getString("config.names-file", "names_en.yml"));
-        villagers = new langFile(config.getString("config.speech-file", "speech_en.yml"));
-        skinHolder.preLoadSkins(config.getStringList("config.file-skins", new ArrayList<String>()));
-        loader.removeListener();
-        loader.RegisterListener();
+        proffesions = new LangFile("proffesion.yml");
+        config = FileUtils.getFileConfiguration("config.yml");
+        messages = new LangFile(config.getString("config.lang-file", "messages_en.yml"));
+        skins = new LangFile(config.getString("config.skins-file", "skins.yml"));
+        names = new LangFile(config.getString("config.names-file", "names_en.yml"));
+        villagers = new LangFile(config.getString("config.speech-file", "speech_en.yml"));
+        skinHolder = new SkinHolder();
+        nms = new Nms();
+        DEBUG = MComesToLife.getMainConfig().getBoolean("config.debug", false);
+        loadCompatibilities();
+        for (PlaceholderBase pch : getPlaceholders()) {
+            pch.register();
+        }
+
         Maingui = new GuiCreator(
-                fileUtils.getFileConfiguration(MComesToLife.config.getString("config.main-gui", "example-gui.yml"))
+                FileUtils.getFileConfiguration(MComesToLife.config.getString("config.main-gui", "example-gui.yml"))
                         .getConfig().getConfigurationSection("gui"),
                 MComesToLife.config.getString("config.main-gui", "example-gui.yml"));
         Maingui.setupInv();
+        Mood.waitTimes = new WaitTimePerAction("interact");
+        skinHolder.preLoadSkins(config.getStringList("config.file-skins", new ArrayList<String>()));
+        EntityAi.reload();
     }
 
-    public static Long getTimeOutProcreate() {
-        ConfigurationSection conf = MComesToLife.config.getConfig().getConfigurationSection("config.procreate-timeout");
-        int days = conf.getInt("days");
-        int hours = conf.getInt("hours");
-        int minutes = conf.getInt("minutes");
-        int seconds = conf.getInt("seconds");
-        // convert time to millis
-        long time = (days * 24 * 60 * 60 * 1000) + (hours * 60 * 60 * 1000) + (minutes * 60 * 1000) + (seconds * 1000);
-        return time;
+    public void reload() {
+        unload();
+        load();
+        loader.RegisterListener();
     }
 
-    public static Long getTimeFromConfig(CustomConfigurationSection conf) {
-        int days = conf.getInt("days", 0);
-        int hours = conf.getInt("hours", 0);
-        int minutes = conf.getInt("minutes", 0);
-        int seconds = conf.getInt("seconds", 0);
-        // convert time to millis
-        long time = (days * 24 * 60 * 60 * 1000) + (hours * 60 * 60 * 1000) + (minutes * 60 * 1000) + (seconds * 1000);
-        return time;
-    }
-
-    public static Long getTimeFromArgs(int days, int hours, int minutes, int seconds) {
-        long time = (days * 24 * 60 * 60 * 1000) + (hours * 60 * 60 * 1000) + (minutes * 60 * 1000) + (seconds * 1000);
-        return time;
-    }
-
-    public static CustomVillager getlastClickedEntity(Player p) {
-        Entity e = lastClickedEntity.get(p.getName());
-        if (e == null) {
-            if (DataMethods.isCustom(Target.getTargetEntity((Entity) p))) {
-                CustomVillager vil = new CustomVillager((LivingEntity) Target.getTargetEntity((Entity) p));
-                vil.loadVillager(false);
-                return vil;
-            }
-        } else {
-            if (DataMethods.isCustom(e)) {
-                CustomVillager vil = new CustomVillager((LivingEntity) e);
-                vil.loadVillager(false);
-                return vil;
+    public void unload() {
+        loader.removeListener();
+        for (PlaceholderBase pch : getPlaceholders()) {
+            if (pch.isRegistered()) {
+                pch.unregister();
             }
         }
-        return null;
-    }
-
-    public static HashMap<timeFormat, Integer> getTimeFromDate(long time) {
-        HashMap<timeFormat, Integer> timeMap = new HashMap<timeFormat, Integer>();
-        int days = (int) (time / (1000 * 60 * 60 * 24));
-        int hours = (int) ((time / (1000 * 60 * 60)) % 24);
-        int minutes = (int) ((time / (1000 * 60)) % 60);
-        int seconds = (int) (time / 1000) % 60;
-        timeMap.put(timeFormat.DAY, days);
-        timeMap.put(timeFormat.HOURS, hours);
-        timeMap.put(timeFormat.MINUTES, minutes);
-        timeMap.put(timeFormat.SECONDS, seconds);
-        return timeMap;
-    }
-
-    public enum timeFormat {
-        DAY, HOURS, MINUTES, SECONDS
     }
 }

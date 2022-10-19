@@ -1,6 +1,6 @@
 package dev.arubik.mctl.enums;
 
-public enum trait {
+public enum Trait {
     SHY,
     FUN,
     SERIOUS,
@@ -10,7 +10,7 @@ public enum trait {
     OUTGOING;
 
     public static Boolean contains(String arg) {
-        for (trait arg0 : trait.values()) {
+        for (Trait arg0 : Trait.values()) {
             if (arg0.toString().equalsIgnoreCase(arg)) {
                 return true;
             }

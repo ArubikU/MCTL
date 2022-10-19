@@ -17,24 +17,31 @@ import org.bukkit.entity.Villager;
 
 import dev.arubik.mctl.MComesToLife;
 import dev.arubik.mctl.entity.CustomVillager;
-import dev.arubik.mctl.enums.sex;
+import dev.arubik.mctl.enums.Sex;
 import dev.arubik.mctl.holders.Methods.DataMethods;
-import dev.arubik.mctl.utils.fileUtils;
-import dev.arubik.mctl.utils.messageUtils;
+import dev.arubik.mctl.utils.FileUtils;
+import dev.arubik.mctl.utils.MessageUtils;
 
-public class timers {
+public class Timers {
 
     public static void startTimers() {
 
-        timers.slowTimer();
-        timers.longTimer();
+        Timers.slowTimer();
+        Timers.longTimer();
     }
 
     public static Boolean entEnabled(Entity e) {
         return Optional
                 .ofNullable(
-                        fileUtils.getFileConfiguration("config.yml").getConfig().getStringList("config.villager-mobs"))
+                        FileUtils.getFileConfiguration("config.yml").getConfig().getStringList("config.villager-mobs"))
                 .orElse(new ArrayList<String>()).contains(e.getType().toString());
+    }
+
+    public static Boolean entEnabled(String e) {
+        return Optional
+                .ofNullable(
+                        FileUtils.getFileConfiguration("config.yml").getConfig().getStringList("config.villager-mobs"))
+                .orElse(new ArrayList<String>()).contains(e);
     }
 
     public static Player getPlayerByUuid(String uuid) {
@@ -65,13 +72,13 @@ public class timers {
                     if (!isBaby((LivingEntity) e)) {
                         HashMap<String, Object> tmp = vil.getData();
                         Optional.ofNullable(getPlayerByUuid((String) tmp.get("father"))).ifPresent(pl -> {
-                            messageUtils.MessageParsedPlaceholders((CommandSender) pl, new Message(
+                            MessageUtils.MessageParsedPlaceholders((CommandSender) pl, new Message(
                                     MComesToLife.getMessages().getLang("baby.grown",
                                             "<prefix><gray>Tu hij<villager_sex_endchar> <villager_name> a crecido.")),
                                     vil);
                         });
                         Optional.ofNullable(getPlayerByUuid((String) tmp.get("mother"))).ifPresent(pl -> {
-                            messageUtils.MessageParsedPlaceholders((CommandSender) pl, new Message(
+                            MessageUtils.MessageParsedPlaceholders((CommandSender) pl, new Message(
                                     MComesToLife.getMessages().getLang("baby.grown",
                                             "<prefix><gray>Tu hij<villager_sex_endchar> <villager_name> a crecido.")),
                                     vil);
@@ -91,7 +98,7 @@ public class timers {
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(MComesToLife.getPlugin(), new Runnable() {
             public void run() {
                 try {
-                    timers.slowTimer();
+                    Timers.slowTimer();
                 } catch (Exception exception) {
                 }
             }
@@ -108,19 +115,20 @@ public class timers {
 
             if (r == 1) {
                 for (Entity e : p.getNearbyEntities(30.0D, 30.0D, 30.0D)) {
-                    if (timers.entEnabled(e)) {
+                    if (Timers.entEnabled(e)) {
                         LivingEntity v = (LivingEntity) e;
                         CustomVillager cv = new CustomVillager(v);
+                        cv.loadVillager(true);
                         if (cv.getLikes(p).orElse(0) > 0) {
                             // to-do Give Flower
                             break;
                         }
-                        sex vSex = cv.getSex();
-                        sex pSex = sex.valueOf(Optional.ofNullable(DataMethods.retrivePlayerData(p).get("sex"))
+                        Sex vSex = cv.getSex();
+                        Sex pSex = Sex.valueOf(Optional.ofNullable(DataMethods.retrivePlayerData(p).get("sex"))
                                 .orElse("male").toString());// this.saveFile.getString("players." + p.getUniqueId() +
                                                             // ".sex");
                         if (!pSex.equals(vSex)) {
-                            cv.addLikes(fileUtils.getFileConfiguration("config.yml")
+                            cv.addLikes(FileUtils.getFileConfiguration("config.yml")
                                     .getInteger("config.give-likes-ontime", 10), p);
                             break;
                         }
@@ -131,10 +139,10 @@ public class timers {
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(MComesToLife.getPlugin(), new Runnable() {
             public void run() {
                 try {
-                    timers.longTimer();
+                    Timers.longTimer();
                 } catch (Exception exception) {
                 }
             }
-        }, (fileUtils.getFileConfiguration("config.yml").getInteger("config.likes-timer", 40) * 20));
+        }, (FileUtils.getFileConfiguration("config.yml").getInteger("config.likes-timer", 40) * 20));
     }
 }

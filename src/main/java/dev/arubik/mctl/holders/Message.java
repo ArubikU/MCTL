@@ -9,8 +9,9 @@ import lombok.Getter;
 import lombok.Setter;
 import me.clip.placeholderapi.PlaceholderAPI;
 import dev.arubik.mctl.MComesToLife;
-import dev.arubik.mctl.MComesToLife.timeFormat;
-import dev.arubik.mctl.enums.sex;
+import dev.arubik.mctl.enums.Sex;
+import dev.arubik.mctl.utils.TimeFormat;
+import dev.arubik.mctl.utils.TimeUtils;
 
 public class Message {
 
@@ -20,8 +21,8 @@ public class Message {
 
     HashMap<String, String> extraData = new HashMap<String, String>();
 
-    public void ContraryformatSex(sex s) {
-        if (s == sex.female) {
+    public void ContraryformatSex(Sex s) {
+        if (s == Sex.female) {
             replace("<contrary_sex_plural>",
                     MComesToLife.getMessages().getLang("message.gender.male.plural", "chicos"));
             replace("<contrary_sex_plural_pronoun>",
@@ -43,8 +44,8 @@ public class Message {
         }
     }
 
-    public void formatSex(sex s) {
-        if (s == sex.male) {
+    public void formatSex(Sex s) {
+        if (s == Sex.male) {
             replace("<villager_sex_plural>",
                     MComesToLife.getMessages().getLang("message.gender.male.plural", "chicos"));
             replace("<villager_sex_plural_pronoun>",
@@ -66,8 +67,8 @@ public class Message {
         }
     }
 
-    public void formatPlayerSex(sex s) {
-        if (s == sex.male) {
+    public void formatPlayerSex(Sex s) {
+        if (s == Sex.male) {
             replace("<player_sex_plural>",
                     MComesToLife.getMessages().getLang("message.gender.male.plural", "chicos"));
             replace("<player_sex_plural_pronoun>",
@@ -87,51 +88,51 @@ public class Message {
 
     public void setupTimePlaceholder(Long time) {
 
-        HashMap<timeFormat, Integer> timetoWaitMap = MComesToLife.getTimeFromDate(time);
+        HashMap<TimeFormat, Integer> timetoWaitMap = TimeUtils.getTimeFromDate(time);
 
         // day setup
-        if (timetoWaitMap.get(timeFormat.DAY) == 0) {
+        if (timetoWaitMap.get(TimeFormat.DAY) == 0) {
             this.replace("<day_format> ", "");
             this.replace("<day_amount> ", "");
         }
-        this.replace("<day_amount>", timetoWaitMap.get(timeFormat.DAY).toString());
-        if (timetoWaitMap.get(timeFormat.DAY) <= 1) {
+        this.replace("<day_amount>", timetoWaitMap.get(TimeFormat.DAY).toString());
+        if (timetoWaitMap.get(TimeFormat.DAY) <= 1) {
             this.replace("<day_format>", MComesToLife.getMessages().getLang("cmd.time.day", "dia"));
         } else {
             this.replace("<day_format>", MComesToLife.getMessages().getLang("cmd.time.days", "dias"));
         }
 
         // hours setup
-        if (timetoWaitMap.get(timeFormat.HOURS) == 0) {
+        if (timetoWaitMap.get(TimeFormat.HOURS) == 0) {
             this.replace("<hours_format> ", "");
             this.replace("<hour_amount> ", "");
         }
-        this.replace("<hours_amount>", timetoWaitMap.get(timeFormat.HOURS).toString());
-        if (timetoWaitMap.get(timeFormat.HOURS) <= 1) {
+        this.replace("<hours_amount>", timetoWaitMap.get(TimeFormat.HOURS).toString());
+        if (timetoWaitMap.get(TimeFormat.HOURS) <= 1) {
             this.replace("<hours_format>", MComesToLife.getMessages().getLang("cmd.time.hour", "hora"));
         } else {
             this.replace("<hours_format>", MComesToLife.getMessages().getLang("cmd.time.hours", "horas"));
         }
 
         // minutes setup
-        if (timetoWaitMap.get(timeFormat.MINUTES) == 0) {
+        if (timetoWaitMap.get(TimeFormat.MINUTES) == 0) {
             this.replace("<minutes_format> ", "");
             this.replace("<minutes_amount> ", "");
         }
-        this.replace("<minutes_amount>", timetoWaitMap.get(timeFormat.MINUTES).toString());
-        if (timetoWaitMap.get(timeFormat.MINUTES) <= 1) {
+        this.replace("<minutes_amount>", timetoWaitMap.get(TimeFormat.MINUTES).toString());
+        if (timetoWaitMap.get(TimeFormat.MINUTES) <= 1) {
             this.replace("<minutes_format>", MComesToLife.getMessages().getLang("cmd.time.minute", "minuto"));
         } else {
             this.replace("<minutes_format>", MComesToLife.getMessages().getLang("cmd.time.minutes", "minutos"));
         }
 
         // seconds setup
-        if (timetoWaitMap.get(timeFormat.SECONDS) == 0) {
+        if (timetoWaitMap.get(TimeFormat.SECONDS) == 0) {
             this.replace("<seconds_format> ", "");
             this.replace("<seconds_amount> ", "");
         }
-        this.replace("<seconds_amount>", timetoWaitMap.get(timeFormat.SECONDS).toString());
-        if (timetoWaitMap.get(timeFormat.SECONDS) <= 1) {
+        this.replace("<seconds_amount>", timetoWaitMap.get(TimeFormat.SECONDS).toString());
+        if (timetoWaitMap.get(TimeFormat.SECONDS) <= 1) {
             this.replace("<seconds_format>", MComesToLife.getMessages().getLang("cmd.time.second", "segundo"));
         } else {
             this.replace("<seconds_format>", MComesToLife.getMessages().getLang("cmd.time.seconds", "segundos"));
@@ -163,7 +164,7 @@ public class Message {
     }
 
     public String getString() {
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+        if (MComesToLife.getEnabledPlugins().isEnabled("PlaceholderAPI")) {
             return PlaceholderAPI.setPlaceholders(player, this.string);
         }
 

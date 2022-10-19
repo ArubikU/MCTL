@@ -7,13 +7,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Mob;
 import org.jetbrains.annotations.Nullable;
-import org.jsoup.Connection.Method;
 
 import dev.arubik.mctl.MComesToLife;
-import dev.arubik.mctl.holders.Methods.DataMethods;
 import me.gamercoder215.mobchip.EntityBrain;
 import me.gamercoder215.mobchip.abstraction.ChipUtil;
-import me.gamercoder215.mobchip.abstraction.ChipUtil1_18_R1;
 import me.gamercoder215.mobchip.ai.memories.Memory;
 import me.gamercoder215.mobchip.bukkit.BukkitBrain;
 
@@ -22,8 +19,8 @@ public class AIEntity extends CustomEntity {
         super(v);
     }
 
-    public LivingEntity getLivingEntity() {
-        return (LivingEntity) villager;
+    public static AIEntity getFromEntity(LivingEntity v) {
+        return new AIEntity(v);
     }
 
     public EntityBrain getBrain() {
@@ -47,8 +44,12 @@ public class AIEntity extends CustomEntity {
     }
 
     public void setNBTTime(Memory memory, Object value, long time) {
+        if (!MComesToLife.getPlugin().isEnabled()) {
+            getBrain().getNBTEditor().remove(memory.getKey().toString());
+            return;
+        }
         getBrain().getNBTEditor().set(memory.getKey().toString(), value);
-        Bukkit.getScheduler().runTaskLater(MComesToLife.plugin, () -> {
+        Bukkit.getScheduler().runTaskLater(MComesToLife.getPlugin(), () -> {
             getBrain().getNBTEditor().remove(memory.getKey().toString());
         }, time);
     }
@@ -104,8 +105,42 @@ public class AIEntity extends CustomEntity {
                         ChipUtil.getWrapper(),
                         (Mob) this.villager)));
             } else {
-                if (f.get(null) != null) {
-                    return ((net.minecraft.world.entity.LivingEntity) ((net.minecraft.world.entity.Mob) f.get(null)));
+                if (f.get(getBrain().getBody()) != null) {
+                    return ((net.minecraft.world.entity.LivingEntity) ((net.minecraft.world.entity.Mob) f
+                            .get(getBrain().getBody())));
+                }
+            }
+
+            return null;
+        } catch (IllegalArgumentException | NoSuchFieldException | SecurityException | IllegalAccessException
+                | InvocationTargetException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Nullable
+    public static net.minecraft.world.entity.LivingEntity getNmsEntity(LivingEntity entity) {
+        try {
+
+            Field f = BukkitBrain.getBrain((Mob) entity).getBody().getClass().getDeclaredField("nmsMob");
+            f.setAccessible(true);
+
+            java.lang.reflect.Method toNMS = null;
+            for (java.lang.reflect.Method m : ChipUtil.getWrapper().getClass().getDeclaredMethods()) {
+                if (m.getName().toLowerCase().contains("tonms")) {
+                    toNMS = m;
+                }
+            }
+            if (toNMS == null) {
+                toNMS.setAccessible(true);
+                return ((net.minecraft.world.entity.LivingEntity) ((net.minecraft.world.entity.Mob) toNMS.invoke(
+                        ChipUtil.getWrapper(),
+                        (Mob) entity)));
+            } else {
+                if (f.get(BukkitBrain.getBrain((Mob) entity).getBody()) != null) {
+                    return ((net.minecraft.world.entity.LivingEntity) ((net.minecraft.world.entity.Mob) f
+                            .get(BukkitBrain.getBrain((Mob) entity).getBody())));
                 }
             }
 

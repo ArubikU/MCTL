@@ -1,16 +1,41 @@
 config:
+  debug: false
+  compatibility:
+    PlaceholderAPI: true
   autoChangeVillagers: true
-  divorce:
-    broadcast:
-      all: true
-      ignore_spouses: true
   interactions:
     max: 6
   permission:
     default-commands: true
   give-likes-ontime: 10
+  equip-percent: 0
+  attack-radius: 4
   likes-timer: 40
+  unboat: true
   villager-mobs:
     - VILLAGER
   villager-stats:
     MAX_HEALTH: 30
+  nitwit-items:
+  - item:BOOK
+  - itemsadder:ia_item:jade_sword
+  - config:{path="items.yml";section="book"}
+  target-mobs:
+  - ZOMBIE
+  - SKELETON
+  - VINDICATOR
+  mythic-target-mobs:
+  - "mythicZombie"
+  gifts:
+    GOLD_INGOT: 5
+    ANIMACRAFT:COBALT_INGO: 3
+  rings:
+    GOLD_INGOT_1005: 5
+    ANIMACRAFT:RING: 3
+  divorce:
+    ANIMACRAFT:DIVORCE_PAPERS: 3
+    broadcast:
+      all: true
+      ignore_spouses: true
+  heal:
+    APPLE: 3

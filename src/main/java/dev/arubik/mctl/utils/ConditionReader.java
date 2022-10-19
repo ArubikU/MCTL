@@ -2,6 +2,7 @@ package dev.arubik.mctl.utils;
 
 import javax.annotation.Nullable;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import dev.arubik.mctl.MComesToLife;
@@ -53,19 +54,27 @@ public class ConditionReader {
     }
 
     public Boolean isAvaliableCondition() {
+        if (MComesToLife.isDEBUG()) {
+            MessageUtils.BukkitLog("Condition Type: " + line.getString("condition", "any"));
+        }
         return Conditions.contains(line.getString("condition", "any"));
     }
 
     public Boolean checkCondition(Player player) {
         if (line.getBoolean("invert", false))
-            return !preCondition(line.getString("condition", "any"), line.getString("second_value", "null"), player);
-        return preCondition(line.getString("condition", "any"), line.getString("second_value", "null"), player);
+            return !preCondition(line.getString("condition", "any").toUpperCase(),
+                    line.getString("second_value", "null"), player);
+        return preCondition(line.getString("condition", "any").toUpperCase(), line.getString("second_value", "null"),
+                player);
     }
 
     private Boolean preCondition(String condition, String value, Player p) {
         String arg1 = line.getString("value");
+        if(DataMethods.getlastClickedEntity(p)!=null){
+            arg1 = MessageUtils.replace(DataMethods.getlastClickedEntity(p), p, arg1);
+        }
         if (MComesToLife.getEnabledPlugins().isEnabled("PlaceholderAPI")) {
-            arg1 = PlaceholderAPI.setPlaceholders(p, value);
+            arg1 = PlaceholderAPI.setPlaceholders(p, arg1);
         }
         if (condition.equals(Conditions.EQUALS.toString())) {
             return arg1.equals(value);
@@ -100,13 +109,13 @@ public class ConditionReader {
         } else if (condition.equals(Conditions.NOT_ENDS_WITH.toString())) {
             return !value.endsWith(arg1);
         } else if (condition.equals(Conditions.IS_SON.toString())) {
-            return DataMethods.isSon(MComesToLife.getlastClickedEntity(p).getLivingEntity(), p);
+            return DataMethods.isSon(DataMethods.getlastClickedEntity(p).getLivingEntity(), p);
         } else if (condition.equals(Conditions.NOT_IS_SON.toString())) {
-            return !DataMethods.isSon(MComesToLife.getlastClickedEntity(p).getLivingEntity(), p);
+            return !DataMethods.isSon(DataMethods.getlastClickedEntity(p).getLivingEntity(), p);
         } else if (condition.equals(Conditions.IS_SPOUSE.toString())) {
-            return MComesToLife.getlastClickedEntity(p).getSpouse().equalsIgnoreCase(p.getUniqueId().toString());
+            return DataMethods.getlastClickedEntity(p).getSpouse().equalsIgnoreCase(p.getUniqueId().toString());
         } else if (condition.equals(Conditions.NOT_IS_SPOUSE.toString())) {
-            return !MComesToLife.getlastClickedEntity(p).getSpouse().equalsIgnoreCase(p.getUniqueId().toString());
+            return !DataMethods.getlastClickedEntity(p).getSpouse().equalsIgnoreCase(p.getUniqueId().toString());
         } else if (condition.equals(Conditions.PERMISSION.toString())) {
             return p.hasPermission(value);
         }
