@@ -33,6 +33,7 @@ import dev.arubik.mctl.holders.Methods.DataMethods;
 import dev.arubik.mctl.utils.Target;
 import dev.arubik.mctl.utils.TimeUtils;
 import dev.arubik.mctl.utils.FileUtils;
+import dev.arubik.mctl.utils.ItemSerializer;
 import dev.arubik.mctl.utils.MessageUtils;
 
 public class CommandHolder implements org.bukkit.command.TabExecutor {
@@ -62,6 +63,7 @@ public class CommandHolder implements org.bukkit.command.TabExecutor {
         loadAllVillagers,
         debug,
         version,
+        itemtype,
         help;
 
         public static Boolean contains(String arg) {
@@ -105,6 +107,12 @@ public class CommandHolder implements org.bukkit.command.TabExecutor {
             }
             if (sender.hasPermission("mctl.cmd.debug") || admin(sender)) {
                 arrayList.add("debug");
+            }
+            if (sender.hasPermission("mctl.cmd.version") || admin(sender)) {
+                arrayList.add("version");
+            }
+            if (sender.hasPermission("mctl.cmd.itemtype") || admin(sender)) {
+                arrayList.add("itemtype");
             }
             // for (String cmd : arrayList) {
             // if (cmd.startsWith(args[0]))
@@ -198,6 +206,18 @@ public class CommandHolder implements org.bukkit.command.TabExecutor {
                             MessageUtils.MessageParsedPlaceholders(sender,
                                     new Message("<prefix><gray>La version del servidor es <server_version></gray>"));
                         }
+                        break;
+                    }
+                    case itemtype: {
+                        if (sender.hasPermission("mctl.itemtype")) {
+                            MessageUtils.MessageParsedPlaceholders(sender,
+                                    new Message(
+                                            "<prefix><gray>El tipo del item es "
+                                                    + ItemSerializer.getType(
+                                                            ((Player) sender).getInventory().getItemInMainHand())
+                                                    + "</gray>"));
+                        }
+                        break;
                     }
                     case gender: {
                         if (sender.hasPermission("mctl.gender") || sender.hasPermission("mctl.gender.male")
@@ -557,7 +577,9 @@ public class CommandHolder implements org.bukkit.command.TabExecutor {
                                 return true;
                             }
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            if(MComesToLife.isDEBUG()){
+                                    e.printStackTrace();
+                            }
                         }
                         break;
                     }

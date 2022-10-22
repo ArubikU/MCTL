@@ -81,6 +81,7 @@ public class BiObject<V, C> {
 
     // create methos to convert the BiObject to hash code and from hash code to
     // BiObject
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;

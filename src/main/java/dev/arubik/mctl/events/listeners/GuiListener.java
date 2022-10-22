@@ -26,6 +26,7 @@ import dev.arubik.mctl.utils.GuiCreator;
 import dev.arubik.mctl.utils.ItemSerializer;
 import dev.arubik.mctl.utils.FileUtils;
 import dev.arubik.mctl.utils.MessageUtils;
+import dev.arubik.mctl.utils.NumberUtils;
 import dev.arubik.mctl.utils.GuiCreator.Action;
 import dev.arubik.mctl.utils.GuiCreator.GuiHolder;
 import dev.arubik.mctl.utils.Json.LineConfig;
@@ -84,6 +85,7 @@ public class GuiListener extends Listener {
                 }
                 if (item.getConfigurationSection("ON_" + event.getClick().toString() + "_CLICK") == null)
                     return;
+                    
                 for (String key : item.getConfigurationSection("ON_" + event.getClick().toString() + "_CLICK")
                         .getKeys(false)) {
                     if (Action.valueOf(key.toUpperCase().replaceAll("[0-9]+", "")) != null) {
@@ -189,8 +191,8 @@ public class GuiListener extends Listener {
                                                     event.getWhoClicked());
                                         } else if (MComesToLife.lastClickedEntity
                                                 .containsKey(event.getWhoClicked().getUniqueId().toString())) {
-                                            CustomVillager villager = (CustomVillager) MComesToLife.lastClickedEntity
-                                                    .get(event.getWhoClicked().getUniqueId().toString());
+                                            CustomVillager villager = new CustomVillager((LivingEntity) MComesToLife.lastClickedEntity
+                                            .get(event.getWhoClicked().getUniqueId().toString()));
                                             villager.loadVillager(false);
                                             villager.getMood().speech(villager,
                                                     TypeAction.valueOf(actionConfig.getString("action", "CHAT"))
@@ -239,7 +241,21 @@ public class GuiListener extends Listener {
                                     villager.deEquip(villager.getEnum(actionConfig.getString("slot", "HAND")));
                                 }
                                 break;
+                            }
+                            case DROPITEMFROMINVENTORY:{
+                                CustomConfigurationSection actionConfig = new CustomConfigurationSection(item
+                                        .getConfigurationSection(
+                                                "ON_" + event.getClick().toString() + "_CLICK." + key));
 
+                                VillagerInventoryHolder villager = VillagerInventoryHolder
+                                        .getInstance((CustomVillager) holder.InventoryData
+                                                .get("CUSTOMVILLAGER"));
+                                villager.loadVillager(false);
+                                if (NumberUtils.isCreatable(actionConfig.getString("slot", "1"))) {
+                                    villager.loadInventory();
+                                    villager.dropItem(Integer.parseInt(actionConfig.getString("slot", "1")));
+                                }
+                                break;
                             }
                             case INTERNAL: {
                                 CustomConfigurationSection actionConfig = new CustomConfigurationSection(item

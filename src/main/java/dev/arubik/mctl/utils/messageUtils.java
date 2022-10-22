@@ -126,7 +126,7 @@ public class MessageUtils {
         message.replace(new String[] { "<cmd>", "<command>" }, MComesToLife.getMessages().getLang("command", "mctl"));
         if (p instanceof Player) {
             message.replace("<player_sons>", DataMethods.getSonNames((Player) p));
-            message.replace("<player_sons>", DataMethods.getSonNames((Player) p));
+            ;
             if (message.getString().contains("<player_sex")) {
                 message.formatPlayerSex(DataMethods.getSex((Player) p));
             }
@@ -160,7 +160,7 @@ public class MessageUtils {
         message.replace(new String[] { "<cmd>", "<command>" }, MComesToLife.getMessages().getLang("command", "mctl"));
         if (p instanceof Player) {
             message.replace("<player_sons>", DataMethods.getSonNames((Player) p));
-            message.replace("<player_sons>", DataMethods.getSonNames((Player) p));
+            ;
             if (message.getString().contains("<player_sex")) {
                 message.formatPlayerSex(DataMethods.getSex((Player) p));
             }
@@ -191,7 +191,7 @@ public class MessageUtils {
         message.replace(new String[] { "<cmd>", "<command>" }, MComesToLife.getMessages().getLang("command", "mctl"));
         if (p instanceof Player) {
             message.replace("<player_sons>", DataMethods.getSonNames((Player) p));
-            message.replace("<player_sons>", DataMethods.getSonNames((Player) p));
+            ;
             if (message.getString().contains("<player_sex")) {
                 message.formatPlayerSex(DataMethods.getSex((Player) p));
             }
@@ -223,7 +223,7 @@ public class MessageUtils {
         message.replace(new String[] { "<cmd>", "<command>" }, MComesToLife.getMessages().getLang("command", "mctl"));
         if (p instanceof Player) {
             message.replace("<player_sons>", DataMethods.getSonNames((Player) p));
-            message.replace("<player_sons>", DataMethods.getSonNames((Player) p));
+            ;
             if (message.getString().contains("<player_sex")) {
                 message.formatPlayerSex(DataMethods.getSex((Player) p));
             }
@@ -251,29 +251,50 @@ public class MessageUtils {
         MessageUtils.MiniMessage(message.getString(), p, 0);
     }
 
-    public static String replace(CustomVillager v, CommandSender p, String vd) {
+    public static String replace(@Nullable CustomVillager v, CommandSender p, String vd) {
         dev.arubik.mctl.holders.Message message = new dev.arubik.mctl.holders.Message(vd);
-        message.replace("<villager_nice>", MComesToLife.getMessages()
-                .getLang("message.gender." + v.getSex().toString().toLowerCase() + ".nice", "beautiful"));
-        message.replace("<villager_name>", v.getRealName());
-        message.replace("<villager_prefix>", MComesToLife.getNames().getLang().getString("names.prefix", ""));
-        message.replace("<villager_suffix>", MComesToLife.getNames().getLang().getString("names.suffix", ""));
-        message.replace("<villager_displayname>", ((String) v.getData().get("name")));
-        message.replace("<villager_sons>", DataMethods.getSonNames(v.villager));
-        message.replace("<villager_health>", ((int) v.villager.getHealth()) + "");
-        message.replace("<villager_type>", MComesToLife.getMessages()
-                .getLang("message.type." + v.getType().toLowerCase(), "v.getType().toLowerCase()"));
-        if (message.getString().contains("<villager_likes>")) {
-            message.replace("<villager_likes>", v.getLikes((Player) p).orElse(0).toString());
+        if (v != null && v.getLivingEntity() != null) {
+
+            message.replace("<villager_nice>", MComesToLife.getMessages()
+                    .getLang("message.gender." + v.getSex().toString().toLowerCase() + ".nice", "beautiful"));
+            message.replace("<villager_name>", v.getRealName());
+            message.replace("<villager_prefix>", MComesToLife.getNames().getLang().getString("names.prefix", ""));
+            message.replace("<villager_suffix>", MComesToLife.getNames().getLang().getString("names.suffix", ""));
+            message.replace("<villager_displayname>", Optional.ofNullable(((String) v.getData().get("name"))).orElse("ANY"));
+            message.replace("<villager_sons>", DataMethods.getSonNames(v.villager));
+            message.replace("<villager_health>", Optional.ofNullable(((int) v.villager.getHealth())).orElse(0) + "");
+            message.replace("<villager_max_health>", Optional.ofNullable(((int) v.villager.getMaxHealth())).orElse(0) + "");
+            message.replace("<villager_type>", MComesToLife.getMessages()
+                    .getLang("message.type_nice." + v.getType().toLowerCase(), v.getType().toLowerCase()));
+            if (message.getString().contains("<villager_likes>")) {
+                message.replace("<villager_likes>", v.getLikes((Player) p).orElse(0).toString());
+            }
+            if (message.getString().contains("<villager_mood>")) {
+                message.replace("<villager_mood>", MComesToLife.getMessages()
+                        .getLang(
+                                "message.mood_nice." + v.getMood().toString().toLowerCase() + "_"
+                                        + v.getSex().toString().toLowerCase(),
+                                v.getMood().toString().toLowerCase()));
+            }
+            if (message.getString().contains("<villager_trait>")) {
+                message.replace("<villager_trait>", MComesToLife.getMessages()
+                        .getLang(
+                                "message.trait_nice." + v.getTrait().toString().toLowerCase() + "_"
+                                        + v.getSex().toString().toLowerCase(),
+                                v.getTrait().toString().toLowerCase()));
+            }
+            if (message.getString().contains("<villager_hapiness>")) {
+                message.replace("<villager_hapiness>", v.getHappiness().orElse(0).toString());
+            }
+            if (message.getString().contains("<villager_sex")) {
+                message.formatSex(v.getSex());
+            }
         }
-        if (message.getString().contains("<villager_mood>")) {
-            message.replace("<villager_mood>", v.getMood().toString().toLowerCase());
+        if (message.getString().contains("<player_sex")) {
+            message.formatPlayerSex(DataMethods.getSex((Player) p));
         }
-        if (message.getString().contains("<villager_hapiness>")) {
-            message.replace("<villager_hapiness>", v.getHappiness().orElse(0).toString());
-        }
-        if (message.getString().contains("<villager_sex")) {
-            message.formatSex(v.getSex());
+        if (message.getString().contains("<contrary_sex")) {
+            message.ContraryformatSex(DataMethods.getSex((Player) p));
         }
         return message.getString();
     }
@@ -287,13 +308,6 @@ public class MessageUtils {
 
         if (p instanceof Player) {
             message.replace("<player_sons>", DataMethods.getSonNames((Player) p));
-            message.replace("<player_sons>", DataMethods.getSonNames((Player) p));
-            if (message.getString().contains("<player_sex")) {
-                message.formatPlayerSex(DataMethods.getSex((Player) p));
-            }
-            if (message.getString().contains("<contrary_sex")) {
-                message.ContraryformatSex(DataMethods.getSex((Player) p));
-            }
             message.setPlayer((Player) p);
             message.replace("%player%", p.getName());
             final Player pl = (Player) p;
@@ -333,9 +347,6 @@ public class MessageUtils {
         }
         if (message.getString().contains("§")) {
             message.removeLegacy();
-        }
-        if (message.getString().contains("<villager_sex")) {
-            message.formatSex(v.getSex());
         }
         MessageUtils.MiniMessage(message.getString(), p, 0);
     }
@@ -349,13 +360,6 @@ public class MessageUtils {
 
         if (p instanceof Player) {
             message.replace("<player_sons>", DataMethods.getSonNames((Player) p));
-            message.replace("<player_sons>", DataMethods.getSonNames((Player) p));
-            if (message.getString().contains("<player_sex")) {
-                message.formatPlayerSex(DataMethods.getSex((Player) p));
-            }
-            if (message.getString().contains("<contrary_sex")) {
-                message.ContraryformatSex(DataMethods.getSex((Player) p));
-            }
             message.setPlayer((Player) p);
             message.replace("%player%", p.getName());
             final Player pl = (Player) p;
@@ -371,34 +375,35 @@ public class MessageUtils {
             message.replace("<player_type>", type);
             message = new dev.arubik.mctl.holders.Message(replace(v, pl, message.getString()));
 
-            HashMap<String, Object> data = DataMethods.retriveData(v.villager);
-            if (data.get("father") != null && data.get("mother") != null) {
-                if (data.get("father").toString().equalsIgnoreCase(pl.getUniqueId().toString())) {
-                    message.replace("<villager_parent_me>",
-                            MComesToLife.getMessages().getLang("message.gender.female.parent", "mother"));
+            if (v != null) {
+
+                HashMap<String, Object> data = DataMethods.retriveData(v.villager);
+                if (data.get("father") != null && data.get("mother") != null) {
+                    if (data.get("father").toString().equalsIgnoreCase(pl.getUniqueId().toString())) {
+                        message.replace("<villager_parent_me>",
+                                MComesToLife.getMessages().getLang("message.gender.female.parent", "mother"));
+                        message.replace("<villager_parent_other>",
+                                MComesToLife.getMessages().getLang("message.gender.male.parent", "father"));
+                    }
+                    if (data.get("mother").toString().equalsIgnoreCase(pl.getUniqueId().toString())) {
+                        message.replace("<villager_parent_other>",
+                                MComesToLife.getMessages().getLang("message.gender.female.parent", "mother"));
+                        message.replace("<villager_parent_me>",
+                                MComesToLife.getMessages().getLang("message.gender.male.parent", "father"));
+                    }
+                } else {
                     message.replace("<villager_parent_other>",
-                            MComesToLife.getMessages().getLang("message.gender.male.parent", "father"));
-                }
-                if (data.get("mother").toString().equalsIgnoreCase(pl.getUniqueId().toString())) {
-                    message.replace("<villager_parent_other>",
-                            MComesToLife.getMessages().getLang("message.gender.female.parent", "mother"));
+                            MComesToLife.getMessages().getLang("message.any", "any"));
                     message.replace("<villager_parent_me>",
-                            MComesToLife.getMessages().getLang("message.gender.male.parent", "father"));
+                            MComesToLife.getMessages().getLang("message.any", "any"));
                 }
-            } else {
-                message.replace("<villager_parent_other>",
-                        MComesToLife.getMessages().getLang("message.any", "any"));
-                message.replace("<villager_parent_me>",
-                        MComesToLife.getMessages().getLang("message.any", "any"));
+
             }
             LivingEntity liv = (LivingEntity) ((Player) p);
             message.replace("<spouse_name>", DataMethods.getSpouse(liv).orElse(liv).getCustomName());
         }
         if (message.getString().contains("§")) {
             message.removeLegacy();
-        }
-        if (message.getString().contains("<villager_sex")) {
-            message.formatSex(v.getSex());
         }
         return message.getString();
     }

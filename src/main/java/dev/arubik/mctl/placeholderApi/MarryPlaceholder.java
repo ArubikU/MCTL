@@ -3,6 +3,7 @@ package dev.arubik.mctl.placeholderApi;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.LivingEntity;
 
+import dev.arubik.mctl.holders.Message;
 import dev.arubik.mctl.holders.Methods.DataMethods;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
@@ -14,11 +15,9 @@ import org.jetbrains.annotations.NotNull;
 import dev.arubik.mctl.MComesToLife;
 
 public class MarryPlaceholder extends PlaceholderExpansion {
-    String pid = "";
     private BiFunction<Player, String, String> onPlaceholderRequest;
 
     public MarryPlaceholder() {
-        pid = "marry";
         setOnPlaceholderRequest((player, identifier) -> {
             if (player == null) {
                 return "";
@@ -29,6 +28,8 @@ public class MarryPlaceholder extends PlaceholderExpansion {
                         return ((OfflinePlayer) DataMethods.getSpouse((LivingEntity) player).get()).getName();
                     }
                     return DataMethods.getSpouse((LivingEntity) player).get().getName();
+                } else {
+                    return "ANY";
                 }
             }
             if (identifier.equalsIgnoreCase("spouse_type")) {
@@ -37,7 +38,21 @@ public class MarryPlaceholder extends PlaceholderExpansion {
                         return "PLAYER";
                     }
                     return DataMethods.getSpouse((LivingEntity) player).get().getType().toString();
+                } else {
+                    return "ANY";
                 }
+            }
+            if (identifier.equalsIgnoreCase("gender")) {
+                return new Message("<player_sex>").formatPlayerSex(DataMethods.getSex(player)).getString();
+            }
+            if (identifier.equalsIgnoreCase("gender_pronoun")) {
+                return new Message("<player_sex_pronoun>").formatPlayerSex(DataMethods.getSex(player)).getString();
+            }
+            if (identifier.equalsIgnoreCase("gender_sign")) {
+                return new Message("<player_sign>").formatPlayerSex(DataMethods.getSex(player)).getString();
+            }
+            if (identifier.equalsIgnoreCase("gender_color")) {
+                return new Message("<player_color>").formatPlayerSex(DataMethods.getSex(player)).getString();
             }
             return "";
         });
@@ -47,6 +62,11 @@ public class MarryPlaceholder extends PlaceholderExpansion {
         this.onPlaceholderRequest = onPlaceholderRequest;
     }
 
+    public void registerTry() {
+        if (!this.isRegistered()) {
+            this.register();
+        }
+    }
 
     @Override
     public @NotNull String getAuthor() {
@@ -55,7 +75,7 @@ public class MarryPlaceholder extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getIdentifier() {
-        return pid;
+        return "marry";
     }
 
     @Override

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -41,9 +42,9 @@ import dev.arubik.mctl.utils.MessageUtils;
 
 public final class MComesToLife extends JavaPlugin {
 
-    private static JavaPlugin plugin;
+    private static MComesToLife plugin;
 
-    public static JavaPlugin getPlugin() {
+    public static MComesToLife getPlugin() {
         return plugin;
     }
 
@@ -121,6 +122,7 @@ public final class MComesToLife extends JavaPlugin {
     public static GuiCreator Maingui;
 
     public static SkinHolder skinHolder;
+    private static List<UUID> villagerUUID = new ArrayList<UUID>();
 
     public static FileConfiguration getMainConfig() {
         return config;
@@ -129,6 +131,20 @@ public final class MComesToLife extends JavaPlugin {
     @Override
     public org.bukkit.configuration.file.FileConfiguration getConfig() {
         return config.getConfig();
+    }
+
+    public Boolean containsUUID(Entity entity) {
+        return villagerUUID.contains(entity.getUniqueId());
+    }
+
+    public void addUUID(Entity entity) {
+        villagerUUID.add(entity.getUniqueId());
+    }
+
+    public void removeUUID(Entity entity) {
+        if (villagerUUID.contains(entity.getUniqueId())) {
+            villagerUUID.remove(entity.getUniqueId());
+        }
     }
 
     @Getter
@@ -144,8 +160,8 @@ public final class MComesToLife extends JavaPlugin {
     }
 
     public void addPlaceholders() {
-        new VillagerPlaceholder().register();
-        new MarryPlaceholder().register();
+        new VillagerPlaceholder().registerTry();
+        new MarryPlaceholder().registerTry();
     }
 
     @Override
@@ -192,9 +208,7 @@ public final class MComesToLife extends JavaPlugin {
         nms = new Nms();
         DEBUG = MComesToLife.getMainConfig().getBoolean("config.debug", false);
         loadCompatibilities();
-        for (PlaceholderBase pch : getPlaceholders()) {
-            pch.register();
-        }
+        addPlaceholders();
 
         Maingui = new GuiCreator(
                 FileUtils.getFileConfiguration(MComesToLife.config.getString("config.main-gui", "example-gui.yml"))

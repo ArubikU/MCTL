@@ -21,8 +21,21 @@ public class Message {
 
     HashMap<String, String> extraData = new HashMap<String, String>();
 
-    public void ContraryformatSex(Sex s) {
+    public Message ContraryformatSex(Sex s) {
         if (s == Sex.female) {
+
+            replace("<contrary_sign>", MComesToLife.getMessages().getLang(
+                    "cmd.gender."
+                            + Sex.male.toString().toLowerCase() + "_sign",
+                    Sex.male.getSign()));
+            replace("<contrary_sex>", MComesToLife.getMessages().getLang(
+                    "cmd.gender."
+                            + Sex.male.toString().toLowerCase(),
+                    Sex.male.toString().toLowerCase()));
+            replace("<contrary_color>", MComesToLife.getMessages().getLang(
+                    "cmd.gender."
+                            + Sex.male.toString().toLowerCase() + "_color",
+                    Sex.male.getColor()));
             replace("<contrary_sex_plural>",
                     MComesToLife.getMessages().getLang("message.gender.male.plural", "chicos"));
             replace("<contrary_sex_plural_pronoun>",
@@ -32,6 +45,18 @@ public class Message {
             replace("<contrary_sex_endchardisapear>",
                     MComesToLife.getMessages().getLang("message.gender.male.endchardisapear", "endchardisapear"));
         } else {
+            replace("<contrary_sign>", MComesToLife.getMessages().getLang(
+                    "cmd.gender."
+                            + Sex.female.toString().toLowerCase() + "_sign",
+                    Sex.female.getSign()));
+            replace("<contrary_sex>", MComesToLife.getMessages().getLang(
+                    "cmd.gender."
+                            + Sex.female.toString().toLowerCase(),
+                    Sex.female.toString().toLowerCase()));
+            replace("<contrary_color>", MComesToLife.getMessages().getLang(
+                    "cmd.gender."
+                            + Sex.female.toString().toLowerCase() + "_color",
+                    Sex.female.getColor()));
             replace("<contrary_sex_plural>",
                     MComesToLife.getMessages().getLang("message.gender.female.plural", "chicas"));
             replace("<contrary_sex_plural_pronoun>",
@@ -42,9 +67,22 @@ public class Message {
             replace("<contrary_sex_endchardisapear>",
                     MComesToLife.getMessages().getLang("message.gender.female.endchardisapear", "a"));
         }
+        return this;
     }
 
-    public void formatSex(Sex s) {
+    public Message formatSex(Sex s) {
+        replace("<villager_sex>", MComesToLife.getMessages().getLang(
+                "cmd.gender."
+                        + s.toString().toLowerCase(),
+                s.toString().toLowerCase()));
+        replace("<villager_sign>", MComesToLife.getMessages().getLang(
+                "cmd.gender."
+                        + s.toString().toLowerCase() + "_sign",
+                s.getSign()));
+        replace("<villager_color>", MComesToLife.getMessages().getLang(
+                "cmd.gender."
+                        + s.toString().toLowerCase() + "_color",
+                s.getColor()));
         if (s == Sex.male) {
             replace("<villager_sex_plural>",
                     MComesToLife.getMessages().getLang("message.gender.male.plural", "chicos"));
@@ -65,9 +103,22 @@ public class Message {
             replace("<villager_sex_endchardisapear>",
                     MComesToLife.getMessages().getLang("message.gender.female.endchardisapear", "a"));
         }
+        return this;
     }
 
-    public void formatPlayerSex(Sex s) {
+    public Message formatPlayerSex(Sex s) {
+        replace("<player_sex>", MComesToLife.getMessages().getLang(
+                "cmd.gender."
+                        + s.toString().toLowerCase(),
+                s.toString().toLowerCase()));
+        replace("<player_sign>", MComesToLife.getMessages().getLang(
+                "cmd.gender."
+                        + s.toString().toLowerCase() + "_sign",
+                s.getSign()));
+        replace("<player_color>", MComesToLife.getMessages().getLang(
+                "cmd.gender."
+                        + s.toString().toLowerCase() + "_color",
+                s.getColor()));
         if (s == Sex.male) {
             replace("<player_sex_plural>",
                     MComesToLife.getMessages().getLang("message.gender.male.plural", "chicos"));
@@ -84,9 +135,10 @@ public class Message {
                     MComesToLife.getMessages().getLang("message.gender.female.pronoun", "ella"));
             replace("<player_sex_endchar>", MComesToLife.getMessages().getLang("message.gender.female.endchar", "a"));
         }
+        return this;
     }
 
-    public void setupTimePlaceholder(Long time) {
+    public Message setupTimePlaceholder(Long time) {
 
         HashMap<TimeFormat, Integer> timetoWaitMap = TimeUtils.getTimeFromDate(time);
 
@@ -137,6 +189,7 @@ public class Message {
         } else {
             this.replace("<seconds_format>", MComesToLife.getMessages().getLang("cmd.time.seconds", "segundos"));
         }
+        return this;
     }
 
     public Message(String string) {
@@ -148,19 +201,20 @@ public class Message {
         this.extraData = extraData;
     }
 
-    public void replace(String pattern, String replacement) {
+    public Message replace(String pattern, String replacement) {
         if (string.contains(pattern)) {
             this.string = string.replaceAll(pattern, replacement);
         }
-
+        return this;
     }
 
-    public void replace(String[] patterns, String replacements) {
+    public Message replace(String[] patterns, String replacements) {
         for (int i = 0; i < patterns.length; i++) {
             if (string.contains(patterns[i])) {
                 this.string = string.replaceAll(patterns[i], replacements);
             }
         }
+        return this;
     }
 
     public String getString() {
@@ -171,7 +225,7 @@ public class Message {
         return this.string;
     }
 
-    public void removeLegacy() {
+    public Message removeLegacy() {
         this.replace("§f", "<white>");
         this.replace("§0", "<black>");
         this.replace("§1", "<dark_blue>");
@@ -186,6 +240,7 @@ public class Message {
         this.replace("§a", "<green>");
         this.replace("§b", "<aqua>");
         this.replace("§c", "<red>");
+        return this;
     }
 
     public Message removeMiniMessage() {

@@ -141,6 +141,10 @@ public enum Mood {
         }, 1L);
 
         if (type.equalsIgnoreCase("PROCREATE")) {
+            if (!DataMethods.getSpouse(interacter).orElse(interacter).getUniqueId().toString()
+                    .equalsIgnoreCase(cv.getLivingEntity().getUniqueId().toString())) {
+                return;
+            }
             Long p1l = (Long) DataMethods.retrivePlayerData((Player) interacter)
                     .getOrDefault("last-baby", 0L);
             Long p2l = (Long) DataMethods.retriveData(cv.getLivingEntity()).getOrDefault("last-baby",
@@ -501,7 +505,9 @@ public enum Mood {
                 cv.takeLikes(rand(1, 15), interacter);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            if(MComesToLife.isDEBUG()){
+                    e.printStackTrace();
+            }
         }
     }
 }

@@ -3,7 +3,7 @@ api-version: 1.13
 version: '${project.version}'
 main: dev.arubik.mctl.MComesToLife
 authors: [ Arubik ]
-depend: [ ProtocolLib, MythicLib ]
+depend: [ ProtocolLib, MythicLib, LibsDisguises ]
 softdepend:
   - "SkinsRestorer"
   - "PlaceholderAPI"

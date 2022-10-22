@@ -178,7 +178,7 @@ speech:
   flirt-bad: 
   - "<villager_prefix><villager_name><white>: That was bad."
   - "<villager_prefix><villager_name><white>: Not interested."
-  - "<villager_prefix><villager_name><white>: I bet you say that to all the <sex>s"
+  - "<villager_prefix><villager_name><white>: I bet you say that to all the <contrary_sex_plural>"
   - "<villager_prefix><villager_name><white>: Just stay away from me."
   - "<villager_prefix><villager_name><white>: Ewwww."
   - "<villager_prefix><villager_name><white>: Nice try."

@@ -9,29 +9,33 @@ public enum VillagerClassActions {
     GIVELIKES,
     TAKELIKES,
     GIVEHEALTH,
-    SETMOOD;
+    SETMOOD,
+    REBOOT;
 
     public void run(CustomVillager vil, Player interacter, Object extraData) {
         switch (this) {
-            case GIVELIKES:
+            case GIVELIKES: {
                 if (NumberUtils.isCreatable(extraData.toString())) {
                     int likes = Integer.parseInt(extraData.toString());
                     vil.addLikes(likes, interacter);
                 }
                 break;
-            case TAKELIKES:
+            }
+            case TAKELIKES: {
                 if (NumberUtils.isCreatable(extraData.toString())) {
                     int likes = Integer.parseInt(extraData.toString());
                     vil.takeLikes(likes, interacter);
                 }
                 break;
-            case GIVEHEALTH:
+            }
+            case GIVEHEALTH: {
                 if (NumberUtils.isCreatable(extraData.toString())) {
                     int health = Integer.parseInt(extraData.toString());
                     vil.regen(health);
                 }
                 break;
-            case SETMOOD:
+            }
+            case SETMOOD: {
                 if (NumberUtils.isCreatable(extraData.toString())) {
                     if (Mood.contains(extraData.toString())) {
                         Mood mood = Mood.valueOf(extraData.toString());
@@ -39,6 +43,13 @@ public enum VillagerClassActions {
                     }
                 }
                 break;
+            }
+            case REBOOT: {
+                vil.removeData();
+                vil = new CustomVillager(vil.getLivingEntity());
+                vil.loadVillager(true);
+                break;
+            }
         }
     }
 

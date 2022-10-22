@@ -54,12 +54,12 @@ public class CustomEntity {
     }
 
     public void putItems(String key, ItemStack... items) {
-        data.put(key, ItemSerializer.write(items));
+        this.putForceData(key, ItemSerializer.write(items));
         save();
     }
 
     public ItemStack[] getItems(String key) {
-        return ItemSerializer.read((String) data.get(key));
+        return ItemSerializer.read((String) this.getData(key));
     }
 
     public void putTempData(String key, Object value) {
@@ -96,6 +96,19 @@ public class CustomEntity {
             }
         }
     };
+
+    public void putForceData(String key, Object value) {
+        data.put(key, value);
+        FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
+        file.getConfig().set(path() + "." + key, value);
+        FileUtils.saveFile(file.getConfig(), "data.yml");
+    }
+
+    public Object getData(String key) {
+
+        FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
+        return file.getConfig().get(path() + "." + key);
+    }
 
     public String playerPath() {
         return "players." + villager.getUniqueId().toString();

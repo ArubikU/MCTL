@@ -52,6 +52,7 @@ public class MultiObjects {
             return this.d == null ? def : this.d;
         }
 
+        @Override
         public String toString() {
             return "TriObject [v=" + this.v + ", c=" + this.c + ", d=" + this.d + "]";
         }
@@ -96,6 +97,7 @@ public class MultiObjects {
             return this.d != null;
         }
 
+        @Override
         public int hashCode() {
             int result = 17;
             result = 31 * result + (this.v == null ? 0 : this.v.hashCode());

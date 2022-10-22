@@ -106,6 +106,10 @@ public class CustomVillager extends BetterEntity {
         return Mood.valueOf((String) Optional.ofNullable(data.get("mood")).orElse("NEUTRAL"));
     }
 
+    public Trait getTrait() {
+        return Trait.valueOf((String) Optional.ofNullable(data.get("trait")).orElse("OUTGOING"));
+    }
+
     public void setWork(Works i) {
         data.put("work", i.toString());
         save();
@@ -125,13 +129,14 @@ public class CustomVillager extends BetterEntity {
     }
 
     public void addLikes(Integer i, LivingEntity e) {
-        data.put("likes-" + e.getUniqueId().toString(),
-                Optional.ofNullable((Integer) data.get("likes-" + e.getUniqueId().toString())).orElse(0) + i);
+        Integer newLikes = i + Optional.ofNullable((Integer) data.get("likes-" + e.getUniqueId().toString())).orElse(0);
+        this.putForceData("likes-" + e.getUniqueId().toString(), newLikes);
+        data.put("likes-" + e.getUniqueId().toString(), newLikes);
         save();
     }
 
     public void takeLikes(Integer i, LivingEntity e) {
-        Integer a = Optional.ofNullable((Integer) data.get("likes-" + e.getUniqueId().toString())).orElse(0) - i;
+        Integer a = Optional.ofNullable((Integer) this.getData("likes-" + e.getUniqueId().toString())).orElse(0) - i;
         if (a < 0) {
             a = 0;
         }
@@ -143,7 +148,7 @@ public class CustomVillager extends BetterEntity {
     }
 
     public String getRealName() {
-        return ((String) data.get("name"))
+        return Optional.ofNullable(((String) data.get("name"))).orElse("ANY")
                 .replace(MComesToLife.getNames().getLang().getString("names.prefix", ""), "")
                 .replace(MComesToLife.getNames().getLang().getString("names.suffix", ""), "");
     }
@@ -349,7 +354,9 @@ public class CustomVillager extends BetterEntity {
                     Disguise();
                 }
             }
-        } else {
+        } else if (!MComesToLife.getPlugin().containsUUID(villager)) {
+            this.putForceData("villager-id", this.getLivingEntity().getUniqueId().toString());
+            MComesToLife.getPlugin().addUUID(villager);
             setupVillager();
             save();
             preDisguise();
@@ -529,11 +536,14 @@ public class CustomVillager extends BetterEntity {
                     + MComesToLife.getProffesions().getLang(type, type.toLowerCase().replace("_", " ")));
 
         } catch (Exception e) {
-            e.printStackTrace();
+            if(MComesToLife.isDEBUG()){
+                    e.printStackTrace();
+            }
         }
     }
 
     public void killVillager() {
+        MComesToLife.getPlugin().removeUUID(villager);
         String spouseuuid = (String) DataMethods.getRelationMap(this.villager).get("spouse");
         if (spouseuuid != "any") {
             // get the player by the UUID
@@ -554,6 +564,13 @@ public class CustomVillager extends BetterEntity {
                 }
                 this.divorceWithOutMessages(player);
             });
+        }
+
+        try {
+            VillagerInventoryHolder holder = VillagerInventoryHolder.getInstance(this);
+            holder.loadInventoryNoReload();
+            holder.DropInventory();
+        } catch (Throwable e) {
         }
 
         removeData();

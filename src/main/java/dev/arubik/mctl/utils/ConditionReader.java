@@ -3,18 +3,46 @@ package dev.arubik.mctl.utils;
 import javax.annotation.Nullable;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import dev.arubik.mctl.MComesToLife;
+import dev.arubik.mctl.holders.Message;
 import dev.arubik.mctl.holders.Methods.DataMethods;
 import dev.arubik.mctl.utils.Json.LineConfig;
 import me.clip.placeholderapi.PlaceholderAPI;
 
 public class ConditionReader {
     private LineConfig line;
+    private String realline;
 
     public ConditionReader(String line) {
-        this.line = new LineConfig(line);
+        this.realline = line;
+        this.line = new LineConfig(realline);
+    }
+
+    public String getLine() {
+        return realline;
+    }
+
+    public void redoConditions(Player p) {
+
+        if (MComesToLife.getEnabledPlugins().isEnabled("PlaceholderAPI")) {
+            realline = PlaceholderAPI.setPlaceholders(p, realline);
+        }
+
+        Message message = new Message(realline);
+        if (DataMethods.getSex(p) != null) {
+            message.ContraryformatSex(DataMethods.getSex(p));
+            message.formatPlayerSex(DataMethods.getSex(p));
+        }
+        realline = message.getString();
+        if (DataMethods.getlastClickedEntity(p) != null) {
+            message.formatSex(DataMethods.getlastClickedEntity(p).getSex());
+            realline = message.getString();
+            realline = MessageUtils.replace(DataMethods.getlastClickedEntity(p), p, realline);
+        }
+        line = new LineConfig(realline);
     }
 
     public enum Conditions {
@@ -60,22 +88,35 @@ public class ConditionReader {
         return Conditions.contains(line.getString("condition", "any"));
     }
 
-    public Boolean checkCondition(Player player) {
+    public Boolean checkCondition(Player player, ConfigurationSection section) {
+
+        boolean and = true;
+        boolean or = true;
+
+        if (line.getString("ANDcondition", "any") != "any") {
+            if (section.contains(line.getString("&&condition", "any"))) {
+                ConditionReader cond = new ConditionReader(section.getString(line.getString("&&condition", "any")));
+                cond.redoConditions(player);
+                and = cond.checkCondition(player, section);
+            }
+        }
+        if (line.getString("ORcondition", "any") != "any") {
+            if (section.contains(line.getString("ORcondition", "any"))) {
+                ConditionReader cond = new ConditionReader(section.getString(line.getString("&&condition", "any")));
+                cond.redoConditions(player);
+                or = cond.checkCondition(player, section);
+            }
+        }
+
         if (line.getBoolean("invert", false))
-            return !preCondition(line.getString("condition", "any").toUpperCase(),
-                    line.getString("second_value", "null"), player);
-        return preCondition(line.getString("condition", "any").toUpperCase(), line.getString("second_value", "null"),
-                player);
+            return !((preCondition(line.getString("condition", "any").toUpperCase(),
+                    line.getString("second_value", "null"), player) && and) || or);
+        return ((preCondition(line.getString("condition", "any").toUpperCase(),
+                line.getString("second_value", "null"), player) && and) || or);
     }
 
-    private Boolean preCondition(String condition, String value, Player p) {
-        String arg1 = line.getString("value");
-        if(DataMethods.getlastClickedEntity(p)!=null){
-            arg1 = MessageUtils.replace(DataMethods.getlastClickedEntity(p), p, arg1);
-        }
-        if (MComesToLife.getEnabledPlugins().isEnabled("PlaceholderAPI")) {
-            arg1 = PlaceholderAPI.setPlaceholders(p, arg1);
-        }
+    private Boolean preCondition(String condition, String arg1, Player p) {
+        String value = line.getString("value");
         if (condition.equals(Conditions.EQUALS.toString())) {
             return arg1.equals(value);
         } else if (condition.equals(Conditions.NOT_EQUALS.toString())) {

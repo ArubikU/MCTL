@@ -3,6 +3,7 @@ package dev.arubik.mctl.holders;
 import javax.annotation.Nullable;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -56,7 +57,14 @@ public class VillagerInventoryHolder extends CustomVillager {
 
     public void setupInv() {
         villagerInv = Bukkit.createInventory((InventoryHolder) this.villager, 54, "Inventory");
-        villagerInv.addItem(this.getItems("inventory"));
+        try {
+            if (this.getItems("inventory").length == 0) {
+                return;
+            }
+            this.addItem(this.getItems("inventory"));
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
     }
 
     public void equip(EquipmentSlot type, @Nullable ItemStack stack) {
@@ -89,7 +97,7 @@ public class VillagerInventoryHolder extends CustomVillager {
             }
             this.villager.getEquipment().setItem(type, null);
             this.setData(type.toString(), null);
-            this.Disguise();
+            this.loadVillager(true);
             return false;
         }
         return false;
@@ -214,16 +222,17 @@ public class VillagerInventoryHolder extends CustomVillager {
             String useProffessionForGifts = "";
 
             if (MComesToLife.getMainConfig().getBoolean("config.proffesion-gifts", false)) {
-                useProffessionForGifts = "." + this.getData("type", "nitwit") + ".";
+                useProffessionForGifts = this.getType() + ".";
             }
 
             if (MComesToLife.getMainConfig()
-                    .Contains("config.gifts." + useProffessionForGifts + ItemSerializer.getType(stack))) {
+                    .Contains("config.gifts." + ItemSerializer.getType(stack))) {
                 Integer extraLikes = MComesToLife.getMainConfig()
                         .getInteger("config.gifts." + ItemSerializer.getType(stack), 0);
                 Integer multiplier = 1;
-                if (stack.getAmount() > 4) {
-                    multiplier = Math.round(stack.getAmount() / 4);
+                if (stack.getAmount() > MComesToLife.getMainConfig().getInt("config.gift-amount-multiplier", 4)) {
+                    multiplier = Math.round(stack.getAmount()
+                            / MComesToLife.getMainConfig().getInt("config.gift-amount-multiplier", 4));
                 }
                 if (extraLikes < 0) {
                     extraLikes *= -1;
@@ -258,7 +267,7 @@ public class VillagerInventoryHolder extends CustomVillager {
                                 this);
                     }
                 }
-                villagerInv.addItem(stack);
+                this.addItem(stack);
                 return;
             } else if (MComesToLife.getMainConfig().Contains("config.rings." + ItemSerializer.getType(stack))) {
                 Integer extraLikes = MComesToLife.getMainConfig()
@@ -272,7 +281,7 @@ public class VillagerInventoryHolder extends CustomVillager {
                 }
 
                 DataMethods.marry(villager, gifter, extraLikes);
-                villagerInv.addItem(stack);
+                this.addItem(stack);
                 return;
             } else if (MComesToLife.getMainConfig().Contains("config.divorce." + ItemSerializer.getType(stack))) {
                 Integer extraLikes = MComesToLife.getMainConfig().getInteger(
@@ -297,7 +306,7 @@ public class VillagerInventoryHolder extends CustomVillager {
                 }
 
                 divorce(gifter);
-                // villagerInv.addItem(stack);
+                // this.addItem(stack);
                 return;
             } else if (MComesToLife.getMainConfig().Contains("config.heal." + ItemSerializer.getType(stack))) {
                 Integer extraLikes = MComesToLife.getMainConfig().getInteger(
@@ -309,9 +318,7 @@ public class VillagerInventoryHolder extends CustomVillager {
                     // Message(Mood
                     // .getText("gift-no-heal", DataMethods.getFamily("", gifter, villager))),
                     // this);
-                    villagerInv.addItem(stack).forEach((a, result) -> {
-                        this.dropItems(result);
-                    });
+                    this.addItem(stack);
                     return;
                 }
 
@@ -320,26 +327,27 @@ public class VillagerInventoryHolder extends CustomVillager {
                     clone.setAmount(stack.getAmount() - 1);
                     this.dropItems(clone);
                     stack.setAmount(1);
-
-                    for (ItemStack a : villagerInv.getContents()) {
-
-                        if (MComesToLife.getMainConfig().Contains("config.heal." + ItemSerializer.getType(a))) {
-                            villagerInv.remove(a);
-                            SaveInventory();
-                            dropItems(a);
-                        }
-                    }
                 }
                 this.regen(extraLikes);
-                villagerInv.addItem(stack).forEach((a, result) -> {
-                    this.dropItems(result);
-                });
+                MessageUtils.MessageParsedPlaceholders((CommandSender) gifter, new Message(Mood
+                        .getText("gift-regular", DataMethods.getFamily("", gifter, villager))),
+                        this);
             } else {
-                villagerInv.addItem(stack).forEach((a, result) -> {
-                    this.dropItems(result);
-                });
+                MessageUtils.MessageParsedPlaceholders((CommandSender) gifter, new Message(Mood
+                        .getText("gift-regular", DataMethods.getFamily("", gifter, villager))),
+                        this);
+                this.addItem(stack);
+                Integer multiplier = 1;
+                if (stack.getAmount() > MComesToLife.getMainConfig().getInt("config.gift-amount-multiplier", 4)) {
+                    multiplier = Math.round(stack.getAmount()
+                            / MComesToLife.getMainConfig().getInt("config.gift-amount-multiplier", 4));
+                }
+
+                this.addLikes(DataMethods.rand(0,
+                        MComesToLife.getMainConfig().getInt("config.max-gift-none", 7) * multiplier), gifter);
             }
         }
+        SaveInventory();
     }
 
     public void giveItem(@Nullable ItemStack stack) {
@@ -400,10 +408,45 @@ public class VillagerInventoryHolder extends CustomVillager {
 
             return;
         } else {
-            villagerInv.addItem(stack).forEach((a, result) -> {
-                this.dropItems(result);
-            });
+            this.addItem(stack);
         }
+        SaveInventory();
+    }
+
+    public void addItem(ItemStack... items) {
+        villagerInv.addItem(items);
+        this.SaveInventory();
+    }
+
+    @Nullable
+    public ItemStack getItem(int slot) {
+        ItemStack stack = villagerInv.getItem(slot);
+        if (stack == null)
+            return null;
+        if (stack.getType().isAir())
+            return null;
+        return stack;
+    }
+
+    public void removeItem(ItemStack stack) {
+        villagerInv.remove(stack);
+        this.SaveInventory();
+    }
+
+    public void removeItem(int slot) {
+        villagerInv.remove(getItem(slot));
+        this.SaveInventory();
+    }
+
+    public void dropItem(int slot) {
+        ItemStack stack = getItem(slot);
+        if (stack == null)
+            return;
+        if (stack.getType().isAir())
+            return;
+        villagerInv.remove(stack);
+        this.dropItems(stack);
+        SaveInventory();
     }
 
     public void SaveInventory() {
@@ -425,7 +468,7 @@ public class VillagerInventoryHolder extends CustomVillager {
                 ItemStack newItem = item.clone();
                 villagerInv.remove(item);
                 newItem.setAmount(newItem.getAmount() - 1);
-                villagerInv.addItem(newItem);
+                this.addItem(newItem);
                 SaveInventory();
                 return newItem;
             }

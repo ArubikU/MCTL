@@ -58,7 +58,9 @@ public class ListenerLoader {
             Listener l = (Listener) clazz.newInstance();
             listeners.put(listener, l);
         } catch (Exception e) {
-            e.printStackTrace();
+            if(MComesToLife.isDEBUG()){
+                    e.printStackTrace();
+            }
         }
     }
 
@@ -71,7 +73,9 @@ public class ListenerLoader {
                 listeners.put(clazz.getSimpleName(), l);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            if(MComesToLife.isDEBUG()){
+                    e.printStackTrace();
+            }
         }
     }
 

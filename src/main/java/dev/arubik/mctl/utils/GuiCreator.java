@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -16,6 +18,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -24,6 +27,7 @@ import dev.arubik.mctl.MComesToLife;
 import dev.arubik.mctl.entity.CustomVillager;
 import dev.arubik.mctl.enums.TypeAction;
 import dev.arubik.mctl.holders.Message;
+import dev.arubik.mctl.holders.VillagerInventoryHolder;
 import dev.arubik.mctl.holders.Methods.DataMethods;
 
 public class GuiCreator {
@@ -104,13 +108,19 @@ public class GuiCreator {
         }
     }
 
-    public ItemStack getSlot(EquipmentSlot slot, CustomVillager v) {
+    @Nullable
+    public ItemStack getSlot(EquipmentSlot slot, @Nullable CustomVillager v) {
+        if (v == null)
+            return null;
         if (v.hasData(slot.toString())) {
             if (ItemSerializer.read(v.getData(slot.toString(), "")).length == 0) {
                 return null;
             }
             ItemStack stack = ItemSerializer.read(v.getData(slot.toString(), ""))[0];
             return stack;
+        }
+        if (v.getLivingEntity().getEquipment().getItem(slot) != null) {
+            return v.getLivingEntity().getEquipment().getItem(slot);
         }
         return null;
     }
@@ -142,6 +152,7 @@ public class GuiCreator {
         DIVORCE,
         TRADE,
         DEEQUIP,
+        DROPITEMFROMINVENTORY,
         INTERNAL
 
     }
@@ -162,57 +173,47 @@ public class GuiCreator {
             tittle = new Message(tittle).removeMiniMessage().getString();
             Inventory clone = Bukkit.createInventory(Gui, inv.getSize(), tittle);
             InventoryItems.forEach((slot, tempItem) -> {
-                ItemStack item = tempItem;
+                ItemStack item = tempItem.clone();
                 if (config.getConfigurationSection("items." + slot).contains("slot")) {
                     if (DataMethods.getlastClickedEntity(player) != null) {
-
-                        try {
-                            switch (config.getConfigurationSection("items." + slot).getString("slot").toUpperCase()) {
-                                case "HAND":
-                                    item = DataMethods.getlastClickedEntity(player).getLivingEntity()
-                                            .getEquipment()
-                                            .getItemInMainHand();
-                                case "OFFHAND":
-                                    item = DataMethods.getlastClickedEntity(player).getLivingEntity()
-                                            .getEquipment()
-                                            .getItemInOffHand();
-                                case "LEGS":
-                                    item = DataMethods.getlastClickedEntity(player).getLivingEntity()
-                                            .getEquipment()
-                                            .getLeggings();
-                                case "BOOTS":
-                                    item = DataMethods.getlastClickedEntity(player).getLivingEntity()
-                                            .getEquipment()
-                                            .getBoots();
-                                case "HELMET":
-                                    item = DataMethods.getlastClickedEntity(player).getLivingEntity()
-                                            .getEquipment()
-                                            .getHelmet();
-                                case "CHESTPLATE":
-                                    item = DataMethods.getlastClickedEntity(player).getLivingEntity()
-                                            .getEquipment()
-                                            .getChestplate();
-
+                        switch (config.getConfigurationSection("items." + slot).getString("slot").toUpperCase()) {
+                            case "HAND": {
+                                item = getSlot(EquipmentSlot.HAND, DataMethods.getlastClickedEntity(player));
+                                break;
                             }
-                            if (item == null) {
-                                if (config.getConfigurationSection("items." + slot).get("replace-armor-item") != null) {
-                                    item = ItemSerializer.getFromConfigurationSection(
-                                            config.getConfigurationSection("items." + slot + ".replace-armor-item"));
-                                    item = ItemSerializer.putData(item, "armor_replace_section",
-                                            config.getConfigurationSection("items." + slot).get("replace-armor-item"));
-                                } else {
-                                    item = tempItem;
-                                }
-                            } else {
-                                if (config.getConfigurationSection("items." + slot).get("add-lore") != null) {
-                                    List<String> addLore = (List<String>) config
-                                            .getConfigurationSection("items." + slot).getList("add-lore");
-                                    List<String> lore = item.getItemMeta().getLore();
-                                    lore.addAll(addLore);
-                                    item.getItemMeta().setLore(lore);
-                                }
+                            case "OFFHAND": {
+                                item = getSlot(EquipmentSlot.OFF_HAND, DataMethods.getlastClickedEntity(player));
+                                break;
                             }
-                        } catch (Throwable e) {
+                            case "LEGS": {
+                                item = getSlot(EquipmentSlot.LEGS, DataMethods.getlastClickedEntity(player));
+                                break;
+                            }
+                            case "BOOTS": {
+                                item = getSlot(EquipmentSlot.FEET, DataMethods.getlastClickedEntity(player));
+                                break;
+                            }
+                            case "HELMET": {
+                                item = getSlot(EquipmentSlot.HEAD, DataMethods.getlastClickedEntity(player));
+                                break;
+                            }
+                            case "CHESTPLATE": {
+                                item = getSlot(EquipmentSlot.CHEST, DataMethods.getlastClickedEntity(player));
+                                break;
+                            }
+                        }
+
+                        if (NumberUtils
+                                .isCreatable(config.getConfigurationSection("items." + slot).getString("slot"))) {
+                            int slot2 = Integer
+                                    .parseInt(config.getConfigurationSection("items." + slot).getString("slot"));
+                            VillagerInventoryHolder holder = VillagerInventoryHolder
+                                    .getInstance(DataMethods.getlastClickedEntity(player));
+                            holder.loadInventoryNoReload();
+                            item = holder.getItem(slot2);
+
+                        }
+                        if (item == null) {
                             if (config.getConfigurationSection("items." + slot).get("replace-armor-item") != null) {
                                 item = ItemSerializer.getFromConfigurationSection(
                                         config.getConfigurationSection("items." + slot + ".replace-armor-item"));
@@ -220,6 +221,23 @@ public class GuiCreator {
                                         config.getConfigurationSection("items." + slot).get("replace-armor-item"));
                             } else {
                                 item = tempItem;
+                            }
+                        } else {
+                            if (config.getConfigurationSection("items." + slot).get("add-lore") != null
+                                    && item.hasItemMeta()) {
+                                List<String> addLore = (List<String>) config
+                                        .getConfigurationSection("items." + slot).getList("add-lore");
+                                List<String> lore = item.getItemMeta().getLore();
+                                lore.addAll(addLore);
+                                ItemMeta meta = item.getItemMeta();
+                                meta.setLore(lore);
+                                item.setItemMeta(meta);
+                            }
+                            if (config.getConfigurationSection("items." + slot).get("rename") != null) {
+                                ItemMeta meta = item.getItemMeta();
+                                meta.setDisplayName(
+                                        config.getConfigurationSection("items." + slot).getString("rename"));
+                                item.setItemMeta(meta);
                             }
                         }
                     }
@@ -229,14 +247,15 @@ public class GuiCreator {
                             .getStringList("conditions");
                     for (String condition : conditions) {
                         ConditionReader cond = new ConditionReader(condition);
+                        cond.redoConditions(player);
                         if (MComesToLife.isDEBUG()) {
-                            MessageUtils.BukkitLog("condition: " + condition);
+                            MessageUtils.BukkitLog("condition: " + cond.getLine());
                         }
                         if (cond.isAvaliableCondition()) {
                             if (MComesToLife.isDEBUG()) {
                                 MessageUtils.BukkitLog("condition Detected: true");
                             }
-                            if (cond.checkCondition(player)) {
+                            if (cond.checkCondition(player, config.getConfigurationSection("items." + slot))) {
                                 if (MComesToLife.isDEBUG()) {
                                     MessageUtils.BukkitLog("condition Pass: false");
                                 }
