@@ -61,10 +61,6 @@ public class LineConfig {
                     count--;
             }
             if (count != 0) {
-                // Log.error("" + ConsoleColor.RED + "Error loading LineConfig: Unbalanced
-                // Braces" + ConsoleColor.RED);
-                // Log.error("" + ConsoleColor.RED + "[Line]: " + ConsoleColor.RED +
-                // ConsoleColor.WHITE);
                 return;
             }
             if (s.length() == 0)
@@ -90,7 +86,7 @@ public class LineConfig {
                             this.config.put(key, val);
                         }
                     } catch (Exception exception) {
-                        if(MComesToLife.isDEBUG()){
+                        if (MComesToLife.isDEBUG()) {
                             exception.printStackTrace();
                         }
                     } finally {
@@ -105,10 +101,6 @@ public class LineConfig {
                 String[] split2 = s.split("\\]");
                 s = split2[0];
             } catch (ArrayIndexOutOfBoundsException ex) {
-                // Log.error("" + ConsoleColor.RED + "Error loading LineConfig: Invalid Syntax"
-                // + ConsoleColor.RED);
-                // Log.error("" + ConsoleColor.RED + "[Line]: " + ConsoleColor.RED +
-                // ConsoleColor.WHITE);
                 return;
             }
         } else {

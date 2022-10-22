@@ -167,7 +167,8 @@ public class EntityListener extends Listener {
         event.setCancelled(true);
     }
 
-    /*image.png
+    /*
+     * image.png
      * on summon a villager and verify they dont have any nbt tags in the List of
      * path config.yml config.except-nbts entity
      */
@@ -262,6 +263,7 @@ public class EntityListener extends Listener {
                 playertoTrade.remove(player.getUniqueId().toString().toLowerCase());
                 return;
             } else if (player.isSneaking()) {
+                return;
             } else {
                 event.setCancelled(true);
                 MComesToLife.Maingui.OpenInv(player);

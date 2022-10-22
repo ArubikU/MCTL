@@ -189,6 +189,9 @@ public class EntityAi {
 
             brain.getGoalAI().put(follow, 0);
         } catch (Throwable e) {
+            if(MComesToLife.isDEBUG()){
+                e.printStackTrace();
+            }
         }
     }
 

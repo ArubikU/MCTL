@@ -571,6 +571,9 @@ public class CustomVillager extends BetterEntity {
             holder.loadInventoryNoReload();
             holder.DropInventory();
         } catch (Throwable e) {
+            if(MComesToLife.isDEBUG()){
+                    e.printStackTrace();
+            }
         }
 
         removeData();
