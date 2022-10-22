@@ -57,7 +57,7 @@ speech:
   - '<villager_prefix><villager_name><white>: Es un buen regalo.'
   - '<villager_prefix><villager_name><white>: Gracias por el regalo.'
   - '<villager_prefix><villager_name><white>: Es hermoso.'
-  - '<villager_prefix><villager_name><white>: Algun dia de comprare uno.' 
+  - '<villager_prefix><villager_name><white>: Algun dia de comprare uno.'
   - '<villager_prefix><villager_name><white>: Que cool.'
   gift-great:
   - '<villager_prefix><villager_name><white>: Es asombroso!'

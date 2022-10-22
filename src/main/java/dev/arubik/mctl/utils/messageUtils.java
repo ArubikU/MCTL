@@ -126,7 +126,6 @@ public class MessageUtils {
         message.replace(new String[] { "<cmd>", "<command>" }, MComesToLife.getMessages().getLang("command", "mctl"));
         if (p instanceof Player) {
             message.replace("<player_sons>", DataMethods.getSonNames((Player) p));
-            ;
             if (message.getString().contains("<player_sex")) {
                 message.formatPlayerSex(DataMethods.getSex((Player) p));
             }
@@ -160,7 +159,6 @@ public class MessageUtils {
         message.replace(new String[] { "<cmd>", "<command>" }, MComesToLife.getMessages().getLang("command", "mctl"));
         if (p instanceof Player) {
             message.replace("<player_sons>", DataMethods.getSonNames((Player) p));
-            ;
             if (message.getString().contains("<player_sex")) {
                 message.formatPlayerSex(DataMethods.getSex((Player) p));
             }
@@ -191,7 +189,6 @@ public class MessageUtils {
         message.replace(new String[] { "<cmd>", "<command>" }, MComesToLife.getMessages().getLang("command", "mctl"));
         if (p instanceof Player) {
             message.replace("<player_sons>", DataMethods.getSonNames((Player) p));
-            ;
             if (message.getString().contains("<player_sex")) {
                 message.formatPlayerSex(DataMethods.getSex((Player) p));
             }
@@ -223,7 +220,6 @@ public class MessageUtils {
         message.replace(new String[] { "<cmd>", "<command>" }, MComesToLife.getMessages().getLang("command", "mctl"));
         if (p instanceof Player) {
             message.replace("<player_sons>", DataMethods.getSonNames((Player) p));
-            ;
             if (message.getString().contains("<player_sex")) {
                 message.formatPlayerSex(DataMethods.getSex((Player) p));
             }

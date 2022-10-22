@@ -60,14 +60,10 @@ public class BetterEntity extends AIEntity implements EntityMethods, CrossbowAtt
 
     @Override
     public void Disguise() {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void Disguise(Player... p) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
@@ -366,12 +362,11 @@ public class BetterEntity extends AIEntity implements EntityMethods, CrossbowAtt
 
     @Override
     public void onCrossbowAttackPerformed() {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void setChargingCrossbow(boolean arg0) {
+        
     }
 
     @Override

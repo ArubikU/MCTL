@@ -125,8 +125,7 @@ public class CustomEvent extends org.bukkit.event.Event implements Cancellable {
 
     @Override
     public @NotNull HandlerList getHandlers() {
-        // TODO Auto-generated method stub
-        return null;
+        return new HandlerList();
     }
 
 }

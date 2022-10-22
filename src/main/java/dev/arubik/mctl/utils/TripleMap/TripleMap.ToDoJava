@@ -2629,37 +2629,37 @@ public class TripleMap<K, V, C> extends AbstractTriple<K, V, C>
 
     @Override
     public void put(K key, V value, C cvalue) {
-        // TODO Auto-generated method stub
+        
 
     }
 
     @Override
     public V getv(K key) {
-        // TODO Auto-generated method stub
+        
         return null;
     }
 
     @Override
     public C getc(K key) {
-        // TODO Auto-generated method stub
+        
         return null;
     }
 
     @Override
     public boolean containsValues(V value, C cvalue) {
-        // TODO Auto-generated method stub
+        
         return false;
     }
 
     @Override
     public boolean containsVValue(V value) {
-        // TODO Auto-generated method stub
+        
         return false;
     }
 
     @Override
     public boolean containsCValue(C cvalue) {
-        // TODO Auto-generated method stub
+        
         return false;
     }
 

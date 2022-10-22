@@ -399,6 +399,9 @@ public class DataMethods {
                 if (DataMethods.isSon(v, p))
                     return "Child";
             } catch (Exception exception) {
+                if(MComesToLife.isDEBUG()){
+                    exception.printStackTrace();
+                }
             }
 
             try {
@@ -406,8 +409,14 @@ public class DataMethods {
                         .equalsIgnoreCase(v.getUniqueId().toString()))
                     return "Spouse";
             } catch (Exception exception) {
+                if(MComesToLife.isDEBUG()){
+                    exception.printStackTrace();
+                }
             }
         } catch (Exception exception) {
+            if(MComesToLife.isDEBUG()){
+                exception.printStackTrace();
+            }
         }
         return message;
     }

@@ -11,6 +11,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
+import dev.arubik.mctl.MComesToLife;
 import net.md_5.bungee.api.ChatColor;
 
 public class LineConfig {
@@ -89,7 +90,9 @@ public class LineConfig {
                             this.config.put(key, val);
                         }
                     } catch (Exception exception) {
-
+                        if(MComesToLife.isDEBUG()){
+                            exception.printStackTrace();
+                        }
                     } finally {
                         start = pos + 1;
                     }

@@ -100,6 +100,9 @@ public class Timers {
                 try {
                     Timers.slowTimer();
                 } catch (Exception exception) {
+                    if(MComesToLife.isDEBUG()){
+                        exception.printStackTrace();
+                    }
                 }
             }
         }, 120L);
@@ -141,6 +144,9 @@ public class Timers {
                 try {
                     Timers.longTimer();
                 } catch (Exception exception) {
+                    if(MComesToLife.isDEBUG()){
+                        exception.printStackTrace();
+                    }
                 }
             }
         }, (FileUtils.getFileConfiguration("config.yml").getInteger("config.likes-timer", 40) * 20));

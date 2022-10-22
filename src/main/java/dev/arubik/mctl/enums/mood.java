@@ -267,6 +267,9 @@ public enum Mood {
                 EntityAi.stopFollow((Mob) cv.getLivingEntity());
                 return;
             } catch (Exception exception) {
+                if(MComesToLife.isDEBUG()){
+                    exception.printStackTrace();
+                }
             }
         } else if (type.equalsIgnoreCase("stay")) {
             cv.getLivingEntity().addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 998001, 257));

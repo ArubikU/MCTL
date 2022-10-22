@@ -728,7 +728,6 @@ public abstract class AbstractTriple<K, V, C> implements TriMap<K, V, C> {
 
         @Override
         public C getCValue() {
-            // TODO Auto-generated method stub
             return Cvalue;
         }
 
@@ -882,7 +881,6 @@ public abstract class AbstractTriple<K, V, C> implements TriMap<K, V, C> {
 
         @Override
         public C getCValue() {
-            // TODO Auto-generated method stub
             return Cvalue;
         }
 

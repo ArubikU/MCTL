@@ -22,11 +22,7 @@ public class WaitTimePerAction {
 
     public Boolean able(Player p, Long time) {
         if (timeMap.containsKey(p.getName())) {
-            if (timeMap.get(p.getName()) + time < System.currentTimeMillis()) {
-                return true;
-            } else {
-                return false;
-            }
+            return timeMap.get(p.getName()) + time < System.currentTimeMillis();
         } else {
             return true;
         }

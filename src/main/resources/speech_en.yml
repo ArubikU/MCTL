@@ -175,7 +175,7 @@ speech:
   - "<villager_prefix><villager_name><white>: We should go out sometime."
   - "<villager_prefix><villager_name><white>: Your sweet."
   - "<villager_prefix><villager_name><white>: You know it."
-  flirt-bad: 
+  flirt-bad:
   - "<villager_prefix><villager_name><white>: That was bad."
   - "<villager_prefix><villager_name><white>: Not interested."
   - "<villager_prefix><villager_name><white>: I bet you say that to all the <contrary_sex_plural>"
