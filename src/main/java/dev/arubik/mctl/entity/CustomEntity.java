@@ -9,11 +9,13 @@ import javax.annotation.Nullable;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Mob;
 import org.bukkit.entity.ZombieVillager;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
 
 import dev.arubik.mctl.MComesToLife;
 import dev.arubik.mctl.holders.Methods.DataMethods;
@@ -80,7 +82,11 @@ public class CustomEntity {
             file.getConfig().set(path() + "." + key, data.get(key));
         }
         FileUtils.saveFile(file.getConfig(), "data.yml");
+
+        this.getLivingEntity().getPersistentDataContainer().set(key, PersistentDataType.STRING, "true");
     };
+
+    public static final NamespacedKey key = new NamespacedKey(MComesToLife.getPlugin(), "villager");
 
     public void load() {
         FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
@@ -150,4 +156,76 @@ public class CustomEntity {
     public Creature getCreature() {
         return (Creature) villager;
     }
+
+    public void putContainerData(String tag, Object object) {
+        if (object.getClass().getName().equals("java.lang.String")) {
+            this.villager.getPersistentDataContainer().set(
+                    new NamespacedKey(MComesToLife.getPlugin(), tag), PersistentDataType.STRING,
+                    (String) object);
+        } else if (object.getClass().getName().equals("java.lang.Integer")) {
+            this.villager.getPersistentDataContainer().set(
+                    new NamespacedKey(MComesToLife.getPlugin(), tag), PersistentDataType.INTEGER,
+                    (Integer) object);
+        } else if (object.getClass().getName().equals("java.lang.Double")) {
+            this.villager.getPersistentDataContainer().set(
+                    new NamespacedKey(MComesToLife.getPlugin(), tag), PersistentDataType.DOUBLE,
+                    (Double) object);
+        } else if (object.getClass().getName().equals("java.lang.Float")) {
+            this.villager.getPersistentDataContainer().set(
+                    new NamespacedKey(MComesToLife.getPlugin(), tag), PersistentDataType.FLOAT,
+                    (Float) object);
+        } else if (object.getClass().getName().equals("java.lang.Long")) {
+            this.villager.getPersistentDataContainer().set(
+                    new NamespacedKey(MComesToLife.getPlugin(), tag), PersistentDataType.LONG,
+                    (Long) object);
+        } else if (object.getClass().getName().equals("java.lang.Short")) {
+            this.villager.getPersistentDataContainer().set(
+                    new NamespacedKey(MComesToLife.getPlugin(), tag), PersistentDataType.SHORT,
+                    (Short) object);
+        } else if (object.getClass().getName().equals("java.lang.Byte")) {
+            this.villager.getPersistentDataContainer().set(
+                    new NamespacedKey(MComesToLife.getPlugin(), tag), PersistentDataType.BYTE,
+                    (Byte) object);
+        } else if (object.getClass().getName().equals("java.lang.Boolean")) {
+            this.villager.getPersistentDataContainer().set(
+                    new NamespacedKey(MComesToLife.getPlugin(), tag), PersistentDataType.STRING,
+                    object.toString());
+        }
+    }
+
+    public Boolean containsContainerData(String tag) {
+        return this.villager.getPersistentDataContainer()
+                .has(new NamespacedKey(MComesToLife.getPlugin(), tag));
+    }
+
+    public <T> T getContainerData(String tag, Class<T> Type) {
+        if (Type.getName().equals("java.lang.String")) {
+            return (T) this.villager.getPersistentDataContainer().get(
+                    new NamespacedKey(MComesToLife.getPlugin(), tag), PersistentDataType.STRING);
+        } else if (Type.getName().equals("java.lang.Integer")) {
+            return (T) this.villager.getPersistentDataContainer().get(
+                    new NamespacedKey(MComesToLife.getPlugin(), tag), PersistentDataType.INTEGER);
+        } else if (Type.getName().equals("java.lang.Double")) {
+            return (T) this.villager.getPersistentDataContainer().get(
+                    new NamespacedKey(MComesToLife.getPlugin(), tag), PersistentDataType.DOUBLE);
+        } else if (Type.getName().equals("java.lang.Float")) {
+            return (T) this.villager.getPersistentDataContainer().get(
+                    new NamespacedKey(MComesToLife.getPlugin(), tag), PersistentDataType.FLOAT);
+        } else if (Type.getName().equals("java.lang.Long")) {
+            return (T) this.villager.getPersistentDataContainer()
+                    .get(new NamespacedKey(MComesToLife.getPlugin(), tag), PersistentDataType.LONG);
+        } else if (Type.getName().equals("java.lang.Short")) {
+            return (T) this.villager.getPersistentDataContainer().get(
+                    new NamespacedKey(MComesToLife.getPlugin(), tag), PersistentDataType.SHORT);
+        } else if (Type.getName().equals("java.lang.Byte")) {
+            return (T) this.villager.getPersistentDataContainer()
+                    .get(new NamespacedKey(MComesToLife.getPlugin(), tag), PersistentDataType.BYTE);
+        } else if (Type.getName().equals("java.lang.Boolean")) {
+            return (T) Boolean.valueOf(this.villager.getPersistentDataContainer()
+                    .get(new NamespacedKey(MComesToLife.getPlugin(), tag),
+                            PersistentDataType.STRING));
+        }
+        return null;
+    }
+
 }

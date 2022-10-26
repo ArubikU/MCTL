@@ -30,13 +30,6 @@ public class PacketListener extends dev.arubik.mctl.events.event.PacketListener 
     }
 
     private final static int RENDER_DISTANCE = 32;
-    private final static Set<PacketType> MOVEMENT_PACKETS = Sets.newHashSet(
-            PacketType.Play.Server.ENTITY_VELOCITY,
-            PacketType.Play.Server.REL_ENTITY_MOVE,
-            PacketType.Play.Server.ENTITY_LOOK,
-            PacketType.Play.Server.ENTITY_TELEPORT,
-            PacketType.Play.Server.ENTITY_HEAD_ROTATION,
-            PacketType.Play.Server.REL_ENTITY_MOVE_LOOK);
 
     @Override
     public void unregisterPacket() {
@@ -48,19 +41,10 @@ public class PacketListener extends dev.arubik.mctl.events.event.PacketListener 
         ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(MComesToLife.getPlugin(),
                 ListenerPriority.HIGHEST,
                 PacketType.Play.Server.SPAWN_ENTITY,
-                PacketType.Play.Server.SPAWN_ENTITY_EXPERIENCE_ORB,
                 PacketType.Play.Server.NAMED_ENTITY_SPAWN,
-                PacketType.Play.Server.ANIMATION,
-                PacketType.Play.Server.BLOCK_BREAK_ANIMATION,
                 PacketType.Play.Server.ENTITY_STATUS,
-                PacketType.Play.Server.REL_ENTITY_MOVE,
-                PacketType.Play.Server.REL_ENTITY_MOVE_LOOK,
-                PacketType.Play.Server.ENTITY_LOOK,
-                PacketType.Play.Server.ENTITY_HEAD_ROTATION,
-                PacketType.Play.Server.CAMERA,
                 PacketType.Play.Server.ENTITY_METADATA,
                 PacketType.Play.Server.ATTACH_ENTITY,
-                PacketType.Play.Server.ENTITY_VELOCITY,
                 PacketType.Play.Server.ENTITY_EQUIPMENT,
                 PacketType.Play.Server.MOUNT,
                 PacketType.Play.Server.ENTITY_SOUND,

@@ -36,6 +36,7 @@ import net.citizensnpcs.api.CitizensAPI;
 import net.skinsrestorer.api.SkinVariant;
 import net.skinsrestorer.api.exception.SkinRequestException;
 import dev.arubik.mctl.MComesToLife;
+import dev.arubik.mctl.entity.CustomEntity;
 import dev.arubik.mctl.entity.CustomVillager;
 import dev.arubik.mctl.enums.Works;
 import dev.arubik.mctl.enums.Mood;
@@ -83,7 +84,8 @@ public class DataMethods {
 
         if (MComesToLife.getEnabledPlugins().isEnabled("MythicMobs")) {
             if (MythicBukkit.inst().getMobManager().isActiveMob(e.getUniqueId())) {
-                if(Timers.entEnabled(MythicBukkit.inst().getMobManager().getMythicMobInstance(e).getType().getInternalName())) {
+                if (Timers.entEnabled(
+                        MythicBukkit.inst().getMobManager().getMythicMobInstance(e).getType().getInternalName())) {
                     return true;
                 }
                 return false;
@@ -100,7 +102,7 @@ public class DataMethods {
                 return false;
             }
         }
-        if(Timers.entEnabled(e)){
+        if (Timers.entEnabled(e)) {
             return true;
         }
         return true;
@@ -399,7 +401,7 @@ public class DataMethods {
                 if (DataMethods.isSon(v, p))
                     return "Child";
             } catch (Exception exception) {
-                if(MComesToLife.isDEBUG()){
+                if (MComesToLife.isDEBUG()) {
                     exception.printStackTrace();
                 }
             }
@@ -409,12 +411,12 @@ public class DataMethods {
                         .equalsIgnoreCase(v.getUniqueId().toString()))
                     return "Spouse";
             } catch (Exception exception) {
-                if(MComesToLife.isDEBUG()){
+                if (MComesToLife.isDEBUG()) {
                     exception.printStackTrace();
                 }
             }
         } catch (Exception exception) {
-            if(MComesToLife.isDEBUG()){
+            if (MComesToLife.isDEBUG()) {
                 exception.printStackTrace();
             }
         }
@@ -457,12 +459,15 @@ public class DataMethods {
     }
 
     public static Boolean isCustom(Entity e) {
-        FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
-        if (e instanceof LivingEntity) {
-            return file.getConfig().contains(DataMethods.pathEnt((LivingEntity) e));
-        } else {
-            return false;
-        }
+
+        return e.getPersistentDataContainer().has(CustomEntity.key);
+
+        // FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
+        // if (e instanceof LivingEntity) {
+        // return file.getConfig().contains(DataMethods.pathEnt((LivingEntity) e));
+        // } else {
+        // return false;
+        // }
     }
 
     public static Boolean isCustom(String e) {
