@@ -34,6 +34,14 @@ public class MessageUtils {
         }
     }
 
+    public static void send(CommandSender sender, String s) {
+        MessageParsedPlaceholders(sender, new dev.arubik.mctl.holders.Message(s));
+    }
+
+    public static void send(CommandSender sender, String s, CustomVillager v) {
+        MessageParsedPlaceholders(sender, new dev.arubik.mctl.holders.Message(s), v);
+    }
+
     public static void Message(Player pl, String s) {
         Audience p = Audience.empty();
         p = au.player(pl);

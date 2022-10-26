@@ -161,10 +161,14 @@ public class VillagerInventoryHolder extends CustomVillager {
 
     public void giveItem(Player gifter) {
         ItemStack stack = gifter.getInventory().getItemInMainHand();
-        if (stack == null)
+        if (stack == null) {
+            MessageUtils.send(gifter, "<prefix> You must be holding an item to give to the villager!", this);
             return;
-        if (stack.getType().isAir())
+        }
+        if (stack.getType().isAir()) {
+            MessageUtils.send(gifter, "<prefix> You must be holding an item to give to the villager!", this);
             return;
+        }
         gifter.getInventory().setItemInMainHand(AIR);
         if (Material.contains(ItemSerializer.getType(stack))) {
             if (Material.isType(Material.HELMET, ItemSerializer.getType(stack))) {
@@ -224,8 +228,46 @@ public class VillagerInventoryHolder extends CustomVillager {
             if (MComesToLife.getMainConfig().getBoolean("config.proffesion-gifts", false)) {
                 useProffessionForGifts = this.getType() + ".";
             }
+            if (MComesToLife.getMainConfig().Contains("config.rings." + ItemSerializer.getType(stack))) {
+                Integer extraLikes = MComesToLife.getMainConfig()
+                        .getInteger("config.rings." + ItemSerializer.getType(stack), 0);
 
-            if (MComesToLife.getMainConfig()
+                if (stack.getAmount() > 1) {
+                    ItemStack clone = stack.clone();
+                    clone.setAmount(stack.getAmount() - 1);
+                    this.dropItems(clone);
+                    stack.setAmount(1);
+                }
+
+                DataMethods.marry(villager, gifter, extraLikes);
+                this.addItem(stack);
+                return;
+            } else if (MComesToLife.getMainConfig().Contains("config.divorce." + ItemSerializer.getType(stack))) {
+                Integer extraLikes = MComesToLife.getMainConfig().getInteger(
+                        "config.divorce." + ItemSerializer.getType(stack),
+                        0);
+
+                if (stack.getAmount() > 1) {
+                    ItemStack clone = stack.clone();
+                    clone.setAmount(stack.getAmount() - 1);
+                    this.dropItems(clone);
+                    stack.setAmount(1);
+
+                    for (ItemStack a : villagerInv.getContents()) {
+
+                        if (MComesToLife.getMainConfig().Contains("config.rings." + ItemSerializer.getType(a))) {
+                            villagerInv.remove(a);
+                            SaveInventory();
+                            dropItems(a);
+                        }
+                    }
+
+                }
+
+                divorce(gifter);
+                // this.addItem(stack);
+                return;
+            } else if (MComesToLife.getMainConfig()
                     .Contains("config.gifts." + ItemSerializer.getType(stack))) {
                 Integer extraLikes = MComesToLife.getMainConfig()
                         .getInteger("config.gifts." + ItemSerializer.getType(stack), 0);
@@ -268,45 +310,6 @@ public class VillagerInventoryHolder extends CustomVillager {
                     }
                 }
                 this.addItem(stack);
-                return;
-            } else if (MComesToLife.getMainConfig().Contains("config.rings." + ItemSerializer.getType(stack))) {
-                Integer extraLikes = MComesToLife.getMainConfig()
-                        .getInteger("config.rings." + ItemSerializer.getType(stack), 0);
-
-                if (stack.getAmount() > 1) {
-                    ItemStack clone = stack.clone();
-                    clone.setAmount(stack.getAmount() - 1);
-                    this.dropItems(clone);
-                    stack.setAmount(1);
-                }
-
-                DataMethods.marry(villager, gifter, extraLikes);
-                this.addItem(stack);
-                return;
-            } else if (MComesToLife.getMainConfig().Contains("config.divorce." + ItemSerializer.getType(stack))) {
-                Integer extraLikes = MComesToLife.getMainConfig().getInteger(
-                        "config.divorce." + ItemSerializer.getType(stack),
-                        0);
-
-                if (stack.getAmount() > 1) {
-                    ItemStack clone = stack.clone();
-                    clone.setAmount(stack.getAmount() - 1);
-                    this.dropItems(clone);
-                    stack.setAmount(1);
-
-                    for (ItemStack a : villagerInv.getContents()) {
-
-                        if (MComesToLife.getMainConfig().Contains("config.rings." + ItemSerializer.getType(a))) {
-                            villagerInv.remove(a);
-                            SaveInventory();
-                            dropItems(a);
-                        }
-                    }
-
-                }
-
-                divorce(gifter);
-                // this.addItem(stack);
                 return;
             } else if (MComesToLife.getMainConfig().Contains("config.heal." + ItemSerializer.getType(stack))) {
                 Integer extraLikes = MComesToLife.getMainConfig().getInteger(
