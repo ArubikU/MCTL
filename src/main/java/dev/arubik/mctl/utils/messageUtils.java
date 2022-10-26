@@ -256,11 +256,16 @@ public class MessageUtils {
             message.replace("<villager_name>", v.getRealName());
             message.replace("<villager_prefix>", MComesToLife.getNames().getLang().getString("names.prefix", ""));
             message.replace("<villager_suffix>", MComesToLife.getNames().getLang().getString("names.suffix", ""));
-            message.replace("<villager_displayname>", Optional.ofNullable(((String) v.getData().get("name"))).orElse("ANY"));
+            message.replace("<villager_displayname>",
+                    Optional.ofNullable(((String) v.getData().get("name"))).orElse("ANY"));
             message.replace("<villager_sons>", DataMethods.getSonNames(v.villager));
             message.replace("<villager_health>", Optional.ofNullable(((int) v.villager.getHealth())).orElse(0) + "");
-            message.replace("<villager_max_health>", Optional.ofNullable(((int) v.villager.getMaxHealth())).orElse(0) + "");
+            message.replace("<villager_max_health>",
+                    Optional.ofNullable(((int) v.villager.getMaxHealth())).orElse(0) + "");
             message.replace("<villager_type>", MComesToLife.getMessages()
+                    .getLang("message.type_nice." + v.getType().toLowerCase() + "_"
+                            + v.getSex().toString().toLowerCase(), v.getType().toLowerCase()));
+            message.replace("<villager_type_ungender>", MComesToLife.getMessages()
                     .getLang("message.type_nice." + v.getType().toLowerCase(), v.getType().toLowerCase()));
             if (message.getString().contains("<villager_likes>")) {
                 message.replace("<villager_likes>", v.getLikes((Player) p).orElse(0).toString());
@@ -272,11 +277,23 @@ public class MessageUtils {
                                         + v.getSex().toString().toLowerCase(),
                                 v.getMood().toString().toLowerCase()));
             }
+            if (message.getString().contains("<villager_mood_ungender>")) {
+                message.replace("<villager_mood_ungender>", MComesToLife.getMessages()
+                        .getLang(
+                                "message.mood_nice." + v.getMood().toString().toLowerCase(),
+                                v.getMood().toString().toLowerCase()));
+            }
             if (message.getString().contains("<villager_trait>")) {
                 message.replace("<villager_trait>", MComesToLife.getMessages()
                         .getLang(
                                 "message.trait_nice." + v.getTrait().toString().toLowerCase() + "_"
                                         + v.getSex().toString().toLowerCase(),
+                                v.getTrait().toString().toLowerCase()));
+            }
+            if (message.getString().contains("<villager_trait_ungender>")) {
+                message.replace("<villager_trait>", MComesToLife.getMessages()
+                        .getLang(
+                                "message.trait_nice." + v.getTrait().toString().toLowerCase(),
                                 v.getTrait().toString().toLowerCase()));
             }
             if (message.getString().contains("<villager_hapiness>")) {

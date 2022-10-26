@@ -1,1 +1,7 @@
 book:
+  MATERIAL: BOOK
+  NAME: "<white>Book"
+  AMOUNT: 1
+  LORE:
+  - "<red>A custom Book"
+  CMD: 10001

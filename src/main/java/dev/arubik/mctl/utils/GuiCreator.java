@@ -144,19 +144,6 @@ public class GuiCreator {
         }
     }
 
-    public enum Action {
-        OPEN_MENU,
-        PLAYER_COMMAND,
-        CONSOLE_COMMAND,
-        INTERACT,
-        DIVORCE,
-        TRADE,
-        DEEQUIP,
-        DROPITEMFROMINVENTORY,
-        INTERNAL
-
-    }
-
     public void OpenInv(Player... players) {
         if (inv == null) {
 

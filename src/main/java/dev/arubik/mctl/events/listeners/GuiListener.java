@@ -15,6 +15,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 import dev.arubik.mctl.MComesToLife;
 import dev.arubik.mctl.entity.CustomVillager;
+import dev.arubik.mctl.enums.Action;
 import dev.arubik.mctl.enums.TypeAction;
 import dev.arubik.mctl.enums.VillagerClassActions;
 import dev.arubik.mctl.events.Listener;
@@ -27,7 +28,6 @@ import dev.arubik.mctl.utils.ItemSerializer;
 import dev.arubik.mctl.utils.FileUtils;
 import dev.arubik.mctl.utils.MessageUtils;
 import dev.arubik.mctl.utils.NumberUtils;
-import dev.arubik.mctl.utils.GuiCreator.Action;
 import dev.arubik.mctl.utils.GuiCreator.GuiHolder;
 import dev.arubik.mctl.utils.Json.LineConfig;
 

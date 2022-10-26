@@ -19,11 +19,13 @@ public class FileUtils {
             s.options().copyDefaults(true);
             try {
                 try {
-                    MComesToLife.getPlugin().saveResource(path, false);
-                    data.save(path);
+                    if (MComesToLife.getPlugin().getResource(path) != null && path != "data.yml") {
+                        MComesToLife.getPlugin().saveResource(path, false);
+                    }
                 } catch (java.lang.IllegalArgumentException e) {
                     MessageUtils.log("<red>MCTL: <white>Failed to load default file <yellow>" + path);
                 }
+                data.save(path);
             } catch (IOException e) {
                 e.printStackTrace();
             }

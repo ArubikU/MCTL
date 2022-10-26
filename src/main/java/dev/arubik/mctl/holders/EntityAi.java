@@ -182,14 +182,13 @@ public class EntityAi {
             // if (brain.getGoalAI().stream()
             // .anyMatch(p ->
             // p.getPathfinder().getInternalName().equalsIgnoreCase("VillagerDefend"))) {
-            // brain.getGoalAI()
-            // .removeIf(path ->
-            // path.getPathfinder().getInternalName().equalsIgnoreCase("VillagerDefend"));
-            // }
+            brain.getGoalAI()
+                    .removeIf(path -> path.getPathfinder().getInternalName().equalsIgnoreCase("VillagerDefend"));
 
-            brain.getGoalAI().put(follow, 0);
+            // brain.getGoalAI().put(follow, 0);
+            brain.getTargetAI().put(follow, 0);
         } catch (Throwable e) {
-            if(MComesToLife.isDEBUG()){
+            if (MComesToLife.isDEBUG()) {
                 e.printStackTrace();
             }
         }

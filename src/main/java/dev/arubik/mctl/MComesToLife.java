@@ -210,11 +210,15 @@ public final class MComesToLife extends JavaPlugin {
         loadCompatibilities();
         addPlaceholders();
 
-        Maingui = new GuiCreator(
-                FileUtils.getFileConfiguration(MComesToLife.config.getString("config.main-gui", "example-gui.yml"))
-                        .getConfig().getConfigurationSection("gui"),
-                MComesToLife.config.getString("config.main-gui", "example-gui.yml"));
-        Maingui.setupInv();
+        try {
+            Maingui = new GuiCreator(
+                    FileUtils.getFileConfiguration(MComesToLife.config.getString("config.main-gui", "example-gui.yml"))
+                            .getConfig().getConfigurationSection("gui"),
+                    MComesToLife.config.getString("config.main-gui", "example-gui.yml"));
+            Maingui.setupInv();
+        } catch (Throwable e) {
+            MessageUtils.log("<red>[MCTL]</red> <gray> The Main guis is not generated or bad config");
+        }
         Mood.waitTimes = new WaitTimePerAction("interact");
         skinHolder.preLoadSkins(config.getStringList("config.file-skins", new ArrayList<String>()));
         EntityAi.reload();
