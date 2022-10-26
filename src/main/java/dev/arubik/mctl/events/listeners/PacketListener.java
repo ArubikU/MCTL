@@ -30,6 +30,13 @@ public class PacketListener extends dev.arubik.mctl.events.event.PacketListener 
     }
 
     private final static int RENDER_DISTANCE = 32;
+    private final static Set<PacketType> MOVEMENT_PACKETS = Sets.newHashSet(
+            PacketType.Play.Server.ENTITY_VELOCITY,
+            PacketType.Play.Server.REL_ENTITY_MOVE,
+            PacketType.Play.Server.ENTITY_LOOK,
+            PacketType.Play.Server.ENTITY_TELEPORT,
+            PacketType.Play.Server.ENTITY_HEAD_ROTATION,
+            PacketType.Play.Server.REL_ENTITY_MOVE_LOOK);
 
     @Override
     public void unregisterPacket() {
@@ -39,38 +46,41 @@ public class PacketListener extends dev.arubik.mctl.events.event.PacketListener 
     @Override
     public void registerPacket() {
         ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(MComesToLife.getPlugin(),
-                ListenerPriority.HIGHEST,
-                PacketType.Play.Server.SPAWN_ENTITY,
-                PacketType.Play.Server.NAMED_ENTITY_SPAWN,
-                PacketType.Play.Server.ENTITY_STATUS,
-                PacketType.Play.Server.ENTITY_METADATA,
-                PacketType.Play.Server.ATTACH_ENTITY,
-                PacketType.Play.Server.ENTITY_EQUIPMENT,
-                PacketType.Play.Server.MOUNT,
-                PacketType.Play.Server.ENTITY_SOUND,
-                PacketType.Play.Server.COLLECT,
-                PacketType.Play.Server.ENTITY_TELEPORT,
-                PacketType.Play.Server.UPDATE_ATTRIBUTES,
-                PacketType.Play.Server.ENTITY_EFFECT) {
+        ListenerPriority.HIGHEST,
+        PacketType.Play.Server.SPAWN_ENTITY,
+        PacketType.Play.Server.NAMED_ENTITY_SPAWN,
+        PacketType.Play.Server.ENTITY_STATUS,
+        PacketType.Play.Server.ENTITY_METADATA,
+        PacketType.Play.Server.ATTACH_ENTITY,
+        PacketType.Play.Server.ENTITY_EQUIPMENT,
+        PacketType.Play.Server.MOUNT,
+        PacketType.Play.Server.ENTITY_SOUND,
+        PacketType.Play.Server.COLLECT,
+        PacketType.Play.Server.ENTITY_TELEPORT,
+        PacketType.Play.Server.UPDATE_ATTRIBUTES,
+        PacketType.Play.Server.ENTITY_EFFECT) {
             @Override
             public void onPacketSending(PacketEvent event) {
                 PacketType type = event.getPacketType();
 
+                if(MOVEMENT_PACKETS.contains(type)) {
+                    return;
+                }
+
                 Player player = event.getPlayer();
                 Entity entity = event.getPacket().getEntityModifier(player.getWorld()).readSafely(0);
+
                 if (entity == null)
                     return;
+                if(entity.getLocation().distance(player.getLocation())/16 > RENDER_DISTANCE) {
+                    return;
+                }
                 if (!DataMethods.isCustom(entity))
                     return;
-
-                // if (type.toString().toUpperCase().contains("SPAWN")) {
-                // // event.setCancelled(true);
-                // return;
-                // }
-                if (DisguiseAPI.getDisguise(player, entity) == null) {
+                if(!DisguiseAPI.isDisguised(player, entity)){
                     CustomVillager vil = new CustomVillager((LivingEntity) entity);
-                    vil.loadVillager(true);
-                    //vil.Disguise(player);
+                    vil.loadVillager(false);
+                    vil.Disguise(player);
                 }
             }
         });
