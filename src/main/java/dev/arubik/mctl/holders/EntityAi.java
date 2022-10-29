@@ -12,6 +12,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
@@ -31,6 +32,7 @@ import me.gamercoder215.mobchip.bukkit.BukkitBrain;
 import dev.arubik.mctl.MComesToLife;
 import dev.arubik.mctl.entity.CustomVillager;
 import dev.arubik.mctl.enums.Works;
+import dev.arubik.mctl.holders.IA.ItemFollow;
 import dev.arubik.mctl.holders.IA.PlayerFollow;
 import dev.arubik.mctl.holders.IA.VillagerDefend;
 import dev.arubik.mctl.holders.Methods.DataMethods;
@@ -38,8 +40,10 @@ import dev.arubik.mctl.utils.FileConfiguration;
 import dev.arubik.mctl.utils.ItemSerializer;
 import dev.arubik.mctl.utils.FileUtils;
 import dev.arubik.mctl.utils.MessageUtils;
+import dev.arubik.mctl.utils.Json.JsonBuilder;
 import dev.arubik.mctl.utils.Json.LineConfig;
 import dev.lone.itemsadder.api.CustomStack;
+import io.lumine.mythic.bukkit.BukkitAPIHelper;
 
 public class EntityAi {
     public void setupAi(CustomVillager mob) {
@@ -76,19 +80,35 @@ public class EntityAi {
 
     public static void SetHome(Mob m, Location loc) {
         EntityBrain brain = BukkitBrain.getBrain(m);
-        EntityAI goal = brain.getGoalAI();
-        brain.setMemory(EntityMemory.HOME, loc);
+        StringBuilder location = new StringBuilder();
+        location.append("{");
+        location.append("world=" + loc.getWorld().getName() + ";");
+        location.append("x=" + loc.getX() + ";");
+        location.append("y=" + loc.getY() + ";");
+        location.append("z=" + loc.getZ() + ";");
+        location.append("}");
+        brain.getNBTEditor().set("home_location", location.toString());
     }
 
     public static Boolean goHome(Mob m) {
+        stopFollow(m);
         EntityBrain brain = BukkitBrain.getBrain(m);
-        EntityAI goal = brain.getGoalAI();
-        EntityAI target = brain.getTargetAI();
-        if (brain.getMemory(EntityMemory.HOME) == null)
-            return false;
-        Location loc = brain.getMemory(EntityMemory.HOME);
-        brain.getController().moveTo(loc, brain.getController().getCurrentSpeedModifier());
-        return true;
+        if (brain.getNBTEditor().getString("home_location") != null) {
+            String location = brain.getNBTEditor().getString("home_location");
+            String[] loc = location.split(";");
+            String world = loc[0].split("=")[1];
+            if (m.getWorld().getName() != world) {
+                return false;
+            }
+            double x = Double.parseDouble(loc[1].split("=")[1]);
+            double y = Double.parseDouble(loc[2].split("=")[1]);
+            double z = Double.parseDouble(loc[3].split("=")[1]);
+            Location home = new Location(Bukkit.getWorld(world), x, y, z);
+            EntityAI goal = brain.getGoalAI();
+            brain.getController().moveTo(home, brain.getController().getCurrentSpeedModifier());
+            return true;
+        }
+        return false;
     }
 
     public static void startFishing(CustomVillager v) {
@@ -175,18 +195,22 @@ public class EntityAi {
         try {
             EntityBrain brain = BukkitBrain.getBrain(m);
 
-            VillagerDefend follow = new VillagerDefend(m, true, targetTypes);
-            for (String s : MComesToLife.getMainConfig().getStringList("config.mythic-target-mobs", aaaa)) {
-                follow.addID(s);
-            }
             // if (brain.getGoalAI().stream()
             // .anyMatch(p ->
             // p.getPathfinder().getInternalName().equalsIgnoreCase("VillagerDefend"))) {
             brain.getGoalAI()
                     .removeIf(path -> path.getPathfinder().getInternalName().equalsIgnoreCase("VillagerDefend"));
-
-            // brain.getGoalAI().put(follow, 0);
-            brain.getTargetAI().put(follow, 0);
+            Bukkit.getScheduler().runTaskLater(MComesToLife.getPlugin(), new Runnable() {
+                @Override
+                public void run() {
+                    
+                    VillagerDefend follow = new VillagerDefend(m, true, targetTypes);
+                    for (String s : MComesToLife.getMainConfig().getStringList("config.mythic-target-mobs", aaaa)) {
+                        follow.addID(s);
+                    }
+                    brain.getGoalAI().put(follow, 0);
+                }
+            }, 1);
         } catch (Throwable e) {
             if (MComesToLife.isDEBUG()) {
                 e.printStackTrace();
@@ -194,16 +218,19 @@ public class EntityAi {
         }
     }
 
+    public static void pickupItem(final Mob m, Item item) {
+        final EntityBrain brain = BukkitBrain.getBrain(m);
+        try {
+            final ItemFollow follow = new ItemFollow(m, item);
+            brain.getGoalAI().put(follow, 1);
+        } catch (final Throwable e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void updateVillagerDefend(Mob m) {
         if (!(m instanceof Villager))
             return;
-        // try {
-        // EntityBrain brain = BukkitBrain.getBrain(m);
-        // brain.getGoalAI().removeIf(p ->
-        // p.getPathfinder().getInternalName().equalsIgnoreCase("VillagerAttack"));
-        // } catch (Throwable e) {
-        // e.printStackTrace();
-        // }
         addVillagerDefend(m);
     }
 

@@ -161,8 +161,13 @@ public class ItemSerializer {
 
                         return items;
                 } catch (Exception ignored) {
-                        return new ItemStack[0];
+                        return emptyInv;
                 }
+        }
+
+        private static ItemStack[] emptyInv = new ItemStack[1];
+        static {
+                emptyInv[0] = new ItemStack(Material.AIR);
         }
 
         @Nullable
@@ -215,7 +220,7 @@ public class ItemSerializer {
                                                                                 section.getInt("enchants." + ench),
                                                                                 true);
                                         } catch (Exception e) {
-                                                if(MComesToLife.isDEBUG()){
+                                                if (MComesToLife.isDEBUG()) {
                                                         e.printStackTrace();
                                                 }
                                         }
@@ -226,7 +231,7 @@ public class ItemSerializer {
                                                 b.addUnsafeEnchantment(Enchantment.getByName(ench),
                                                                 section.getInt("enchants." + ench));
                                         } catch (Exception e) {
-                                                if(MComesToLife.isDEBUG()){
+                                                if (MComesToLife.isDEBUG()) {
                                                         e.printStackTrace();
                                                 }
                                         }

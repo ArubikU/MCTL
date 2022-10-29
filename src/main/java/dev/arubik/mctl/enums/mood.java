@@ -39,6 +39,7 @@ import dev.arubik.mctl.utils.CustomConfigurationSection;
 import dev.arubik.mctl.utils.TimeUtils;
 import dev.arubik.mctl.utils.FileUtils;
 import dev.arubik.mctl.utils.MessageUtils;
+import dev.arubik.mctl.utils.ShortCuts;
 
 public enum Mood {
     HAPPY,
@@ -225,7 +226,7 @@ public enum Mood {
 
         }
         VillagerInventoryHolder vil = VillagerInventoryHolder.getInstance(cv);
-        vil.loadInventory();
+        vil.loadInventoryNoReload();
 
         if (type.equalsIgnoreCase("GIFT")) {
             vil.giveItem((Player) interacter);
@@ -267,7 +268,7 @@ public enum Mood {
                 EntityAi.stopFollow((Mob) cv.getLivingEntity());
                 return;
             } catch (Exception exception) {
-                if(MComesToLife.isDEBUG()){
+                if (MComesToLife.isDEBUG()) {
                     exception.printStackTrace();
                 }
             }
@@ -282,7 +283,10 @@ public enum Mood {
             return;
         } else if (type.equalsIgnoreCase("GOHOME")) {
             cv.getLivingEntity().removePotionEffect(PotionEffectType.SLOW);
-            EntityAi.goHome((Mob) cv.getLivingEntity());
+            if (!EntityAi.goHome((Mob) cv.getLivingEntity())) {
+                MessageUtils.send(interacter, ShortCuts.getMessages().getLang("cmd.no-home-near",
+                        "<villager_prefix><villager_name><white>: My home is to far or dont exist."), vil);
+            }
             return;
         }
 
@@ -508,8 +512,8 @@ public enum Mood {
                 cv.takeLikes(rand(1, 15), interacter);
             }
         } catch (Exception e) {
-            if(MComesToLife.isDEBUG()){
-                    e.printStackTrace();
+            if (MComesToLife.isDEBUG()) {
+                e.printStackTrace();
             }
         }
     }

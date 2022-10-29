@@ -61,7 +61,7 @@ public class VillagerInventoryHolder extends CustomVillager {
             if (this.getItems("inventory").length == 0) {
                 return;
             }
-            this.addItem(this.getItems("inventory"));
+            villagerInv.setContents(this.getItems("inventory"));
         } catch (Throwable e) {
             e.printStackTrace();
         }
@@ -162,11 +162,11 @@ public class VillagerInventoryHolder extends CustomVillager {
     public void giveItem(Player gifter) {
         ItemStack stack = gifter.getInventory().getItemInMainHand();
         if (stack == null) {
-            MessageUtils.send(gifter, "<prefix> You must be holding an item to give to the villager!", this);
+            MessageUtils.send(gifter, MComesToLife.getMessages().getLang("cmd.no-item-give","<prefix> You must be holding an item to give to the villager!"), this);
             return;
         }
         if (stack.getType().isAir()) {
-            MessageUtils.send(gifter, "<prefix> You must be holding an item to give to the villager!", this);
+            MessageUtils.send(gifter, MComesToLife.getMessages().getLang("cmd.no-item-give","<prefix> You must be holding an item to give to the villager!"), this);
             return;
         }
         gifter.getInventory().setItemInMainHand(AIR);
@@ -240,7 +240,7 @@ public class VillagerInventoryHolder extends CustomVillager {
                 }
 
                 DataMethods.marry(villager, gifter, extraLikes);
-                this.addItem(stack);
+                this.addItem(stack.clone());
                 return;
             } else if (MComesToLife.getMainConfig().Contains("config.divorce." + ItemSerializer.getType(stack))) {
                 Integer extraLikes = MComesToLife.getMainConfig().getInteger(
@@ -265,7 +265,7 @@ public class VillagerInventoryHolder extends CustomVillager {
                 }
 
                 divorce(gifter);
-                // this.addItem(stack);
+                // this.addItem(stack.clone());
                 return;
             } else if (MComesToLife.getMainConfig()
                     .Contains("config.gifts." + ItemSerializer.getType(stack))) {
@@ -309,7 +309,7 @@ public class VillagerInventoryHolder extends CustomVillager {
                                 this);
                     }
                 }
-                this.addItem(stack);
+                this.addItem(stack.clone());
                 return;
             } else if (MComesToLife.getMainConfig().Contains("config.heal." + ItemSerializer.getType(stack))) {
                 Integer extraLikes = MComesToLife.getMainConfig().getInteger(
@@ -321,7 +321,7 @@ public class VillagerInventoryHolder extends CustomVillager {
                     // Message(Mood
                     // .getText("gift-no-heal", DataMethods.getFamily("", gifter, villager))),
                     // this);
-                    this.addItem(stack);
+                    this.addItem(stack.clone());
                     return;
                 }
 
@@ -339,7 +339,7 @@ public class VillagerInventoryHolder extends CustomVillager {
                 MessageUtils.MessageParsedPlaceholders((CommandSender) gifter, new Message(Mood
                         .getText("gift-regular", DataMethods.getFamily("", gifter, villager))),
                         this);
-                this.addItem(stack);
+                this.addItem(stack.clone());
                 Integer multiplier = 1;
                 if (stack.getAmount() > MComesToLife.getMainConfig().getInt("config.gift-amount-multiplier", 4)) {
                     multiplier = Math.round(stack.getAmount()
@@ -411,7 +411,7 @@ public class VillagerInventoryHolder extends CustomVillager {
 
             return;
         } else {
-            this.addItem(stack);
+            this.addItem(stack.clone());
         }
         SaveInventory();
     }
@@ -584,5 +584,12 @@ public class VillagerInventoryHolder extends CustomVillager {
                     || type.contains("BOW") || type.contains("PICKAXE") || type.contains("ROD")
                     || type.contains("WEAPON");
         }
+    }
+
+    public boolean canTakeItems() {
+        if (this.villagerInv.getStorageContents().length >= 44 && this.villagerInv.getItem(44) != null) {
+            return false;
+        }
+        return true;
     }
 }

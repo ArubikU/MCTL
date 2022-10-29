@@ -64,6 +64,8 @@ public class ConditionReader {
         NOT_IS_SON,
         IS_SPOUSE,
         NOT_IS_SPOUSE,
+        HAS_SPOUSE,
+        HAS_SONS,
         PERMISSION;
 
         public static Boolean contains(String arg) {
@@ -159,6 +161,10 @@ public class ConditionReader {
             return !DataMethods.getlastClickedEntity(p).getSpouse().equalsIgnoreCase(p.getUniqueId().toString());
         } else if (condition.equals(Conditions.PERMISSION.toString())) {
             return p.hasPermission(value);
+        } else if (condition.equals(Conditions.HAS_SPOUSE.toString())) {
+            return DataMethods.getlastClickedEntity(p).getSpouse() != null;
+        } else if (condition.equals(Conditions.HAS_SONS.toString())) {
+            return DataMethods.getSons(DataMethods.getlastClickedEntity(p).getLivingEntity()).isEmpty();
         }
         return false;
     }

@@ -33,14 +33,14 @@ public class Timers {
     public static Boolean entEnabled(Entity e) {
         return Optional
                 .ofNullable(
-                        FileUtils.getFileConfiguration("config.yml").getConfig().getStringList("config.villager-mobs"))
+                        MComesToLife.getMainConfig().getConfig().getStringList("config.villager-mobs"))
                 .orElse(new ArrayList<String>()).contains(e.getType().toString());
     }
 
     public static Boolean entEnabled(String e) {
         return Optional
                 .ofNullable(
-                        FileUtils.getFileConfiguration("config.yml").getConfig().getStringList("config.villager-mobs"))
+                        MComesToLife.getMainConfig().getConfig().getStringList("config.villager-mobs"))
                 .orElse(new ArrayList<String>()).contains(e);
     }
 
@@ -131,7 +131,7 @@ public class Timers {
                                 .orElse("male").toString());// this.saveFile.getString("players." + p.getUniqueId() +
                                                             // ".sex");
                         if (!pSex.equals(vSex)) {
-                            cv.addLikes(FileUtils.getFileConfiguration("config.yml")
+                            cv.addLikes(MComesToLife.getMainConfig()
                                     .getInteger("config.give-likes-ontime", 10), p);
                             break;
                         }
@@ -149,6 +149,6 @@ public class Timers {
                     }
                 }
             }
-        }, (FileUtils.getFileConfiguration("config.yml").getInteger("config.likes-timer", 40) * 20));
+        }, (MComesToLife.getMainConfig().getInteger("config.likes-timer", 40) * 20));
     }
 }

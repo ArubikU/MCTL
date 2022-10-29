@@ -51,7 +51,7 @@ public class CommandHolder implements org.bukkit.command.TabExecutor {
         return (sender.hasPermission("mctl.admin") || sender.isOp());
     }
 
-    private Boolean default_commands = FileUtils.getFileConfiguration("config.yml")
+    private Boolean default_commands = MComesToLife.getMainConfig()
             .getBoolean("config.permission.default-commands", true);
 
     public enum CommandArg0 {
@@ -446,6 +446,7 @@ public class CommandHolder implements org.bukkit.command.TabExecutor {
 
                                 }
                             }
+                            return true;
                         }
 
                         Player p = Bukkit.getPlayer(args[1]);
@@ -483,8 +484,8 @@ public class CommandHolder implements org.bukkit.command.TabExecutor {
                                         p);
                                 return true;
                             }
-                            if (!DataMethods.getRelationMap(p).containsKey("spouse")
-                                    && !DataMethods.getRelationMap((Player) sender).containsValue("spouse")) {
+                            if (!DataMethods.getRelationMap((Player) sender).get("spouse").toString()
+                                    .equalsIgnoreCase("any")) {
                                 if (marryRequest.containsKey(p)) {
                                     MessageUtils.MessageParsedPlaceholders(sender,
                                             new Message(MComesToLife.getMessages().getLang("cmd.marry.already-request",
@@ -507,6 +508,7 @@ public class CommandHolder implements org.bukkit.command.TabExecutor {
                                                 "<prefix><gray>El jugador <second_name> ya esta casado</gray>")),
                                         p);
                             }
+                            return true;
                         } else {
                             MessageUtils.MessageParsedPlaceholders(sender,
                                     new Message(MComesToLife.getMessages().getLang("cmd.marry.no-player",
@@ -564,6 +566,7 @@ public class CommandHolder implements org.bukkit.command.TabExecutor {
                                     new Message(MComesToLife.getMessages().getLang("cmd.marry.no-args",
                                             "<prefix><gray>Debes especificar si quieres aceptar o rechazar la solicitud de matrimonio</gray> <nbsp><prefix><gray>O tambien para enviar una petición de matrimonio/<command> marry <player/accept/deny></gray>")));
                         }
+                        break;
 
                     }
                     case reload: {
@@ -577,8 +580,8 @@ public class CommandHolder implements org.bukkit.command.TabExecutor {
                                 return true;
                             }
                         } catch (Exception e) {
-                            if(MComesToLife.isDEBUG()){
-                                    e.printStackTrace();
+                            if (MComesToLife.isDEBUG()) {
+                                e.printStackTrace();
                             }
                         }
                         break;

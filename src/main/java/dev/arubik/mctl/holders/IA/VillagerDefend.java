@@ -179,7 +179,7 @@ public class VillagerDefend extends me.gamercoder215.mobchip.ai.goal.CustomPathf
             }
         } else {
             if (eBetterEntity.getBrain().canSee(target)
-                    && eBetterEntity.getNearbyEntities(MComesToLife.getMainConfig().getInt("config.attack-radius", 2))
+                    && eBetterEntity.getNearbyEntities(ATTACK_RADIUS)
                             .contains(target)) {
                 if (eBetterEntity.getNBT(EntityMemory.ATTACK_COOLING_DOWN) == null) {
                     eBetterEntity.setNBTTime(EntityMemory.ATTACK_COOLING_DOWN, true, COOLDOWN_BETWEEN_ATTACKS);
@@ -195,6 +195,11 @@ public class VillagerDefend extends me.gamercoder215.mobchip.ai.goal.CustomPathf
 
     }
 
+    private int FOLLOW_RADIUS = MComesToLife.getMainConfig().getInt("config.follow-radius",
+    6);
+    private int ATTACK_RADIUS = MComesToLife.getMainConfig().getInt("config.attack-radius",
+    2);
+
     public LivingEntity getTarget() {
         LivingEntity target = this.eBetterEntity.getLivingEntity();
         if (eBetterEntity.getNBT(CustomMemory.TARGET_UUID) != null) {
@@ -206,10 +211,9 @@ public class VillagerDefend extends me.gamercoder215.mobchip.ai.goal.CustomPathf
         if (eBetterEntity.getLivingTarget() == null
                 || (eBetterEntity.getLivingTarget() != null && !isAvaliableTarget(eBetterEntity.getLivingTarget()))) {
             List<LivingEntity> targets = getAvaliableTargets(
-                    eBetterEntity.getNearbyEntities(MComesToLife.getMainConfig().getInt("config.follow-radius", 6)));
+                    eBetterEntity.getNearbyEntities(FOLLOW_RADIUS));
             MessageUtils.BukkitLog(Arrays.deepToString(
-                    eBetterEntity.getNearbyEntities(MComesToLife.getMainConfig().getInt("config.follow-radius",
-                            6))
+                    eBetterEntity.getNearbyEntities(FOLLOW_RADIUS)
                             .toArray()));
             return eBetterEntity.getLivingNearbyOfLivingEntityes(targets);
         }

@@ -30,7 +30,13 @@ public class MessageUtils {
 
     public static void BukkitLog(String s) {
         if (MComesToLife.isDEBUG()) {
-            Bukkit.getConsoleSender().sendMessage(s);
+            log(s);
+        }
+    }
+
+    public static void BukkitLog(String key, String s) {
+        if (MComesToLife.getMainConfig().getBoolean(key, true)) {
+            log(s);
         }
     }
 
@@ -266,7 +272,8 @@ public class MessageUtils {
             message.replace("<villager_suffix>", MComesToLife.getNames().getLang().getString("names.suffix", ""));
             message.replace("<villager_displayname>",
                     Optional.ofNullable(((String) v.getData().get("name"))).orElse("ANY"));
-            message.replace("<villager_sons>", DataMethods.getSonNames(v.villager));
+                    message.replace("<villager_sons>", DataMethods.getSonNames(v.villager));
+                    message.replace("<villager_spouse>", DataMethods.getSpouseName(v.villager));
             message.replace("<villager_health>", Optional.ofNullable(((int) v.villager.getHealth())).orElse(0) + "");
             message.replace("<villager_max_health>",
                     Optional.ofNullable(((int) v.villager.getMaxHealth())).orElse(0) + "");

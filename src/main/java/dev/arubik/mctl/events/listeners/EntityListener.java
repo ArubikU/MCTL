@@ -11,14 +11,17 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.IronGolem;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.entity.EntityDropItemEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.entity.EntityTransformEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.GenericGameEvent;
@@ -290,4 +293,28 @@ public class EntityListener extends Listener {
             }
         }
     }
+
+    @EventHandler
+    public void onPlayerDropItemEvent(PlayerDropItemEvent e) {
+        for (Entity entity : e.getPlayer().getNearbyEntities(10, 10, 10)) {
+            if (DataMethods.isCustom(entity)) {
+                EntityAi.pickupItem((Mob) entity, e.getItemDrop());
+            }
+        }
+    }
+
+    // @EventHandler
+    // public void onVillagerDropItemEvent(EntityDropItemEvent e){
+    // if(DataMethods.isCustom(e.getEntity())){
+    // for(Entity entity: e.getEntity().getNearbyEntities(10, 10, 10)){
+    // if(entity.getUniqueId()==e.getEntity().getUniqueId()){
+    // continue;
+    // }
+    // if(DataMethods.isCustom(entity)){
+    // EntityAi.pickupItem((Mob)entity, e.getItemDrop());
+    // }
+    // }
+    // }
+    // }
+
 }

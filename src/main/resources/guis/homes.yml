@@ -1,0 +1,46 @@
+gui:
+  size: 9
+  id: interaction-gui
+  title: "<villager_displayname>"
+  saved-data:
+  - CustomVillager
+  - Player
+  items:
+    '3':
+      MATERIAL: PAPER 
+      NAME: "<white>Set home"
+      AMOUNT: 1
+      LORE:
+      - "<red>establishes a home"
+      CMD: 0
+      ON_LEFT_CLICK:
+        INTERACT:
+          INTERACT: true
+          action: SETHOME
+    '4':
+      MATERIAL: PAPER 
+      NAME: "<white>Go home"
+      AMOUNT: 1
+      LORE:
+      - "<red>Have him go home"
+      CMD: 0
+      ON_LEFT_CLICK:
+        INTERACT:
+          INTERACT: true
+          action: GOHOME
+    'FILL':
+      MATERIAL: BLACK_STAINED_GLASS_PANE
+      NAME: "<white>"
+      AMOUNT: 1
+      CMD: 0
+    '8':
+      MATERIAL: BARRIER
+      NAME: "<white>Back to main menu"
+      AMOUNT: 1
+      LORE:
+      - "<red>Back to main menu"
+      CMD: 0
+      ON_LEFT_CLICK:
+        OPEN_MENU:
+          RUTE: "example-gui.yml"
+          PATH: "gui"

@@ -142,11 +142,12 @@ public class CustomEntity {
         return villager.getLocation();
     }
 
+    @Nullable
     public String getSpouse() {
         if (DataMethods.getRelationMap(villager).get("spouse") != null) {
             return (String) DataMethods.getRelationMap(villager).get("spouse");
         }
-        return "null";
+        return null;
     }
 
     public Mob getMob() {

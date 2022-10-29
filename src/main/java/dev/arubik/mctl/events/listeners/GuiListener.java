@@ -85,7 +85,7 @@ public class GuiListener extends Listener {
                 }
                 if (item.getConfigurationSection("ON_" + event.getClick().toString() + "_CLICK") == null)
                     return;
-                    
+
                 for (String key : item.getConfigurationSection("ON_" + event.getClick().toString() + "_CLICK")
                         .getKeys(false)) {
                     if (Action.valueOf(key.toUpperCase().replaceAll("[0-9]+", "")) != null) {
@@ -108,6 +108,12 @@ public class GuiListener extends Listener {
                                 if (actionConfig.contains("RUTE") && actionConfig.contains("PATH")) {
                                     if (FileUtils.getFileConfiguration(actionConfig.getString("RUTE")).getConfig()
                                             .contains(actionConfig.getString("PATH"))) {
+
+                                        if (actionConfig.getString("RUTE") == "<MAIN_GUI>") {
+                                            MComesToLife.Maingui.OpenInv((Player) event.getWhoClicked());
+                                            return;
+                                        }
+
                                         GuiCreator guiToOpen = new GuiCreator(
                                                 FileUtils.getFileConfiguration(actionConfig.getString("RUTE"))
                                                         .getConfig()
@@ -191,8 +197,9 @@ public class GuiListener extends Listener {
                                                     event.getWhoClicked());
                                         } else if (MComesToLife.lastClickedEntity
                                                 .containsKey(event.getWhoClicked().getUniqueId().toString())) {
-                                            CustomVillager villager = new CustomVillager((LivingEntity) MComesToLife.lastClickedEntity
-                                            .get(event.getWhoClicked().getUniqueId().toString()));
+                                            CustomVillager villager = new CustomVillager(
+                                                    (LivingEntity) MComesToLife.lastClickedEntity
+                                                            .get(event.getWhoClicked().getUniqueId().toString()));
                                             villager.loadVillager(false);
                                             villager.getMood().speech(villager,
                                                     TypeAction.valueOf(actionConfig.getString("action", "CHAT"))
@@ -242,7 +249,7 @@ public class GuiListener extends Listener {
                                 }
                                 break;
                             }
-                            case DROPITEMFROMINVENTORY:{
+                            case DROPITEMFROMINVENTORY: {
                                 CustomConfigurationSection actionConfig = new CustomConfigurationSection(item
                                         .getConfigurationSection(
                                                 "ON_" + event.getClick().toString() + "_CLICK." + key));

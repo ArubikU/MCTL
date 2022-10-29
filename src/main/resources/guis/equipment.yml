@@ -1,0 +1,95 @@
+gui:
+  size: 9
+  id: equipment-gui
+  title: "<gray>Equipment"
+  saved-data:
+  - CustomVillager
+  - Player
+  items:
+    '0':
+      MATERIAL: BLACK_STAINED_GLASS_PANE
+      NAME: "<white>"
+      AMOUNT: 1
+      CMD: 0
+    '3':
+      MATERIAL: CHAINMAIL_HELMET
+      NAME: "<white>Removes Hat"
+      AMOUNT: 1
+      LORE:
+      - "<gray>Remove the villager hat"
+      CMD: 0
+      ON_LEFT_CLICK:
+        INTERACT:
+          INTERACT: true
+          action: UNEQUIPHAT
+    '1':
+      MATERIAL: BOW
+      NAME: "<white>Remove villager offhand"
+      AMOUNT: 1
+      LORE:
+      - "<gray>Remove the object from the villagers offhand"
+      CMD: 0
+      ON_LEFT_CLICK:
+        INTERACT:
+          INTERACT: true
+          action: UNEQUIPOFFHAND
+    '4':
+      MATERIAL: CHAINMAIL_CHESTPLATE
+      NAME: "<white>Removes armor chestplate"
+      AMOUNT: 1
+      LORE:
+      - "<gray>Removes the villager chest"
+      CMD: 0
+      ON_LEFT_CLICK:
+        INTERACT:
+          INTERACT: true
+          action: UNEQUIPCHEST
+    '2':
+      MATERIAL: WOODEN_AXE
+      NAME: "<white>Remove villager hand"
+      AMOUNT: 1
+      LORE:
+      - "<gray>Remove the object from the villagers hand"
+      CMD: 0
+      ON_LEFT_CLICK:
+        INTERACT:
+          INTERACT: true
+          action: UNEQUIPHAND
+    '5':
+      MATERIAL: CHAINMAIL_LEGGINGS
+      NAME: "<white>Removes armor legs"
+      AMOUNT: 1
+      LORE:
+      - "<gray>Eliminates the villager armor legs"
+      CMD: 0
+      ON_LEFT_CLICK:
+        INTERACT:
+          INTERACT: true
+          action: UNEQUIPLEGS
+    '6':
+      MATERIAL: CHAINMAIL_BOOTS
+      NAME: "<white>Removes armor boots"
+      AMOUNT: 1
+      LORE:
+      - "<gray>Eliminates the villager armor boots"
+      CMD: 0
+      ON_LEFT_CLICK:
+        INTERACT:
+          INTERACT: true
+          action: UNEQUIPBOOTS
+    '7':
+      MATERIAL: BLACK_STAINED_GLASS_PANE
+      NAME: "<white>"
+      AMOUNT: 1
+      CMD: 0
+    '8':
+      MATERIAL: BARRIER
+      NAME: "<white>Back to main menu"
+      AMOUNT: 1
+      LORE:
+      - "<red>Back to main menu"
+      CMD: 0
+      ON_LEFT_CLICK:
+        OPEN_MENU:
+          RUTE: "example-gui.yml"
+          PATH: "gui"

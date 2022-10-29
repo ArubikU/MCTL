@@ -11,9 +11,63 @@ gui:
       NAME: "<white>Interactions"
       AMOUNT: 1
       LORE:
-      - "<red>Click to open the Interactions menu"
-      CMD: 10001
+      - "<gray>Click to open the Interactions menu"
+      CMD: 0
       ON_LEFT_CLICK:
         OPEN_MENU:
           RUTE: "guis/interactions.yml"
           PATH: "gui"
+    '2':
+      MATERIAL: PAPER
+      NAME: "<white>Equipment"
+      AMOUNT: 1
+      LORE:
+      - "<gray>check the equipment"
+      CMD: 0
+      ON_LEFT_CLICK:
+        OPEN_MENU:
+          RUTE: "guis/equipment.yml"
+          PATH: "gui"
+    '3':
+      MATERIAL: PAPER
+      NAME: "<white>Homes"
+      AMOUNT: 1
+      LORE:
+      - "<gray>reviews the homes"
+      CMD: 0
+      ON_LEFT_CLICK:
+        OPEN_MENU:
+          RUTE: "guis/homes.yml"
+          PATH: "gui"
+    '8':
+      MATERIAL: DIAMOND
+      NAME: "<white>Information"
+      AMOUNT: 1
+      LORE:
+      - "<red>Name: <yellow><villager_displayname>"
+      - "<red>Spouse: <yellow><villager_spouse>"
+      - "<red>Type: <yellow><villager_type>"
+      - "<red>Sex: <yellow><villager_sex>"
+      - "<red>Sons: <yellow><villager_sons>"
+      - "<red>Likes: <yellow><villager_likes>"
+      - "<red>Mood: <yellow><villager_mood>"
+      - "<red>Trait: <yellow><villager_trait>"
+      - "<red>hapiness: <yellow><villager_hapiness>"
+    'FILL':
+      MATERIAL: BLACK_STAINED_GLASS_PANE
+      NAME: "<white>"
+      AMOUNT: 1
+      CMD: 0
+#    '2':
+#      MATERIAL: DIAMOND
+#      NAME: "<white>PlaceholderTest"
+#      AMOUNT: 1
+#      LORE:
+#      - "<gray>If have more than 1000$ show"
+#      conditions:
+#       - 'cond:{condition=GREATER;value=%vault_eco_balance%;second_value=1000}'
+#      CMD: 0
+#      refresh_gui: true
+#      ON_LEFT_CLICK:
+#        CONSOLE_COMMAND:
+#          cmd: eco take %player% 100

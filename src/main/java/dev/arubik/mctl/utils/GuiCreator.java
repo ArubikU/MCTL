@@ -142,6 +142,14 @@ public class GuiCreator {
                 }
             }
         }
+        if(config.getConfigurationSection("items").contains("FILL")){
+            ItemStack fill = ItemSerializer.getFromConfigurationSection(config.getConfigurationSection("items.FILL"));
+            for(int i = 0; i < inv.getSize(); i++){
+                if(!InventoryItems.containsKey(i)){
+                    InventoryItems.put(i, fill);
+                }
+            }
+        }
     }
 
     public void OpenInv(Player... players) {

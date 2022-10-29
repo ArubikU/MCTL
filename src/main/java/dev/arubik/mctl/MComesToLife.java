@@ -196,6 +196,15 @@ public final class MComesToLife extends JavaPlugin {
         // Plugin shutdown logic
     }
 
+    private Boolean premiunBuild(){
+        try {
+            Class.forName("dev.arubik.mctl.holders.Premium");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
     public void load() {
         enabledPlugins = new EnabledPlugins();
         proffesions = new LangFile("proffesion.yml");
@@ -209,6 +218,12 @@ public final class MComesToLife extends JavaPlugin {
         DEBUG = MComesToLife.getMainConfig().getBoolean("config.debug", false);
         loadCompatibilities();
         addPlaceholders();
+        
+        MessageUtils.log("<prefix><gray> ------------------------------------------>");
+        MessageUtils.log("<prefix><gray> Minecraft Comes To Life Plugin:");
+        MessageUtils.log("<prefix><gray> Is premiun build: "+premiunBuild());
+        MessageUtils.log("<prefix><gray> Version: "+getDescription().getVersion());
+        MessageUtils.log("<prefix><gray> Server Version: "+ServerVersion);
 
         try {
             Maingui = new GuiCreator(
@@ -217,8 +232,9 @@ public final class MComesToLife extends JavaPlugin {
                     MComesToLife.config.getString("config.main-gui", "example-gui.yml"));
             Maingui.setupInv();
         } catch (Throwable e) {
-            MessageUtils.log("<red>[MCTL]</red> <gray> The Main guis is not generated or bad config");
+            MessageUtils.log("<prefix><gray> The Main guis is not generated or bad config");
         }
+        MessageUtils.log("<prefix><gray> ------------------------------------------>");
         Mood.waitTimes = new WaitTimePerAction("interact");
         skinHolder.preLoadSkins(config.getStringList("config.file-skins", new ArrayList<String>()));
         EntityAi.reload();

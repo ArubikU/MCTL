@@ -9,21 +9,31 @@ import org.bukkit.entity.Mob;
 import org.jetbrains.annotations.Nullable;
 
 import dev.arubik.mctl.MComesToLife;
+import lombok.Getter;
 import me.gamercoder215.mobchip.EntityBrain;
 import me.gamercoder215.mobchip.abstraction.ChipUtil;
 import me.gamercoder215.mobchip.ai.memories.Memory;
 import me.gamercoder215.mobchip.bukkit.BukkitBrain;
+import me.gamercoder215.mobchip.nbt.EntityNBT;
 
 public class AIEntity extends CustomEntity {
     public AIEntity(LivingEntity v) {
         super(v);
+        this.nMSEntity = this.generateNMS();
+        this.Brain = generateBrain();
+        this.NBTEditor = getNBTEditor();
     }
+
+    @Getter
+    private EntityNBT NBTEditor = null;
+    @Getter
+    private EntityBrain Brain = null;
 
     public static AIEntity getFromEntity(LivingEntity v) {
         return new AIEntity(v);
     }
 
-    public EntityBrain getBrain() {
+    public EntityBrain generateBrain() {
         return BukkitBrain.getBrain((Mob) villager);
     }
 
@@ -40,54 +50,57 @@ public class AIEntity extends CustomEntity {
     }
 
     public void setNBT(Memory memory, Object value) {
-        getBrain().getNBTEditor().set(memory.getKey().toString(), value);
+        getNBTEditor().set(memory.getKey().toString(), value);
     }
 
     public void setNBTTime(Memory memory, Object value, long time) {
         if (!MComesToLife.getPlugin().isEnabled()) {
-            getBrain().getNBTEditor().remove(memory.getKey().toString());
+            getNBTEditor().remove(memory.getKey().toString());
             return;
         }
-        getBrain().getNBTEditor().set(memory.getKey().toString(), value);
+        getNBTEditor().set(memory.getKey().toString(), value);
         Bukkit.getScheduler().runTaskLater(MComesToLife.getPlugin(), () -> {
-            getBrain().getNBTEditor().remove(memory.getKey().toString());
+            getNBTEditor().remove(memory.getKey().toString());
         }, time);
     }
 
     public <T> @Nullable T getNBT(Memory<T> memory) {
         String key = memory.getKey().toString();
-        if (getBrain().getNBTEditor().getString(key) == null)
+        if (getNBTEditor().getString(key) == null)
             return null;
         switch (memory.getBukkitClass().getSimpleName()) {
             case "Integer":
-                return (T) (Integer) getBrain().getNBTEditor().getInteger(key);
+                return (T) (Integer) getNBTEditor().getInteger(key);
             case "Double":
-                return (T) (Double) getBrain().getNBTEditor().getDouble(key);
+                return (T) (Double) getNBTEditor().getDouble(key);
             case "Float":
-                return (T) (Float) getBrain().getNBTEditor().getFloat(key);
+                return (T) (Float) getNBTEditor().getFloat(key);
             case "Long":
-                return (T) (Long) getBrain().getNBTEditor().getLong(key);
+                return (T) (Long) getNBTEditor().getLong(key);
             case "Byte":
-                return (T) (Byte) getBrain().getNBTEditor().getByte(key);
+                return (T) (Byte) getNBTEditor().getByte(key);
             case "String":
-                return (T) getBrain().getNBTEditor().getString(key);
+                return (T) getNBTEditor().getString(key);
             case "ItemStack":
-                return (T) getBrain().getNBTEditor().getItemStack(key);
+                return (T) getNBTEditor().getItemStack(key);
             default:
                 return null;
         }
     }
 
     public void removeNBT(Memory memory) {
-        getBrain().getNBTEditor().remove(memory.getKey().toString());
+        getNBTEditor().remove(memory.getKey().toString());
     }
 
     public Boolean canSee(Mob m) {
         return getBrain().canSee(m);
     }
 
+    @Getter
+    private net.minecraft.world.entity.LivingEntity nMSEntity = null;
+
     @Nullable
-    public net.minecraft.world.entity.LivingEntity getNMSEntity() {
+    public net.minecraft.world.entity.LivingEntity generateNMS() {
         try {
 
             Field f = getBrain().getBody().getClass().getDeclaredField("nmsMob");

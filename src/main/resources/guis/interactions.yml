@@ -1,19 +1,173 @@
 gui:
-  size: 9
-  id: actions-gui
-  title: "<white>Interacciones"
+  size: 18
+  id: interactions-gui
+  title: "<gray>Interacciones"
   saved-data:
   - CustomVillager
   - Player
   items:
+    'FILL':
+      MATERIAL: BLACK_STAINED_GLASS_PANE
+      NAME: "<white>"
+      AMOUNT: 1
+      CMD: 0
     '1':
-      MATERIAL: STICK
-      NAME: "<white>Chat"
-      AMOUNT: 2
+      MATERIAL: PAPER
+      NAME: "<white>Greet"
+      AMOUNT: 1
       LORE:
-      - "<red>Click to chat with the villager"
-      CMD: 10001
+      - "<gray>Greet him"
+      CMD: 0
+      ON_LEFT_CLICK:
+        INTERACT:
+          INTERACT: true
+          action: GREET
+    '2':
+      MATERIAL: CHEST
+      NAME: "<white>Give him a gift"
+      AMOUNT: 1
+      LORE:
+      - "<gray>Click to gift a item with the villager"
+      - "<gray>He will be able to use the object you give him"
+      CMD: 0
+      ON_LEFT_CLICK:
+        INTERACT:
+          INTERACT: true
+          action: GIFT
+    '3':
+      MATERIAL: PAPER
+      NAME: "<white>Speak to him"
+      AMOUNT: 1
+      LORE:
+      - "<gray>Click to chat with the villager"
+      CMD: 0
       ON_LEFT_CLICK:
         INTERACT:
           INTERACT: true
           action: CHAT
+    '4':
+      MATERIAL: PAPER
+      NAME: "<white>Speak to him"
+      AMOUNT: 1
+      LORE:
+      - "<gray>Click to chat with the villager"
+      CMD: 0
+      ON_LEFT_CLICK:
+        INTERACT:
+          INTERACT: true
+          action: CHAT
+    '5':
+      MATERIAL: PAPER
+      NAME: "<white>Insult"
+      AMOUNT: 1
+      LORE:
+      - "<gray>Insult him"
+      CMD: 0
+      ON_LEFT_CLICK:
+        INTERACT:
+          INTERACT: true
+          action: INSULT
+    '6':
+      MATERIAL: PAPER
+      NAME: "<white>Joke"
+      AMOUNT: 1
+      LORE:
+      - "<gray>Tell him a joke"
+      CMD: 0
+      ON_LEFT_CLICK:
+        INTERACT:
+          INTERACT: true
+          action: JOKE
+    '7':
+      MATERIAL: PAPER
+      NAME: "<white>Flirt"
+      AMOUNT: 1
+      LORE:
+      - "<gray>let him have some flirting"
+      CMD: 0
+      ON_LEFT_CLICK:
+        INTERACT:
+          INTERACT: true
+          action: FLIRT
+    '15':
+      MATERIAL: PAPER
+      NAME: "<white>Kiss"
+      AMOUNT: 1
+      LORE:
+      - "<gray>Give him a kiss"
+      CMD: 0
+#      conditions:
+#       - 'cond:{condition=NOT_IS_SON;value=null;second_value=null}'
+      ON_LEFT_CLICK:
+        INTERACT:
+          INTERACT: true
+          action: KISS
+    '16':
+      MATERIAL: PAPER
+      NAME: "<white>Procreate"
+      AMOUNT: 1
+      LORE:
+      - "<gray>Make love to him"
+#      conditions:
+#       - 'cond:{condition=IS_SPOUSE;value=null;second_value=null}'
+#       - 'cond:{condition=NOT_IS_SON;value=null;second_value=null}'
+      CMD: 0
+      ON_LEFT_CLICK:
+        INTERACT:
+          INTERACT: true
+          action: PROCREATE
+    '10':
+      MATERIAL: PAPER
+      NAME: "<white>Play"
+      AMOUNT: 1
+      LORE:
+      - "<gray>Play with"
+      CMD: 0
+      ON_LEFT_CLICK:
+        INTERACT:
+          INTERACT: true
+          action: PLAY
+    '11':
+      MATERIAL: PAPER
+      NAME: "<white>Follow"
+      AMOUNT: 1
+      LORE:
+      - "<gray>Have him follow you"
+      CMD: 0
+      ON_LEFT_CLICK:
+        INTERACT:
+          INTERACT: true
+          action: FOLLOW
+    '12':
+      MATERIAL: PAPER
+      NAME: "<white>Stay"
+      AMOUNT: 1
+      LORE:
+      - "<gray>Make him stay still"
+      CMD: 0
+      ON_LEFT_CLICK:
+        INTERACT:
+          INTERACT: true
+          action: STAY
+    '13':
+      MATERIAL: PAPER
+      NAME: "<white>Stop"
+      AMOUNT: 1
+      LORE:
+      - "<gray>Make him stop following you"
+      CMD: 0
+      ON_LEFT_CLICK:
+        INTERACT:
+          INTERACT: true
+          action: STOP
+    '17':
+      MATERIAL: BARRIER
+      NAME: "<red>Back to main menu"
+      AMOUNT: 1
+      LORE:
+      - "<red>Back to main menu"
+      CMD: 10001
+      ON_LEFT_CLICK:
+        OPEN_MENU:
+          RUTE: "example-gui.yml"
+          PATH: "gui"

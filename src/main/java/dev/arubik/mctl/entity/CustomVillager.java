@@ -501,6 +501,7 @@ public class CustomVillager extends BetterEntity {
             String sex = "female";
             if ((new Random()).nextInt(2) + 1 == 2)
                 sex = "male";
+            putForceData("sex", sex);
             String type = "none";
             if (villager instanceof Villager) {
                 Villager vil = (Villager) villager;
@@ -527,7 +528,6 @@ public class CustomVillager extends BetterEntity {
             String skin = getSkin(sex, type);
             String name = getName(sex);
             setData("mood", m.toString());
-            setData("sex", sex);
             setData("trait", t.toString());
             setData("skin", skin);
             setData("name", name);
@@ -536,8 +536,8 @@ public class CustomVillager extends BetterEntity {
                     + MComesToLife.getProffesions().getLang(type, type.toLowerCase().replace("_", " ")));
 
         } catch (Exception e) {
-            if(MComesToLife.isDEBUG()){
-                    e.printStackTrace();
+            if (MComesToLife.isDEBUG()) {
+                e.printStackTrace();
             }
         }
     }
@@ -571,8 +571,8 @@ public class CustomVillager extends BetterEntity {
             holder.loadInventoryNoReload();
             holder.DropInventory();
         } catch (Throwable e) {
-            if(MComesToLife.isDEBUG()){
-                    e.printStackTrace();
+            if (MComesToLife.isDEBUG()) {
+                e.printStackTrace();
             }
         }
 

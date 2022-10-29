@@ -276,7 +276,7 @@ public class DataMethods {
             Message msg = new Message(Mood.getText("marry-no", ""));
             msg.formatPlayerSex(DataMethods.getSex(p));
             msg.formatSex(DataMethods.getSex(a));
-            MessageUtils.MessageParsedPlaceholders((CommandSender) ((Player) a), msg, vil);
+            MessageUtils.MessageParsedPlaceholders((CommandSender) p, msg, vil);
             return false;
         }
 
@@ -286,13 +286,13 @@ public class DataMethods {
                         "<prefix><gray>Ya estas casad<player_sex_endchar> con <villager_name></gray>"));
                 msg.formatPlayerSex(DataMethods.getSex(p));
                 msg.formatSex(DataMethods.getSex(a));
-                MessageUtils.MessageParsedPlaceholders((CommandSender) ((Player) a), msg, vil);
+                MessageUtils.MessageParsedPlaceholders((CommandSender) p, msg, vil);
                 return false;
             }
             Message msg = new Message(Mood.getText("marry-alredy", ""));
             msg.formatPlayerSex(DataMethods.getSex(p));
             msg.formatSex(DataMethods.getSex(a));
-            MessageUtils.MessageParsedPlaceholders((CommandSender) ((Player) a), msg, vil);
+            MessageUtils.MessageParsedPlaceholders((CommandSender) p, msg, vil);
             return false;
         }
 
@@ -300,7 +300,7 @@ public class DataMethods {
             Message msg = new Message(Mood.getText("marry-cant", ""));
             msg.formatPlayerSex(DataMethods.getSex(p));
             msg.formatSex(DataMethods.getSex(a));
-            MessageUtils.MessageParsedPlaceholders((CommandSender) ((Player) a), msg, vil);
+            MessageUtils.MessageParsedPlaceholders((CommandSender) p, msg, vil);
             return false;
         }
 
@@ -308,7 +308,7 @@ public class DataMethods {
             Message msg = new Message(Mood.getText("marry-cant-son", ""));
             msg.formatPlayerSex(DataMethods.getSex(p));
             msg.formatSex(DataMethods.getSex(a));
-            MessageUtils.MessageParsedPlaceholders((CommandSender) ((Player) a), msg, vil);
+            MessageUtils.MessageParsedPlaceholders((CommandSender) p, msg, vil);
             return false;
         }
 
@@ -318,8 +318,32 @@ public class DataMethods {
         Message msg = new Message(Mood.getText("marry-yes", ""));
         msg.formatPlayerSex(DataMethods.getSex(p));
         msg.formatSex(DataMethods.getSex(a));
-        MessageUtils.MessageParsedPlaceholders((CommandSender) ((Player) a), msg, vil);
+        MessageUtils.MessageParsedPlaceholders((CommandSender) p, msg, vil);
         return true;
+    }
+
+    public static String getSpouseName(LivingEntity e) {
+        Optional<LivingEntity> opt = Optional.empty();
+        if (DataMethods.getRelationMap(e).get("spouse") != "any") {
+            if (Bukkit.getServer()
+                    .getEntity(UUID.fromString(DataMethods.getRelationMap(e).get("spouse").toString())) != null) {
+                opt = Optional.ofNullable((LivingEntity) Bukkit.getServer()
+                        .getEntity(UUID.fromString(DataMethods.getRelationMap(e).get("spouse").toString())));
+                if (opt.isPresent()) {
+                    return opt.get().getName();
+                } else {
+                    return MComesToLife.getMessages().getLang("cmd.no-spouse", "Dont have spouse");
+                }
+            } else {
+                for (OfflinePlayer p : Bukkit.getOfflinePlayers()) {
+                    if (p.getUniqueId().toString()
+                            .equalsIgnoreCase(DataMethods.getRelationMap(e).get("spouse").toString())) {
+                        return p.getName();
+                    }
+                }
+            }
+        }
+        return MComesToLife.getMessages().getLang("cmd.no-spouse", "Dont have spouse");
     }
 
     public static Optional<LivingEntity> getSpouse(LivingEntity e) {
