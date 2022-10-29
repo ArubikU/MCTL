@@ -88,6 +88,7 @@ public class EntityListener extends Listener {
                 return;
             }
 
+            
             MessageUtils.BukkitLog(event.getEntity() + event.getEntity().getUniqueId().toString() + " died");
 
             DataMethods.setData("death", true, customVillager.villager);

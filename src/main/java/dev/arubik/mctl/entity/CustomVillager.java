@@ -47,6 +47,7 @@ import dev.arubik.mctl.holders.Timers;
 import dev.arubik.mctl.holders.Methods.DataMethods;
 import dev.arubik.mctl.utils.FileConfiguration;
 import dev.arubik.mctl.utils.NumberUtils;
+import dev.arubik.mctl.utils.ShortCuts;
 import dev.arubik.mctl.utils.FileUtils;
 import dev.arubik.mctl.utils.MessageUtils;
 import dev.arubik.mctl.utils.Json.LineConfig;
@@ -219,7 +220,8 @@ public class CustomVillager extends BetterEntity {
             }
             if (DataMethods.isCustom(this.getLivingEntity())) {
                 VillagerInventoryHolder inv = VillagerInventoryHolder.getInstance(this);
-                inv.loadInventoryNoReload();;
+                inv.loadInventoryNoReload();
+                ;
                 disguise = inv.loadDisguiseDisplay(disguise);
             }
             if (MComesToLife.isDEBUG()) {
@@ -268,9 +270,9 @@ public class CustomVillager extends BetterEntity {
 
     @Override
     public void Disguise() {
-        Bukkit.getScheduler().runTaskAsynchronously(MComesToLife.getPlugin(), new Runnable(){
+        ShortCuts.Async(new Runnable() {
             @Override
-            public void run(){
+            public void run() {
                 DisguiseAPI.disguiseToAll(villager, generateDisguise());
             }
         });
@@ -278,9 +280,9 @@ public class CustomVillager extends BetterEntity {
 
     @Override
     public void Disguise(Player... p) {
-        Bukkit.getScheduler().runTaskAsynchronously(MComesToLife.getPlugin(), new Runnable(){
+        ShortCuts.Async(new Runnable() {
             @Override
-            public void run(){
+            public void run() {
                 DisguiseAPI.disguiseToPlayers(villager, generateDisguise(), p);
             }
         });
@@ -553,40 +555,51 @@ public class CustomVillager extends BetterEntity {
     }
 
     public void killVillager() {
-        MComesToLife.getPlugin().removeUUID(villager);
-        String spouseuuid = (String) DataMethods.getRelationMap(this.villager).get("spouse");
-        if (spouseuuid != "any") {
-            // get the player by the UUID
-            Optional<Player> opt = Optional.empty();
-            for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-                if (p.getUniqueId().toString().equalsIgnoreCase(spouseuuid)) {
-                    opt = Optional.ofNullable(p);
-                }
-            }
-            opt.ifPresent(player -> {
-                Message death;
-                if (DataMethods.getSex(player) == Sex.male) {
-                    death = new Message(MComesToLife.messages.getLang("cmd.villager.death-female",
-                            "<prefix><gray>Tu esposa <spouse_name> a muerto"));
-                } else {
-                    death = new Message(MComesToLife.messages.getLang("cmd.villager.death-female",
-                            "<prefix><gray>Tu esposo <spouse_name> a muerto"));
-                }
-                this.divorceWithOutMessages(player);
-            });
-        }
+        ShortCuts.Async(new Runnable() {
 
-        try {
-            VillagerInventoryHolder holder = VillagerInventoryHolder.getInstance(this);
-            holder.loadInventoryNoReload();
-            holder.DropInventory();
-        } catch (Throwable e) {
-            if (MComesToLife.isDEBUG()) {
-                e.printStackTrace();
-            }
-        }
+            @Override
+            public void run() {
+                MComesToLife.getPlugin().removeUUID(villager);
+                String spouseuuid = (String) DataMethods.getRelationMap(villager).get("spouse");
+                if (spouseuuid != "any") {
+                    // get the player by the UUID
+                    Optional<Player> opt = Optional.empty();
+                    for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+                        if (p.getUniqueId().toString().equalsIgnoreCase(spouseuuid)) {
+                            opt = Optional.ofNullable(p);
+                        }
+                    }
+                    opt.ifPresent(player -> {
+                        Message death;
+                        if (DataMethods.getSex(player) == Sex.male) {
+                            death = new Message(MComesToLife.messages.getLang("cmd.villager.death-female",
+                                    "<prefix><gray>Tu esposa <spouse_name> a muerto"));
+                        } else {
+                            death = new Message(MComesToLife.messages.getLang("cmd.villager.death-female",
+                                    "<prefix><gray>Tu esposo <spouse_name> a muerto"));
+                        }
+                        divorceWithOutMessages(player);
+                    });
+                }
 
-        removeData();
+                try {
+                    VillagerInventoryHolder holder = VillagerInventoryHolder.getInstance(genInstance());
+                    holder.loadInventoryNoReload();
+                    holder.DropInventory();
+                } catch (Throwable e) {
+                    if (MComesToLife.isDEBUG()) {
+                        e.printStackTrace();
+                    }
+                }
+
+                removeData();
+            }
+
+        });
+
     }
 
+    public CustomVillager genInstance() {
+        return this;
+    }
 }
