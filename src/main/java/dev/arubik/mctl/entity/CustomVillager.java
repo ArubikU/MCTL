@@ -217,11 +217,11 @@ public class CustomVillager extends BetterEntity {
                 disguise.setSkin(
                         ((String) this.data.get("skin")).replace("file:", "").replace("url:", "").replace("name:", ""));
             }
-            VillagerInventoryHolder inv = VillagerInventoryHolder.getInstance(this);
             if (DataMethods.isCustom(this.getLivingEntity())) {
-                inv.loadInventory();
+                VillagerInventoryHolder inv = VillagerInventoryHolder.getInstance(this);
+                inv.loadInventoryNoReload();;
+                disguise = inv.loadDisguiseDisplay(disguise);
             }
-            disguise = inv.loadDisguiseDisplay(disguise);
             if (MComesToLife.isDEBUG()) {
                 Bukkit.getConsoleSender()
                         .sendMessage("Loaded disguise for:" + villager.getCustomName() + "{" + disguise.getSkin() + ","
@@ -268,12 +268,22 @@ public class CustomVillager extends BetterEntity {
 
     @Override
     public void Disguise() {
-        DisguiseAPI.disguiseToAll(villager, generateDisguise());
+        Bukkit.getScheduler().runTaskAsynchronously(MComesToLife.getPlugin(), new Runnable(){
+            @Override
+            public void run(){
+                DisguiseAPI.disguiseToAll(villager, generateDisguise());
+            }
+        });
     }
 
     @Override
     public void Disguise(Player... p) {
-        DisguiseAPI.disguiseToPlayers(villager, generateDisguise(), p);
+        Bukkit.getScheduler().runTaskAsynchronously(MComesToLife.getPlugin(), new Runnable(){
+            @Override
+            public void run(){
+                DisguiseAPI.disguiseToPlayers(villager, generateDisguise(), p);
+            }
+        });
     }
 
     public void preDisguise() {

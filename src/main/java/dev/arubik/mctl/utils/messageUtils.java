@@ -60,7 +60,8 @@ public class MessageUtils {
     private static ConsoleCommandSender console = MComesToLife.getPlugin().getServer().getConsoleSender();
 
     public static void log(final String message) {
-        MessageUtils.Message(console, message);
+        MessageUtils.Message(console,
+                message.replace("<prefix>", MComesToLife.getMessages().getLang("prefix", "<red>[MCTL]</red> ")));
     }
 
     public static void Message(CommandSender pl, String s) {
@@ -272,8 +273,8 @@ public class MessageUtils {
             message.replace("<villager_suffix>", MComesToLife.getNames().getLang().getString("names.suffix", ""));
             message.replace("<villager_displayname>",
                     Optional.ofNullable(((String) v.getData().get("name"))).orElse("ANY"));
-                    message.replace("<villager_sons>", DataMethods.getSonNames(v.villager));
-                    message.replace("<villager_spouse>", DataMethods.getSpouseName(v.villager));
+            message.replace("<villager_sons>", DataMethods.getSonNames(v.villager));
+            message.replace("<villager_spouse>", DataMethods.getSpouseName(v.villager));
             message.replace("<villager_health>", Optional.ofNullable(((int) v.villager.getHealth())).orElse(0) + "");
             message.replace("<villager_max_health>",
                     Optional.ofNullable(((int) v.villager.getMaxHealth())).orElse(0) + "");

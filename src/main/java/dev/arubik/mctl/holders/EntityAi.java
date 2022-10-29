@@ -81,12 +81,10 @@ public class EntityAi {
     public static void SetHome(Mob m, Location loc) {
         EntityBrain brain = BukkitBrain.getBrain(m);
         StringBuilder location = new StringBuilder();
-        location.append("{");
         location.append("world=" + loc.getWorld().getName() + ";");
         location.append("x=" + loc.getX() + ";");
         location.append("y=" + loc.getY() + ";");
-        location.append("z=" + loc.getZ() + ";");
-        location.append("}");
+        location.append("z=" + loc.getZ());
         brain.getNBTEditor().set("home_location", location.toString());
     }
 
@@ -203,12 +201,17 @@ public class EntityAi {
             Bukkit.getScheduler().runTaskLater(MComesToLife.getPlugin(), new Runnable() {
                 @Override
                 public void run() {
-                    
-                    VillagerDefend follow = new VillagerDefend(m, true, targetTypes);
-                    for (String s : MComesToLife.getMainConfig().getStringList("config.mythic-target-mobs", aaaa)) {
-                        follow.addID(s);
+                    try {
+                        VillagerDefend follow = new VillagerDefend(m, true, targetTypes);
+                        for (String s : MComesToLife.getMainConfig().getStringList("config.mythic-target-mobs", aaaa)) {
+                            follow.addID(s);
+                        }
+                        brain.getGoalAI().put(follow, 0);
+                    } catch (Throwable e) {
+                        if (MComesToLife.isDEBUG()) {
+                            e.printStackTrace();
+                        }
                     }
-                    brain.getGoalAI().put(follow, 0);
                 }
             }, 1);
         } catch (Throwable e) {

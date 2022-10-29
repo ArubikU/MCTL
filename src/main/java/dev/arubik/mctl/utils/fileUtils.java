@@ -10,7 +10,7 @@ import dev.arubik.mctl.MComesToLife;
 public class FileUtils {
 
     public static FileConfiguration getFileConfiguration(String path) {
-        if (path == "config.yml") {
+        if (path == "config.yml" && MComesToLife.getMainConfig() != null) {
             return MComesToLife.getMainConfig();
         }
         File f = new File(MComesToLife.getPlugin().getDataFolder(), path);

@@ -202,7 +202,7 @@ public class EntityListener extends Listener {
         if (DataMethods.isVillager(event.getEntity())) {
             if (!(event.getDamager() instanceof Player && !EntityAi.targetTypes.contains("PLAYER"))) {
                 BetterEntity betterEntity = BetterEntity.getFromEntity((LivingEntity) event.getEntity());
-                betterEntity.setNBT(CustomMemory.TARGET_UUID, event.getDamager().getUniqueId().toString());
+                betterEntity.putContainerData(CustomMemory.TARGET_UUID, event.getDamager().getUniqueId().toString());
             }
         }
         if (event.getDamager() instanceof Player) {

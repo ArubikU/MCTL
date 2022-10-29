@@ -196,9 +196,12 @@ public final class MComesToLife extends JavaPlugin {
         // Plugin shutdown logic
     }
 
-    private Boolean premiunBuild(){
+    private static String buyer = "null";
+
+    private Boolean premiunBuild() {
         try {
-            Class.forName("dev.arubik.mctl.holders.Premium");
+            Class<?> premiun = Class.forName("dev.arubik.mctl.holders.Premiun");
+            MComesToLife.buyer = "%%__USER__%%:%%__USERNAME__%%";
             return true;
         } catch (ClassNotFoundException e) {
             return false;
@@ -207,8 +210,8 @@ public final class MComesToLife extends JavaPlugin {
 
     public void load() {
         enabledPlugins = new EnabledPlugins();
-        proffesions = new LangFile("proffesion.yml");
         config = FileUtils.getFileConfiguration("config.yml");
+        proffesions = new LangFile(config.getString("config.proffesion-file", "proffesion.yml"));
         messages = new LangFile(config.getString("config.lang-file", "messages_en.yml"));
         skins = new LangFile(config.getString("config.skins-file", "skins.yml"));
         names = new LangFile(config.getString("config.names-file", "names_en.yml"));
@@ -218,12 +221,13 @@ public final class MComesToLife extends JavaPlugin {
         DEBUG = MComesToLife.getMainConfig().getBoolean("config.debug", false);
         loadCompatibilities();
         addPlaceholders();
-        
+
         MessageUtils.log("<prefix><gray> ------------------------------------------>");
         MessageUtils.log("<prefix><gray> Minecraft Comes To Life Plugin:");
-        MessageUtils.log("<prefix><gray> Is premiun build: "+premiunBuild());
-        MessageUtils.log("<prefix><gray> Version: "+getDescription().getVersion());
-        MessageUtils.log("<prefix><gray> Server Version: "+ServerVersion);
+        MessageUtils.log("<prefix><gray> Is premiun build: " + premiunBuild());
+        MessageUtils.log("<prefix><gray> Version: " + getDescription().getVersion());
+        MessageUtils.log("<prefix><gray> Server Version: " + ServerVersion);
+        MessageUtils.log("<prefix><gray> Buyer: " + buyer);
 
         try {
             Maingui = new GuiCreator(

@@ -46,9 +46,10 @@ public class VillagerDefend extends me.gamercoder215.mobchip.ai.goal.CustomPathf
 
     public List<String> Targets = new ArrayList<String>();
     public List<String> TargetsIDS = new ArrayList<String>();
+    private Boolean halfTick = false;
     private Boolean needSee = false;
-    private final static long COOLDOWN_BETWEEN_ATTACKS = 20L;
-    private final static long COOLDOWN_BETWEEN_BOW_CHARGUE = 5L;
+    private final static long COOLDOWN_BETWEEN_ATTACKS = 13L;
+    private final static long COOLDOWN_BETWEEN_BOW_CHARGUE = 3L;
     private EntityBrain brain;
     private BetterEntity eBetterEntity;
     private Boolean isCrossBow = false;
@@ -133,32 +134,34 @@ public class VillagerDefend extends me.gamercoder215.mobchip.ai.goal.CustomPathf
 
     @Override
     public void start() {
-        eBetterEntity.removeNBT(CustomMemory.TARGET_UUID);
+        eBetterEntity.removeContainerData(CustomMemory.TARGET_UUID);
         tick();
     }
 
     public void setupAttack(LivingEntity target) {
         if (isBoweable()) {
-            if (eBetterEntity.getNBT(EntityMemory.ATTACK_COOLING_DOWN) == null)
+            if (eBetterEntity.getContainerData(EntityMemory.ATTACK_COOLING_DOWN) == null)
                 return;
-            if (eBetterEntity.getNBT(EntityMemory.ATTACK_COOLING_DOWN))
+            if (eBetterEntity.getContainerData(EntityMemory.ATTACK_COOLING_DOWN, Boolean.class))
                 return;
             if (isCrossBow) {
-                if (eBetterEntity.getNBT(CustomMemory.CROSSBOW) == null) {
-                    eBetterEntity.setNBT(CustomMemory.CROSSBOW, CustomMemory.CrossbowState.CHARGING.toString());
+                if (eBetterEntity.getContainerData(CustomMemory.CROSSBOW) == null) {
+                    eBetterEntity.putContainerData(CustomMemory.CROSSBOW,
+                            CustomMemory.CrossbowState.CHARGING.toString());
                 }
-                if (Objects.equals(eBetterEntity.getNBT(CustomMemory.CROSSBOW).toString(),
+                if (Objects.equals(eBetterEntity.getContainerData(CustomMemory.CROSSBOW).toString(),
                         CustomMemory.CrossbowState.CHARGING.toString())) {
-                    eBetterEntity.setNBT(CustomMemory.CROSSBOW, CustomMemory.CrossbowState.CHARGED.toString());
+                    eBetterEntity.putContainerData(CustomMemory.CROSSBOW,
+                            CustomMemory.CrossbowState.CHARGED.toString());
                 }
-                if (Objects.equals(eBetterEntity.getNBT(CustomMemory.CROSSBOW).toString(),
+                if (Objects.equals(eBetterEntity.getContainerData(CustomMemory.CROSSBOW).toString(),
                         CustomMemory.CrossbowState.CHARGED.toString())) {
-                    eBetterEntity.setNBT(CustomMemory.CROSSBOW,
+                    eBetterEntity.putContainerData(CustomMemory.CROSSBOW,
                             CustomMemory.CrossbowState.READY_TO_ATTACK.toString());
                 }
-                if (Objects.equals(eBetterEntity.getNBT(CustomMemory.CROSSBOW).toString(),
+                if (Objects.equals(eBetterEntity.getContainerData(CustomMemory.CROSSBOW).toString(),
                         CustomMemory.CrossbowState.READY_TO_ATTACK.toString())) {
-                    eBetterEntity.removeNBT(CustomMemory.CROSSBOW);
+                    eBetterEntity.removeContainerData(CustomMemory.CROSSBOW);
 
                     boolean multishot = ItemSerializer.getEnchantmentLevel(entity.getEquipment().getItemInMainHand(),
                             "MULTISHOT") > 0;
@@ -170,25 +173,28 @@ public class VillagerDefend extends me.gamercoder215.mobchip.ai.goal.CustomPathf
 
                     brain.getBody().useItem(InteractionHand.OFF_HAND);
                 }
-                eBetterEntity.setNBTTime(EntityMemory.ATTACK_COOLING_DOWN, true, COOLDOWN_BETWEEN_BOW_CHARGUE);
+                eBetterEntity.putContainerDataTime(EntityMemory.ATTACK_COOLING_DOWN, true,
+                        COOLDOWN_BETWEEN_BOW_CHARGUE);
 
             } else {
                 float force = 1.0f;
                 eBetterEntity.performRangedAttack(target, force);
-                eBetterEntity.setNBTTime(EntityMemory.ATTACK_COOLING_DOWN, true, COOLDOWN_BETWEEN_ATTACKS + 2L);
+                eBetterEntity.putContainerDataTime(EntityMemory.ATTACK_COOLING_DOWN, true,
+                        COOLDOWN_BETWEEN_ATTACKS + 2L);
             }
         } else {
             if (eBetterEntity.getBrain().canSee(target)
                     && eBetterEntity.getNearbyEntities(ATTACK_RADIUS)
                             .contains(target)) {
-                if (eBetterEntity.getNBT(EntityMemory.ATTACK_COOLING_DOWN) == null) {
-                    eBetterEntity.setNBTTime(EntityMemory.ATTACK_COOLING_DOWN, true, COOLDOWN_BETWEEN_ATTACKS);
+                if (eBetterEntity.getContainerData(EntityMemory.ATTACK_COOLING_DOWN) == null) {
+                    eBetterEntity.putContainerDataTime(EntityMemory.ATTACK_COOLING_DOWN, true,
+                            COOLDOWN_BETWEEN_ATTACKS);
                     eBetterEntity.performAttack(target);
                     return;
                 }
-                if (eBetterEntity.getNBT(EntityMemory.ATTACK_COOLING_DOWN))
+                if (eBetterEntity.getContainerData(EntityMemory.ATTACK_COOLING_DOWN, Boolean.class))
                     return;
-                eBetterEntity.setNBTTime(EntityMemory.ATTACK_COOLING_DOWN, true, COOLDOWN_BETWEEN_ATTACKS);
+                eBetterEntity.putContainerDataTime(EntityMemory.ATTACK_COOLING_DOWN, true, COOLDOWN_BETWEEN_ATTACKS);
                 eBetterEntity.performAttack(target);
             }
         }
@@ -196,13 +202,13 @@ public class VillagerDefend extends me.gamercoder215.mobchip.ai.goal.CustomPathf
     }
 
     private int FOLLOW_RADIUS = MComesToLife.getMainConfig().getInt("config.follow-radius",
-    6);
+            6);
     private int ATTACK_RADIUS = MComesToLife.getMainConfig().getInt("config.attack-radius",
-    2);
+            2);
 
     public LivingEntity getTarget() {
         LivingEntity target = this.eBetterEntity.getLivingEntity();
-        if (eBetterEntity.getNBT(CustomMemory.TARGET_UUID) != null) {
+        if (eBetterEntity.getContainerData(CustomMemory.TARGET_UUID) != null) {
             target = eBetterEntity.getLivingTarget();
             if (isAvaliableTarget(target)) {
                 return target;
@@ -268,12 +274,20 @@ public class VillagerDefend extends me.gamercoder215.mobchip.ai.goal.CustomPathf
 
     @Override
     public void tick() {
+
+        if (halfTick) {
+            halfTick = false;
+            return;
+        } else {
+            halfTick = true;
+        }
+
         if (this.getEntity() instanceof Villager) {
             if (!((Villager) this.getEntity()).isAdult()) {
                 return;
             }
         }
-        if (eBetterEntity.getNBT(CustomMemory.SHIELDING) == null) {
+        if (eBetterEntity.getContainerData(CustomMemory.SHIELDING) == null) {
             if (eBetterEntity.getNMSEntity() != null) {
                 if (MComesToLife.getServerVersion().contains("1_19")) {
                     eBetterEntity.releaseUsingItem(Version.v1_19_R1);
@@ -283,14 +297,15 @@ public class VillagerDefend extends me.gamercoder215.mobchip.ai.goal.CustomPathf
             }
         }
 
-        if (DataMethods.rand(0, 4) == 0 && eBetterEntity.getNBT(CustomMemory.NEXT_SHIELDING) == null && offHandShield) {
+        if (DataMethods.rand(0, 4) == 0 && eBetterEntity.getContainerData(CustomMemory.NEXT_SHIELDING) == null
+                && offHandShield) {
             brain.getBody().useItem(InteractionHand.OFF_HAND);
             Long nextShielding = 1L;
             if (DataMethods.rand(1, 2) == 1) {
                 nextShielding = 2L;
             }
-            eBetterEntity.setNBTTime(CustomMemory.SHIELDING, true, nextShielding);
-            eBetterEntity.setNBTTime(CustomMemory.NEXT_SHIELDING, true, nextShielding + 1L);
+            eBetterEntity.putContainerDataTime(CustomMemory.SHIELDING, true, nextShielding);
+            eBetterEntity.putContainerDataTime(CustomMemory.NEXT_SHIELDING, true, nextShielding + 1L);
             eBetterEntity.getNMSEntity().startUsingItem(net.minecraft.world.InteractionHand.OFF_HAND);
             return;
         }

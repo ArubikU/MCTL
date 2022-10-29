@@ -331,33 +331,33 @@ public class BetterEntity extends AIEntity implements EntityMethods, CrossbowAtt
 
     @Override
     public net.minecraft.world.entity.LivingEntity getTarget() {
-        if (this.getNBT(CustomMemory.TARGET_UUID) == null) {
+        if (this.getContainerData(CustomMemory.TARGET_UUID) == null) {
             return null;
         }
         if (this.getLivingEntity().getWorld()
-                .getEntity(UUID.fromString(this.getNBT(CustomMemory.TARGET_UUID))) == null) {
+                .getEntity(UUID.fromString(this.getContainerData(CustomMemory.TARGET_UUID))) == null) {
             return null;
         }
         if (!(this.getLivingEntity().getWorld()
-                .getEntity(UUID.fromString(this.getNBT(CustomMemory.TARGET_UUID))) instanceof LivingEntity))
+                .getEntity(UUID.fromString(this.getContainerData(CustomMemory.TARGET_UUID))) instanceof LivingEntity))
             return null;
         return new BetterEntity((LivingEntity) this.getLivingEntity().getWorld()
-                .getEntity(UUID.fromString(this.getNBT(CustomMemory.TARGET_UUID)))).getNMSEntity();
+                .getEntity(UUID.fromString(this.getContainerData(CustomMemory.TARGET_UUID)))).getNMSEntity();
     }
 
     public LivingEntity getLivingTarget() {
-        if (this.getNBT(CustomMemory.TARGET_UUID) == null) {
+        if (this.getContainerData(CustomMemory.TARGET_UUID) == null) {
             return null;
         }
         if (this.getLivingEntity().getWorld()
-                .getEntity(UUID.fromString(this.getNBT(CustomMemory.TARGET_UUID))) == null) {
+                .getEntity(UUID.fromString(this.getContainerData(CustomMemory.TARGET_UUID))) == null) {
             return null;
         }
         if (!(this.getLivingEntity().getWorld()
-                .getEntity(UUID.fromString(this.getNBT(CustomMemory.TARGET_UUID))) instanceof LivingEntity))
+                .getEntity(UUID.fromString(this.getContainerData(CustomMemory.TARGET_UUID))) instanceof LivingEntity))
             return null;
         return (LivingEntity) this.getLivingEntity().getWorld()
-                .getEntity(UUID.fromString(this.getNBT(CustomMemory.TARGET_UUID)));
+                .getEntity(UUID.fromString(this.getContainerData(CustomMemory.TARGET_UUID)));
     }
 
     @Override
@@ -366,7 +366,7 @@ public class BetterEntity extends AIEntity implements EntityMethods, CrossbowAtt
 
     @Override
     public void setChargingCrossbow(boolean arg0) {
-        
+
     }
 
     @Override
@@ -433,7 +433,7 @@ public class BetterEntity extends AIEntity implements EntityMethods, CrossbowAtt
         } else {
             targetE.getNMSEntity().setHealth(targetE.getNMSEntity().getMaxHealth() - damage);
         }
-        this.setNBT(CustomMemory.TARGET_UUID, targetE.getLivingEntity().getUniqueId().toString());
+        this.putContainerData(CustomMemory.TARGET_UUID, targetE.getLivingEntity().getUniqueId().toString());
     }
 
     public void releaseUsingItem(Version version) {
