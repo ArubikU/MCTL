@@ -367,7 +367,8 @@ public class CustomVillager extends BetterEntity {
             }
         }
 
-        if (FileUtils.getFileConfiguration("data.yml").getConfig().contains(path())) {
+        if ((FileUtils.getFileConfiguration("data.yml").getConfig().contains(path()) && MComesToLife.getOldMode())
+                || (FileUtils.existFile(getUniquePath()) && !MComesToLife.getOldMode())) {
             load();
             if (reApplySkin) {
                 if (this.villager instanceof Villager) {
@@ -394,7 +395,7 @@ public class CustomVillager extends BetterEntity {
                 }
             }
             save();
-            ShortCuts.Sync(new Runnable(){
+            ShortCuts.Sync(new Runnable() {
                 @Override
                 public void run() {
                     VillagerInventoryHolder vi = VillagerInventoryHolder.getInstance(genInstance());

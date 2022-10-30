@@ -49,6 +49,7 @@ import dev.arubik.mctl.utils.FileConfiguration;
 import dev.arubik.mctl.utils.Target;
 import dev.arubik.mctl.utils.FileUtils;
 import dev.arubik.mctl.utils.MessageUtils;
+import dev.arubik.mctl.utils.ShortCuts;
 
 public class DataMethods {
 
@@ -65,11 +66,19 @@ public class DataMethods {
     }
 
     public static Mood getMood(LivingEntity entity) {
-        return Mood.valueOf((String) Optional
-                .ofNullable(
-                        FileUtils.getFileConfiguration("data.yml").getConfig()
-                                .get(DataMethods.path(entity) + ".mood", "NEUTRAL"))
-                .orElse("NEUTRAL"));
+        if(MComesToLife.getOldMode()){
+            return Mood.valueOf((String) Optional
+                    .ofNullable(
+                            FileUtils.getFileConfiguration("data.yml").getConfig()
+                                    .get(DataMethods.path(entity) + ".mood", "NEUTRAL"))
+                    .orElse("NEUTRAL"));
+        }else{
+            return Mood.valueOf((String) Optional
+                    .ofNullable(
+                            ShortCuts.getFile(entity).getConfig()
+                                    .get("mood", "NEUTRAL"))
+                    .orElse("NEUTRAL"));
+        }
     }
 
     public static int rand(int min, int max) {
@@ -182,29 +191,35 @@ public class DataMethods {
     }
 
     public static boolean isVillager(Entity e) {
-        FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
-        if (file.getConfig().getString(DataMethods.path((LivingEntity) e) + ".name") != "any")
+        if(e instanceof Villager){
             return true;
+        }
         return false;
     }
 
     public static Boolean setSex(LivingEntity e, Sex s) {
-        FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
-        if (Timers.entEnabled(e)) {
-            file.getConfig().set(path(e) + "." + "sex", s.toString().toLowerCase());
-            FileUtils.saveFile(file.getConfig(), "data.yml");
-            return true;
-        }
-        if (e instanceof Player || e instanceof OfflinePlayer) {
-            file.getConfig().set(playerPath((OfflinePlayer) e) + "." + "sex", s.toString().toLowerCase());
-            FileUtils.saveFile(file.getConfig(), "data.yml");
+        if(MComesToLife.getOldMode()){
+            FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
+            if (Timers.entEnabled(e)) {
+                file.getConfig().set(path(e) + "." + "sex", s.toString().toLowerCase());
+                FileUtils.saveFile(file.getConfig(), "data.yml");
+                return true;
+            }
+            if (e instanceof Player || e instanceof OfflinePlayer) {
+                file.getConfig().set(playerPath((OfflinePlayer) e) + "." + "sex", s.toString().toLowerCase());
+                FileUtils.saveFile(file.getConfig(), "data.yml");
+                return true;
+            }
+        }else{
+            FileConfiguration file = ShortCuts.getFile(e);
+            file.set("sex", s.toString().toLowerCase());
+            FileUtils.saveFile(file.getConfig(), ShortCuts.getUniquePath(e));
             return true;
         }
         return false;
     }
 
     public static Sex getSex(LivingEntity e) {
-        FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
         if (Timers.entEnabled(e)) {
             return Sex.valueOf(DataMethods.retriveData(e).getOrDefault("sex", "male").toString());
         }
@@ -216,17 +231,26 @@ public class DataMethods {
 
     public static HashMap<String, Object> retriveData(LivingEntity e) {
         HashMap<String, Object> mapData = new HashMap<String, Object>();
-        FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
-        if (file.getConfig().contains(path(e))) {
-            for (String key : file.getConfig().getConfigurationSection(pathEnt(e)).getKeys(false)) {
-                mapData.put(key, file.getConfig().get(path(e) + "." + key));
+
+        if(MComesToLife.getOldMode()){
+            FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
+            if (file.getConfig().contains(path(e))) {
+                for (String key : file.getConfig().getConfigurationSection(pathEnt(e)).getKeys(false)) {
+                    mapData.put(key, file.getConfig().get(path(e) + "." + key));
+                }
+            } else {
+                mapData.put("name", "any");
             }
-        } else {
-            mapData.put("name", "any");
+            for (String key : file.getConfig().getConfigurationSection(pathEnt(e)).getKeys(false)) {
+                mapData.put(key, file.getConfig().get(pathEnt(e) + "." + key));
+            }
+        }else{
+            FileConfiguration file = ShortCuts.getFile(e);
+            for(String key : file.getConfig().getKeys(false)){
+                mapData.put(key, file.get(key));
+            }
         }
-        for (String key : file.getConfig().getConfigurationSection(pathEnt(e)).getKeys(false)) {
-            mapData.put(key, file.getConfig().get(pathEnt(e) + "." + key));
-        }
+
         return mapData;
     }
 
@@ -483,20 +507,11 @@ public class DataMethods {
     }
 
     public static Boolean isCustom(Entity e) {
-
         return e.getPersistentDataContainer().has(CustomEntity.key);
-
-        // FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
-        // if (e instanceof LivingEntity) {
-        // return file.getConfig().contains(DataMethods.pathEnt((LivingEntity) e));
-        // } else {
-        // return false;
-        // }
     }
 
     public static Boolean isCustom(String e) {
-        FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
-        return file.getConfig().contains(DataMethods.pathEnt(e));
+        return Bukkit.getServer().getEntity(UUID.fromString(e)).getPersistentDataContainer().has(CustomEntity.key);
     }
 
     public static CustomVillager getlastClickedEntity(Player p) {

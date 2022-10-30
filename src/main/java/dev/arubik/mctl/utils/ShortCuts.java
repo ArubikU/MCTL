@@ -14,6 +14,14 @@ public class ShortCuts {
     }
 
     public static void Sync(Runnable e) {
-        Bukkit.getScheduler().runTaskLater(MComesToLife.getPlugin(), e,0L);
+        Bukkit.getScheduler().runTaskLater(MComesToLife.getPlugin(), e, 0L);
+    }
+
+    public static String getUniquePath(org.bukkit.entity.Entity e) {
+        return "data/" + e.getUniqueId().toString() + ".yml";
+    }
+
+    public static FileConfiguration getFile(org.bukkit.entity.Entity e) {
+        return FileUtils.getFileConfiguration(getUniquePath(e));
     }
 }

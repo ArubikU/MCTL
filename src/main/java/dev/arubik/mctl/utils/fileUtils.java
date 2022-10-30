@@ -22,7 +22,7 @@ public class FileUtils {
             s.options().copyDefaults(true);
             try {
                 try {
-                    if (MComesToLife.getPlugin().getResource(path) != null && path != "data.yml") {
+                    if (MComesToLife.getPlugin().getResource(path) != null && path != "data.yml" && !path.startsWith("data/")) {
                         MComesToLife.getPlugin().saveResource(path, false);
                     }
                 } catch (java.lang.IllegalArgumentException e) {
@@ -44,6 +44,11 @@ public class FileUtils {
         if (f.exists()) {
             f.delete();
         }
+    }
+
+    public static Boolean existFile(String path){
+        File f = new File(MComesToLife.getPlugin().getDataFolder(), path);
+        return f.exists();
     }
 
     public static File getFile(String path) {

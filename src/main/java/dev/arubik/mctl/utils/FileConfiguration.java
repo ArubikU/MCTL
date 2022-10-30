@@ -176,4 +176,8 @@ public class FileConfiguration {
         return false;
     }
 
+    public Object get(@NotNull String path) {
+        return config.get(path);
+    }
+
 }

@@ -44,6 +44,9 @@ public final class MComesToLife extends JavaPlugin {
 
     private static MComesToLife plugin;
 
+    @Getter
+    private static Boolean oldMode = false;
+
     public static MComesToLife getPlugin() {
         return plugin;
     }
@@ -218,6 +221,7 @@ public final class MComesToLife extends JavaPlugin {
         villagers = new LangFile(config.getString("config.speech-file", "speech_en.yml"));
         skinHolder = new SkinHolder();
         nms = new Nms();
+        oldMode = config.getBoolean("config.old-mode", false);
         DEBUG = MComesToLife.getMainConfig().getBoolean("config.debug", false);
         loadCompatibilities();
         addPlaceholders();

@@ -21,6 +21,7 @@ import dev.arubik.mctl.MComesToLife;
 import dev.arubik.mctl.holders.Methods.DataMethods;
 import dev.arubik.mctl.utils.FileConfiguration;
 import dev.arubik.mctl.utils.ItemSerializer;
+import dev.arubik.mctl.utils.ShortCuts;
 import dev.arubik.mctl.utils.FileUtils;
 import lombok.Getter;
 
@@ -77,46 +78,74 @@ public class CustomEntity {
     }
 
     public void save() {
-        FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
-        for (String key : data.keySet()) {
-            file.getConfig().set(path() + "." + key, data.get(key));
+        if (MComesToLife.getOldMode()) {
+            FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
+            for (String key : data.keySet()) {
+                file.getConfig().set(path() + "." + key, data.get(key));
+            }
+            FileUtils.saveFile(file.getConfig(), "data.yml");
+        } else {
+            FileConfiguration file = ShortCuts.getFile(this.getLivingEntity());
+            for (String key : data.keySet()) {
+                file.getConfig().set(key, data.get(key));
+            }
+            FileUtils.saveFile(file.getConfig(), ShortCuts.getUniquePath(this.getLivingEntity()));
         }
-        FileUtils.saveFile(file.getConfig(), "data.yml");
-
         this.getLivingEntity().getPersistentDataContainer().set(key, PersistentDataType.STRING, "true");
     };
 
     public static final NamespacedKey key = new NamespacedKey(MComesToLife.getPlugin(), "villager");
 
     public void load() {
-        FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
-        for (String key : file.getConfig().getConfigurationSection(path()).getKeys(false)) {
-            if (key.equalsIgnoreCase("tittle")) {
-                data.put(key, file.getConfig().get(path() + "." + key));
-                data.put("tittle", MComesToLife.getProffesions().getLang("prefix", "")
-                        + MComesToLife.getProffesions().getLang((String) file.getConfig().get(path() + "." + "type"),
-                                file.getConfig().getString(path() + "." + key).toLowerCase().replace("_", " ")));
-            } else {
-                data.put(key, file.getConfig().get(path() + "." + key));
+        if (MComesToLife.getOldMode()) {
+            FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
+            for (String key : file.getConfig().getConfigurationSection(path()).getKeys(false)) {
+                if (key.equalsIgnoreCase("tittle")) {
+                    data.put(key, file.getConfig().get(path() + "." + key));
+                    data.put("tittle", MComesToLife.getProffesions().getLang("prefix", "")
+                            + MComesToLife.getProffesions().getLang(
+                                    (String) file.getConfig().get(path() + "." + "type"),
+                                    file.getConfig().getString(path() + "." + key).toLowerCase().replace("_", " ")));
+                } else {
+                    data.put(key, file.getConfig().get(path() + "." + key));
+                }
+            }
+        } else {
+            FileConfiguration file = ShortCuts.getFile(this.getLivingEntity());
+            for (String key : file.getConfig().getKeys(false)) {
+                if (key.equalsIgnoreCase("tittle")) {
+                    data.put(key, file.getConfig().get(key));
+                    data.put("tittle", MComesToLife.getProffesions().getLang("prefix", "")
+                            + MComesToLife.getProffesions().getLang(
+                                    (String) file.getConfig().get("type"),
+                                    file.getConfig().getString(key).toLowerCase().replace("_", " ")));
+                } else {
+                    data.put(key, file.getConfig().get(key));
+                }
             }
         }
     };
 
     public void putForceData(String key, Object value) {
-        data.put(key, value);
-        FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
-        file.getConfig().set(path() + "." + key, value);
-        FileUtils.saveFile(file.getConfig(), "data.yml");
+        if(MComesToLife.getOldMode()) {
+            FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
+            file.getConfig().set(path() + "." + key, value);
+            FileUtils.saveFile(file.getConfig(), "data.yml");
+        } else {
+            FileConfiguration file = ShortCuts.getFile(this.getLivingEntity());
+            file.getConfig().set(key, value);
+            FileUtils.saveFile(file.getConfig(), ShortCuts.getUniquePath(this.getLivingEntity()));
+        }
     }
 
     public Object getData(String key) {
-
-        FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
-        return file.getConfig().get(path() + "." + key);
-    }
-
-    public String playerPath() {
-        return "players." + villager.getUniqueId().toString();
+        if(MComesToLife.getOldMode()) {
+            FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
+            return file.getConfig().get(path() + "." + key);
+        } else {
+            FileConfiguration file = ShortCuts.getFile(this.getLivingEntity());
+            return file.getConfig().get(key);
+        }
     }
 
     public String path() {
@@ -131,13 +160,13 @@ public class CustomEntity {
         }, 2L);
 
         FileUtils.removeFile(getUniquePath());
+
+        
     }
 
-    
-    public String getUniquePath(){
-        return villager.getUniqueId().toString();
+    public String getUniquePath() {
+        return ShortCuts.getUniquePath(villager);
     }
-
 
     public void dropItems(ItemStack... stack) {
         for (ItemStack a : stack) {
