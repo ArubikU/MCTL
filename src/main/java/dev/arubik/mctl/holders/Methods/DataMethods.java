@@ -66,13 +66,13 @@ public class DataMethods {
     }
 
     public static Mood getMood(LivingEntity entity) {
-        if(MComesToLife.getOldMode()){
+        if (MComesToLife.getOldMode()) {
             return Mood.valueOf((String) Optional
                     .ofNullable(
                             FileUtils.getFileConfiguration("data.yml").getConfig()
                                     .get(DataMethods.path(entity) + ".mood", "NEUTRAL"))
                     .orElse("NEUTRAL"));
-        }else{
+        } else {
             return Mood.valueOf((String) Optional
                     .ofNullable(
                             ShortCuts.getFile(entity).getConfig()
@@ -191,14 +191,14 @@ public class DataMethods {
     }
 
     public static boolean isVillager(Entity e) {
-        if(e instanceof Villager){
+        if (e instanceof Villager) {
             return true;
         }
         return false;
     }
 
     public static Boolean setSex(LivingEntity e, Sex s) {
-        if(MComesToLife.getOldMode()){
+        if (MComesToLife.getOldMode()) {
             FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
             if (Timers.entEnabled(e)) {
                 file.getConfig().set(path(e) + "." + "sex", s.toString().toLowerCase());
@@ -210,7 +210,7 @@ public class DataMethods {
                 FileUtils.saveFile(file.getConfig(), "data.yml");
                 return true;
             }
-        }else{
+        } else {
             FileConfiguration file = ShortCuts.getFile(e);
             file.set("sex", s.toString().toLowerCase());
             FileUtils.saveFile(file.getConfig(), ShortCuts.getUniquePath(e));
@@ -232,7 +232,7 @@ public class DataMethods {
     public static HashMap<String, Object> retriveData(LivingEntity e) {
         HashMap<String, Object> mapData = new HashMap<String, Object>();
 
-        if(MComesToLife.getOldMode()){
+        if (MComesToLife.getOldMode()) {
             FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
             if (file.getConfig().contains(path(e))) {
                 for (String key : file.getConfig().getConfigurationSection(pathEnt(e)).getKeys(false)) {
@@ -244,9 +244,9 @@ public class DataMethods {
             for (String key : file.getConfig().getConfigurationSection(pathEnt(e)).getKeys(false)) {
                 mapData.put(key, file.getConfig().get(pathEnt(e) + "." + key));
             }
-        }else{
+        } else {
             FileConfiguration file = ShortCuts.getFile(e);
-            for(String key : file.getConfig().getKeys(false)){
+            for (String key : file.getConfig().getKeys(false)) {
                 mapData.put(key, file.get(key));
             }
         }
@@ -255,30 +255,26 @@ public class DataMethods {
     }
 
     public static HashMap<String, Object> retriveData(String e) {
-        HashMap<String, Object> mapData = new HashMap<String, Object>();
-        FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
-        if (file.getConfig().contains(path(e))) {
-            for (String key : file.getConfig().getConfigurationSection(pathEnt(e)).getKeys(false)) {
-                mapData.put(key, file.getConfig().get(path(e) + "." + key));
-            }
-        } else {
-            mapData.put("name", "any");
-        }
-        for (String key : file.getConfig().getConfigurationSection(pathEnt(e)).getKeys(false)) {
-            mapData.put(key, file.getConfig().get(pathEnt(e) + "." + key));
-        }
-        return mapData;
+
+        return retriveData((LivingEntity) Bukkit.getEntity(UUID.fromString(e)));
     }
 
     public static HashMap<String, Object> retrivePlayerData(OfflinePlayer player) {
         HashMap<String, Object> mapData = new HashMap<String, Object>();
-        FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
-        if (file.getConfig().contains(playerPath(player))) {
-            for (String key : file.getConfig().getConfigurationSection(playerPath(player)).getKeys(false)) {
-                mapData.put(key, file.getConfig().get(playerPath(player) + "." + key));
+        if (MComesToLife.getOldMode()) {
+            FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
+            if (file.getConfig().contains(playerPath(player))) {
+                for (String key : file.getConfig().getConfigurationSection(playerPath(player)).getKeys(false)) {
+                    mapData.put(key, file.getConfig().get(playerPath(player) + "." + key));
+                }
+            } else {
+                mapData.put("name", "any");
             }
         } else {
-            mapData.put("name", "any");
+            FileConfiguration file = ShortCuts.getFile(player);
+            for (String key : file.getConfig().getKeys(false)) {
+                mapData.put(key, file.get(key));
+            }
         }
         return mapData;
     }
@@ -472,14 +468,20 @@ public class DataMethods {
     }
 
     public static void setData(String key, @Nullable Object value, LivingEntity e) {
-        FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
-        if (e instanceof Player || e instanceof OfflinePlayer) {
-            file.getConfig().set(DataMethods.playerPath((OfflinePlayer) e) + "." + key, value);
+        if (MComesToLife.getOldMode()) {
+            FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
+            if (e instanceof Player || e instanceof OfflinePlayer) {
+                file.getConfig().set(DataMethods.playerPath((OfflinePlayer) e) + "." + key, value);
+                FileUtils.saveFile(file.getConfig(), "data.yml");
+                return;
+            }
+            file.getConfig().set(DataMethods.path(e) + "." + key, value);
             FileUtils.saveFile(file.getConfig(), "data.yml");
-            return;
+        } else {
+            FileConfiguration file = ShortCuts.getFile(e);
+            file.set(key, value);
+            FileUtils.saveFile(file.getConfig(), ShortCuts.getUniquePath(e));
         }
-        file.getConfig().set(DataMethods.path(e) + "." + key, value);
-        FileUtils.saveFile(file.getConfig(), "data.yml");
     }
 
     public static String path(LivingEntity entity) {
