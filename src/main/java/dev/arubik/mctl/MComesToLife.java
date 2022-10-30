@@ -41,6 +41,19 @@ import dev.arubik.mctl.utils.LangFile;
 import dev.arubik.mctl.utils.MessageUtils;
 
 public final class MComesToLife extends JavaPlugin {
+    
+    
+    
+    //Querido colega programador: 
+    //
+    //Cuando ayane escribío este código solo Dios sabe y ella
+    //como funciona.
+    //Ahora solo !Dios lo sabe¡ 
+    //
+    //Si tratas de """optimizar"""
+    //y fracasas aumenta el contador de horas.
+    //
+    // contador_horas_perdidas: 267
 
     private static MComesToLife plugin;
 
