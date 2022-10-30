@@ -39,6 +39,13 @@ public class FileUtils {
         return new FileConfiguration(data, path);
     }
 
+    public static void removeFile(String path){
+        File f = new File(MComesToLife.getPlugin().getDataFolder(), path);
+        if (f.exists()) {
+            f.delete();
+        }
+    }
+
     public static File getFile(String path) {
         return new File(MComesToLife.getPlugin().getDataFolder(), path);
     }

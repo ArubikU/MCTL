@@ -273,7 +273,13 @@ public class CustomVillager extends BetterEntity {
         ShortCuts.Async(new Runnable() {
             @Override
             public void run() {
-                DisguiseAPI.disguiseToAll(villager, generateDisguise());
+                PlayerDisguise disguise = generateDisguise();
+                ShortCuts.Sync(new Runnable() {
+                    @Override
+                    public void run() {
+                        DisguiseAPI.disguiseToAll(villager, disguise);
+                    }
+                });
             }
         });
     }
@@ -283,7 +289,13 @@ public class CustomVillager extends BetterEntity {
         ShortCuts.Async(new Runnable() {
             @Override
             public void run() {
-                DisguiseAPI.disguiseToPlayers(villager, generateDisguise(), p);
+                PlayerDisguise disguise = generateDisguise();
+                ShortCuts.Sync(new Runnable() {
+                    @Override
+                    public void run() {
+                        DisguiseAPI.disguiseToPlayers(villager, disguise, p);
+                    }
+                });
             }
         });
     }
@@ -382,15 +394,20 @@ public class CustomVillager extends BetterEntity {
                 }
             }
             save();
-            VillagerInventoryHolder vi = VillagerInventoryHolder.getInstance(this);
-            vi.loadInventoryNoReload();
-            if (NumberUtils.probability(MComesToLife.getMainConfig().getInt("config.equip-percent", 0))) {
-                if (this.getLivingEntity() instanceof Villager) {
-                    vi.giveItem(EntityAi.getRandomItem(((Villager) vi.getLivingEntity()).getProfession()));
-                } else {
-                    vi.giveItem(EntityAi.getRandomItem(vi.getLivingEntity().getType()));
+            ShortCuts.Sync(new Runnable(){
+                @Override
+                public void run() {
+                    VillagerInventoryHolder vi = VillagerInventoryHolder.getInstance(genInstance());
+                    vi.loadInventoryNoReload();
+                    if (NumberUtils.probability(MComesToLife.getMainConfig().getInt("config.equip-percent", 0))) {
+                        if (getLivingEntity() instanceof Villager) {
+                            vi.giveItem(EntityAi.getRandomItem(((Villager) vi.getLivingEntity()).getProfession()));
+                        } else {
+                            vi.giveItem(EntityAi.getRandomItem(vi.getLivingEntity().getType()));
+                        }
+                    }
                 }
-            }
+            });
         }
 
         this.villager.setPersistent(true);
@@ -581,17 +598,20 @@ public class CustomVillager extends BetterEntity {
                         divorceWithOutMessages(player);
                     });
                 }
-
-                try {
-                    VillagerInventoryHolder holder = VillagerInventoryHolder.getInstance(genInstance());
-                    holder.loadInventoryNoReload();
-                    holder.DropInventory();
-                } catch (Throwable e) {
-                    if (MComesToLife.isDEBUG()) {
-                        e.printStackTrace();
+                ShortCuts.Sync(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            VillagerInventoryHolder holder = VillagerInventoryHolder.getInstance(genInstance());
+                            holder.loadInventoryNoReload();
+                            holder.DropInventory();
+                        } catch (Throwable e) {
+                            if (MComesToLife.isDEBUG()) {
+                                e.printStackTrace();
+                            }
+                        }
                     }
-                }
-
+                });
                 removeData();
             }
 

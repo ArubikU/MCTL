@@ -6,7 +6,7 @@ import org.bukkit.entity.LivingEntity;
 
 import dev.arubik.mctl.MComesToLife;
 import dev.arubik.mctl.holders.Timers;
-import dev.arubik.mctl.holders.Methods.DataMethods;
+import dev.arubik.mctl.utils.ShortCuts;
 
 public class WorldEntityLoader {
 
@@ -15,8 +15,13 @@ public class WorldEntityLoader {
             for (Entity e : w.getEntities()) {
                 if (e.getLocation().getChunk().isLoaded()) {
                     if (Timers.entEnabled(e)) {
-                        CustomVillager customVillager = new CustomVillager((LivingEntity) e);
-                        customVillager.loadVillager(true);
+                        ShortCuts.Sync(new Runnable() {
+                            @Override
+                            public void run() {
+                                CustomVillager customVillager = new CustomVillager((LivingEntity) e);
+                                customVillager.loadVillager(true);
+                            }
+                        });
                     }
                 }
             }

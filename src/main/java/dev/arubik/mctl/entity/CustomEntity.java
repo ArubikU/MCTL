@@ -129,7 +129,15 @@ public class CustomEntity {
             file.getConfig().set(path(), null);
             FileUtils.saveFile(file.getConfig(), "data.yml");
         }, 2L);
+
+        FileUtils.removeFile(getUniquePath());
     }
+
+    
+    public String getUniquePath(){
+        return villager.getUniqueId().toString();
+    }
+
 
     public void dropItems(ItemStack... stack) {
         for (ItemStack a : stack) {
