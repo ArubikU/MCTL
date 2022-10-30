@@ -451,6 +451,7 @@ public class DataMethods {
             }
 
             try {
+                if(!DataMethods.retrivePlayerData(p).containsKey("spouse")) return "";
                 if (DataMethods.retrivePlayerData(p).get("spouse").toString()
                         .equalsIgnoreCase(v.getUniqueId().toString()))
                     return "Spouse";

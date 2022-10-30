@@ -573,51 +573,38 @@ public class CustomVillager extends BetterEntity {
     }
 
     public void killVillager() {
-        ShortCuts.Async(new Runnable() {
-
-            @Override
-            public void run() {
-                MComesToLife.getPlugin().removeUUID(villager);
-                String spouseuuid = (String) DataMethods.getRelationMap(villager).get("spouse");
-                if (spouseuuid != "any") {
-                    // get the player by the UUID
-                    Optional<Player> opt = Optional.empty();
-                    for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-                        if (p.getUniqueId().toString().equalsIgnoreCase(spouseuuid)) {
-                            opt = Optional.ofNullable(p);
-                        }
-                    }
-                    opt.ifPresent(player -> {
-                        Message death;
-                        if (DataMethods.getSex(player) == Sex.male) {
-                            death = new Message(MComesToLife.messages.getLang("cmd.villager.death-female",
-                                    "<prefix><gray>Tu esposa <spouse_name> a muerto"));
-                        } else {
-                            death = new Message(MComesToLife.messages.getLang("cmd.villager.death-female",
-                                    "<prefix><gray>Tu esposo <spouse_name> a muerto"));
-                        }
-                        divorceWithOutMessages(player);
-                    });
+        MComesToLife.getPlugin().removeUUID(villager);
+        String spouseuuid = (String) DataMethods.getRelationMap(villager).get("spouse");
+        if (spouseuuid != "any") {
+            // get the player by the UUID
+            Optional<Player> opt = Optional.empty();
+            for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+                if (p.getUniqueId().toString().equalsIgnoreCase(spouseuuid)) {
+                    opt = Optional.ofNullable(p);
                 }
-                ShortCuts.Sync(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            VillagerInventoryHolder holder = VillagerInventoryHolder.getInstance(genInstance());
-                            holder.loadInventoryNoReload();
-                            holder.DropInventory();
-                        } catch (Throwable e) {
-                            if (MComesToLife.isDEBUG()) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                });
-                removeData();
             }
-
-        });
-
+            opt.ifPresent(player -> {
+                Message death;
+                if (DataMethods.getSex(player) == Sex.male) {
+                    death = new Message(MComesToLife.messages.getLang("cmd.villager.death-female",
+                            "<prefix><gray>Tu esposa <spouse_name> a muerto"));
+                } else {
+                    death = new Message(MComesToLife.messages.getLang("cmd.villager.death-female",
+                            "<prefix><gray>Tu esposo <spouse_name> a muerto"));
+                }
+                divorceWithOutMessages(player);
+            });
+        }
+        try {
+            VillagerInventoryHolder holder = VillagerInventoryHolder.getInstance(genInstance());
+            holder.loadInventoryNoReload();
+            holder.DropInventory();
+        } catch (Throwable e) {
+            if (MComesToLife.isDEBUG()) {
+                e.printStackTrace();
+            }
+        }
+        removeData();
     }
 
     public CustomVillager genInstance() {

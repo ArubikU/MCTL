@@ -127,7 +127,7 @@ public class CustomEntity {
     };
 
     public void putForceData(String key, Object value) {
-        if(MComesToLife.getOldMode()) {
+        if (MComesToLife.getOldMode()) {
             FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
             file.getConfig().set(path() + "." + key, value);
             FileUtils.saveFile(file.getConfig(), "data.yml");
@@ -139,7 +139,7 @@ public class CustomEntity {
     }
 
     public Object getData(String key) {
-        if(MComesToLife.getOldMode()) {
+        if (MComesToLife.getOldMode()) {
             FileConfiguration file = FileUtils.getFileConfiguration("data.yml");
             return file.getConfig().get(path() + "." + key);
         } else {
@@ -161,7 +161,6 @@ public class CustomEntity {
 
         FileUtils.removeFile(getUniquePath());
 
-        
     }
 
     public String getUniquePath() {
@@ -170,6 +169,10 @@ public class CustomEntity {
 
     public void dropItems(ItemStack... stack) {
         for (ItemStack a : stack) {
+            if (a == null)
+                continue;
+            if (a.getType().isAir())
+                continue;
             villager.getWorld().dropItem(villager.getLocation().add(0, 1, 0), a);
         }
     }

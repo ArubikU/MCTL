@@ -425,6 +425,10 @@ public class ItemSerializer {
         }
 
         public static float getDamage(ItemStack stack) {
+                if (stack == null)
+                        return 0;
+                if (stack.getType().isAir())
+                        return 0;
                 float a = 0f;
                 if (MComesToLife.getEnabledPlugins().isEnabled("MMOItems")) {
                         if (NBTItem.get(stack).hasTag("MMOITEMS_ITEM_ID")) {
@@ -463,7 +467,12 @@ public class ItemSerializer {
         }
 
         public static float getDamage(ItemStack stack, net.minecraft.world.entity.LivingEntity target) {
+
                 float a = getDamage(stack);
+
+                if (a == 0f) {
+                        return 3f;
+                }
 
                 if (getEnchantmentLevel(stack, SerializedEnchantment.SMITE.getEnchantmentName()) > 0
                                 && target.getType().equals(EntityType.ZOMBIE)) {

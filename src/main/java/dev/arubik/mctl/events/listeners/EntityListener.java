@@ -222,7 +222,7 @@ public class EntityListener extends Listener {
                 cv.getLivingEntity().removePotionEffect(PotionEffectType.SLOW);
                 cv.getLivingEntity().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 30, 2));
                 if (Mood.rand(1, 15) == 10) {
-                    cv.getLivingEntity().attack(event.getDamager());
+                    cv.performAttack((LivingEntity)event.getDamager());
                 }
                 cv.takeLikes(Mood.rand(1, 10), player);
                 // play angry particles upp the villager
