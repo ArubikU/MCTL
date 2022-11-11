@@ -201,7 +201,7 @@
             <artifactId>sample</artifactId>
             <version>1.0</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/libs/LibsDisguises-10.0.27-Free.jar</systemPath>
+            <systemPath>${project.basedir}/libs/LibsDisguises.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
@@ -256,13 +256,6 @@
             <version>1.0</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/libs/Shopkeepers-2.16.2.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>com.libc</groupId>
-            <artifactId>sample</artifactId>
-            <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/libs/citizens.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>net.skinsrestorer</groupId>

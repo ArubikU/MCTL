@@ -4,7 +4,7 @@ target/original-mctl-1.0.0.jar
 target/*
 src/main/java/dev/arubik/mctl/holders/Premiun.java
 libs/citizens.jar
-libs/LibsDisguises-10.0.27-Free.jar
+libs/LibsDisguises.jar
 libs/original-mctl-1.0.0.jar
 libs/mythicmobs.jar
-libs/Shopkeepers-2.16.2.jar
+libs/Shopkeepers.jar
