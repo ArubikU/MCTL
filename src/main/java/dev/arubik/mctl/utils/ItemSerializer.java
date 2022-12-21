@@ -26,7 +26,7 @@ import io.lumine.mythic.lib.adventure.text.serializer.legacy.LegacyComponentSeri
 import io.lumine.mythic.lib.api.item.ItemTag;
 import io.lumine.mythic.lib.api.item.NBTItem;
 import io.lumine.mythic.lib.api.util.LegacyComponent;
-import io.th0rgal.oraxen.items.OraxenItems;
+//import io.th0rgal.oraxen.items.OraxenItems;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.Indyuce.mmoitems.ItemStats;
 import net.Indyuce.mmoitems.MMOItems;
@@ -191,17 +191,17 @@ public class ItemSerializer {
                                         b = new ItemStack(a);
                                 }
                         }
-                        if (MComesToLife.getEnabledPlugins().isEnabled("Oraxen")
-                                        || MComesToLife.getEnabledPlugins().isEnabled("OraxenPlugin")) {
-                                if (OraxenItems.exists(mat)) {
-                                        b = OraxenItems.getItemById(mat).build();
-                                } else {
-                                        a = Material.getMaterial(configB.getString(
-                                                        new String[] { "Material", "MATERIAL", "MATERIAL" },
-                                                        "DIAMOND"));
-                                        b = new ItemStack(a);
-                                }
-                        }
+                        // if (MComesToLife.getEnabledPlugins().isEnabled("Oraxen")
+                        // || MComesToLife.getEnabledPlugins().isEnabled("OraxenPlugin")) {
+                        // if (OraxenItems.exists(mat)) {
+                        // b = OraxenItems.getItemById(mat).build();
+                        // } else {
+                        // a = Material.getMaterial(configB.getString(
+                        // new String[] { "Material", "MATERIAL", "MATERIAL" },
+                        // "DIAMOND"));
+                        // b = new ItemStack(a);
+                        // }
+                        // }
 
                 } else {
                         a = Material.getMaterial(configB.getString(new String[] { "Material", "MATERIAL", "MATERIAL" },
@@ -396,12 +396,12 @@ public class ItemSerializer {
                                 return CustomStack.byItemStack(stack).getNamespacedID().toUpperCase();
                         }
                 }
-                if (MComesToLife.getEnabledPlugins().isEnabled("Oraxen")
-                                || MComesToLife.getEnabledPlugins().isEnabled("OraxenPlugin")) {
-                        if (OraxenItems.exists(stack)) {
-                                return OraxenItems.getIdByItem(stack).toUpperCase();
-                        }
-                }
+                // if (MComesToLife.getEnabledPlugins().isEnabled("Oraxen")
+                // || MComesToLife.getEnabledPlugins().isEnabled("OraxenPlugin")) {
+                // if (OraxenItems.exists(stack)) {
+                // return OraxenItems.getIdByItem(stack).toUpperCase();
+                // }
+                // }
                 if (stack.hasItemMeta()) {
                         if (stack.getItemMeta().hasCustomModelData()) {
                                 if (stack.getItemMeta().getCustomModelData() > 0) {

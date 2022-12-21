@@ -100,7 +100,7 @@ public class Timers {
                 try {
                     Timers.slowTimer();
                 } catch (Exception exception) {
-                    if(MComesToLife.isDEBUG()){
+                    if (MComesToLife.isDEBUG()) {
                         exception.printStackTrace();
                     }
                 }
@@ -144,7 +144,7 @@ public class Timers {
                 try {
                     Timers.longTimer();
                 } catch (Exception exception) {
-                    if(MComesToLife.isDEBUG()){
+                    if (MComesToLife.isDEBUG()) {
                         exception.printStackTrace();
                     }
                 }

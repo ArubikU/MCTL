@@ -255,7 +255,7 @@
             <artifactId>sample</artifactId>
             <version>1.0</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/libs/Shopkeepers-2.16.2.jar</systemPath>
+            <systemPath>${project.basedir}/libs/Shopkeepers.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>net.skinsrestorer</groupId>

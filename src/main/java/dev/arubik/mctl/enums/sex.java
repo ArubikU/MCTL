@@ -5,18 +5,19 @@ public enum Sex {
 
     private int sex = 0;
 
-    private Sex(int sex){
+    private Sex(int sex) {
         this.sex = sex;
     }
 
-    public String getSign(){
-        if(sex==0){
+    public String getSign() {
+        if (sex == 0) {
             return "♂";
         }
         return "♀";
     }
-    public String getColor(){
-        if(sex==0){
+
+    public String getColor() {
+        if (sex == 0) {
             return "<#FFC0CB>";
         }
         return "<#00BFFF>";
